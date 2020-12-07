@@ -1,4 +1,5 @@
 <?php
+
 namespace Eris;
 
 class Facade
@@ -11,12 +12,8 @@ class Facade
         $this->erisSetup();
     }
 
-    /**
-     * sadly this facade has no option to retrieve annotations of testcases
-     * @return array
-     */
-    protected function getAnnotations()
+    protected function getName(): string
     {
-        return array();
+        return '';
     }
 }

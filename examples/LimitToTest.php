@@ -1,4 +1,5 @@
 <?php
+
 use Eris\Generator;
 use Eris\TestTrait;
 
@@ -15,7 +16,7 @@ class LimitToTest extends PHPUnit_Framework_TestCase
             Generator\int()
         )
             ->then(function ($value) {
-                $this->assertInternalType('integer', $value);
+                $this->assertIsInt($value);
             });
     }
 

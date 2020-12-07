@@ -1,4 +1,5 @@
 <?php
+
 use Eris\Generator;
 
 class AssociativeArrayTest extends PHPUnit_Framework_TestCase
@@ -16,9 +17,9 @@ class AssociativeArrayTest extends PHPUnit_Framework_TestCase
             ->then(function ($array) {
                 $this->assertEquals(2, count($array));
                 $letter = $array['letter'];
-                $this->assertInternalType('string', $letter);
+                $this->assertIsString($letter);
                 $cipher = $array['cipher'];
-                $this->assertInternalType('integer', $cipher);
+                $this->assertIsInt($cipher);
             });
     }
 }

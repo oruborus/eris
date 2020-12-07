@@ -1,4 +1,5 @@
 <?php
+
 use Eris\Generator;
 use Eris\Random;
 use Eris\TestTrait;
@@ -14,7 +15,7 @@ class RandConfigurationTest extends PHPUnit_Framework_TestCase
             ->forAll(
                 Generator\int()
             )
-            ->withMaxSize(1000 * 1000* 1000)
+            ->withMaxSize(1000 * 1000 * 1000)
             ->then($this->isInteger());
     }
 
@@ -27,7 +28,7 @@ class RandConfigurationTest extends PHPUnit_Framework_TestCase
             ->forAll(
                 Generator\int()
             )
-            ->withMaxSize(1000 * 1000* 1000)
+            ->withMaxSize(1000 * 1000 * 1000)
             ->then($this->isInteger());
     }
 
@@ -71,7 +72,7 @@ class RandConfigurationTest extends PHPUnit_Framework_TestCase
     private function isInteger()
     {
         return function ($number) {
-            $this->assertInternalType('integer', $number);
+            $this->assertIsInt($number);
         };
     }
 }

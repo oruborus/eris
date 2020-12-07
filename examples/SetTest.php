@@ -1,4 +1,5 @@
 <?php
+
 use Eris\Generator;
 use Eris\TestTrait;
 
@@ -12,7 +13,7 @@ class SetTest extends PHPUnit_Framework_TestCase
             Generator\set(Generator\nat())
         )
             ->then(function ($set) {
-                $this->assertInternalType('array', $set);
+                $this->assertIsArray($set);
                 foreach ($set as $element) {
                     $this->assertGreaterThanOrEqual(0, $element);
                 }

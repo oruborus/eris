@@ -1,4 +1,5 @@
 <?php
+
 use Eris\Generator;
 
 class NamesTest extends PHPUnit_Framework_TestCase
@@ -10,7 +11,7 @@ class NamesTest extends PHPUnit_Framework_TestCase
         $this->forAll(
             Generator\names()
         )->then(function ($name) {
-            $this->assertInternalType('string', $name);
+            $this->assertIsString($name);
             var_dump($name);
         });
     }
@@ -19,7 +20,7 @@ class NamesTest extends PHPUnit_Framework_TestCase
     {
         $generator = Generator\NamesGenerator::defaultDataSet();
         $sample = $this->sampleShrink($generator);
-        $this->assertInternalType('array', $sample->collected());
+        $this->assertIsArray($sample->collected());
         var_dump($sample->collected());
     }
 }

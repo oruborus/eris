@@ -1,4 +1,5 @@
 <?php
+
 use Eris\Generator;
 use Eris\TestTrait;
 
@@ -14,7 +15,7 @@ class SubsetTest extends PHPUnit_Framework_TestCase
             ])
         )
             ->then(function ($set) {
-                $this->assertInternalType('array', $set);
+                $this->assertIsArray($set);
                 foreach ($set as $element) {
                     $this->assertTrue($this->isEven($element), "Element $element is not even, where did it come from?");
                 }

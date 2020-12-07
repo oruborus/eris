@@ -1,4 +1,5 @@
 <?php
+
 namespace Eris\Generator;
 
 // TODO: dependency on ForAll is bad,
@@ -19,7 +20,7 @@ function subset($input)
 class SubsetGenerator implements Generator
 {
     private $universe;
-    
+
     public function __construct(array $universe)
     {
         $this->universe = $universe;
@@ -33,7 +34,7 @@ class SubsetGenerator implements Generator
         $binaryDescription = str_pad(decbin($subsetIndex), count($this->universe), "0", STR_PAD_LEFT);
         $subset = [];
         for ($i = 0; $i < strlen($binaryDescription); $i++) {
-            $elementPresent = $binaryDescription{$i};
+            $elementPresent = $binaryDescription[$i];
             if ($elementPresent == "1") {
                 $subset[] = $this->universe[$i];
             }

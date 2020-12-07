@@ -1,8 +1,10 @@
 <?php
+
 use Eris\Generator;
 use Eris\TestTrait;
+use PHPUnit\Framework\TestCase;
 
-class ShrinkingTest extends \PHPUnit_Framework_TestCase
+class ShrinkingTest extends TestCase
 {
     use TestTrait;
 
@@ -13,7 +15,7 @@ class ShrinkingTest extends \PHPUnit_Framework_TestCase
         )
             ->then(function ($string) {
                 var_dump($string);
-                $this->assertNotContains('B', $string);
+                $this->assertNotContains('B', \str_split($string));
             });
     }
 

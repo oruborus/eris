@@ -1,4 +1,5 @@
 <?php
+
 namespace Eris;
 
 use BadMethodCallException;
@@ -10,6 +11,7 @@ use Eris\Random\MtRandSource;
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
 use Eris\Shrinker\ShrinkerFactory;
+use PHPUnit\Util\Test;
 
 trait TestTrait
 {
@@ -51,11 +53,13 @@ trait TestTrait
                 return !($listener instanceof MinimumEvaluations);
             }
         );
-        $tags = $this->getAnnotations();//from TestCase of PHPunit
+
+        $tags = Test::parseTestMethodAnnotations(static::class, $this->getName(false));
+
         $this->withRand($this->getAnnotationValue($tags, 'eris-method', 'rand', 'strval'));
         $this->iterations = $this->getAnnotationValue($tags, 'eris-repeat', 100, 'intval');
         $this->shrinkingTimeLimit = $this->getAnnotationValue($tags, 'eris-shrink', null, 'intval');
-        $this->listeners[] = MinimumEvaluations::ratio($this->getAnnotationValue($tags, 'eris-ratio', 50, 'floatval')/100);
+        $this->listeners[] = MinimumEvaluations::ratio($this->getAnnotationValue($tags, 'eris-ratio', 50, 'floatval') / 100);
         $duration = $this->getAnnotationValue($tags, 'eris-duration', false, 'strval');
         if ($duration) {
             $this->limitTo(new DateInterval($duration));
@@ -68,7 +72,7 @@ trait TestTrait
      */
     private function seedingRandomNumberGeneration()
     {
-        $seed = intval(getenv('ERIS_SEED') ?: (microtime(true)*1000000));
+        $seed = intval(getenv('ERIS_SEED') ?: (microtime(true) * 1000000));
         if ($seed < 0) {
             $seed *= -1;
         }
@@ -84,7 +88,7 @@ trait TestTrait
     private function getAnnotationValue(array $annotations, $key, $default, $cast)
     {
         $annotation = $this->getAnnotation($annotations, $key);
-        return isset($annotation[0])?$cast($annotation[0]):$default;
+        return isset($annotation[0]) ? $cast($annotation[0]) : $default;
     }
 
     /**
@@ -97,7 +101,7 @@ trait TestTrait
         if (isset($annotations['method'][$key])) {
             return $annotations['method'][$key];
         }
-        return isset($annotations['class'][$key])?$annotations['class'][$key]:[];
+        return isset($annotations['class'][$key]) ? $annotations['class'][$key] : [];
     }
 
     /**
@@ -118,7 +122,7 @@ trait TestTrait
             return;
         }
         $command = PHPUnitCommand::fromSeedAndName($this->seed, $this->toString());
-        echo PHP_EOL."Reproduce with:".PHP_EOL.$command.PHP_EOL;
+        echo PHP_EOL . "Reproduce with:" . PHP_EOL . $command . PHP_EOL;
     }
 
     /**
