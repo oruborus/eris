@@ -1,31 +1,35 @@
 <?php
+
 namespace Eris\Random;
 
 use RuntimeException;
 
 class MersenneTwister implements Source
 {
-    private $seed;
-    private $index;
-    private $mt = [];
-    private $w = 32;
-    private $n = 624;
-    private $m = 397;
-    private $f = 1812433253;
-    private $wMask = 0xffffffff;
+    public int $seed = 0;
+    private int $index = 624;
+    /**
+     * @var int[] $mt
+     */
+    private array $mt = [];
+    private int $w = 32;
+    private int $n = 624;
+    private int $m = 397;
+    private int $f = 1812433253;
+    private int $wMask = 0xffffffff;
     // corresponds to $r = 31
-    private $lowerMask = 0x7fffffff;
-    private $upperMask = 0x80000000;
+    private int $lowerMask = 0x7fffffff;
+    private int $upperMask = 0x80000000;
     // recurrence matrix
-    private $a = 0x9908b0df;
+    private int $a = 0x9908b0df;
     // tempering
-    private $u = 11;
-    private $d = 0xffffffff;
-    private $s = 7;
-    private $b = 0x9d2c5680;
-    private $t = 15;
-    private $c = 0xefc60000;
-    private $l = 18;
+    private int $u = 11;
+    private int $d = 0xffffffff;
+    private int $s = 7;
+    private int $b = 0x9d2c5680;
+    private int $t = 15;
+    private int $c = 0xefc60000;
+    private int $l = 18;
 
     public function __construct()
     {
@@ -33,23 +37,21 @@ class MersenneTwister implements Source
             throw new RuntimeException("Pure PHP random implemnentation segfaults HHVM, so it's not available for this platform");
         }
     }
-    
-    public function seed($seed)
+
+    public function seed(int $seed): self
     {
         $this->seed = $seed;
         $this->index = $this->n;
         $this->mt[0] = $seed & $this->wMask;
         for ($i = 1; $i <= $this->n - 1; $i++) {
-            $this->mt[$i] = ($this->f * (
-                $this->mt[$i - 1] ^ (($this->mt[$i - 1] >> ($this->w - 2)) & 0b11)
-            ) + $i) & $this->wMask;
+            $this->mt[$i] = ($this->f * ($this->mt[$i - 1] ^ (($this->mt[$i - 1] >> ($this->w - 2)) & 0b11)) + $i) & $this->wMask;
             assert($this->mt[$i] <= $this->wMask);
         }
         assert(count($this->mt) === 624);
         return $this;
     }
 
-    public function extractNumber()
+    public function extractNumber(): int
     {
         assert($this->index <= $this->n);
         if ($this->index >= $this->n) {
@@ -68,16 +70,16 @@ class MersenneTwister implements Source
         return $y & $this->wMask;
     }
 
-    public function max()
+    public function max(): int
     {
         return 0xffffffff;
     }
 
-    private function twist()
+    private function twist(): void
     {
         for ($i = 0; $i <= $this->n - 1; $i++) {
             $x = ($this->mt[$i] & $this->upperMask)
-               + (($this->mt[($i+1) % $this->n]) & $this->lowerMask);
+                + (($this->mt[($i + 1) % $this->n]) & $this->lowerMask);
             assert($x <= 0xffffffff);
             $xA = $x >> 1;
             assert($xA <= 0x7fffffff);

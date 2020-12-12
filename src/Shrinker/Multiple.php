@@ -1,39 +1,63 @@
 <?php
+
 namespace Eris\Shrinker;
 
+use Eris\Generator;
+use Eris\Generator\GeneratedValue;
 use Eris\Generator\GeneratedValueSingle;
 use Eris\Generator\GeneratedValueOptions;
 use Eris\Generator\TupleGenerator;
 use Eris\Quantifier\Evaluation;
 use Eris\Shrinker;
+use Throwable;
 
 class Multiple implements Shrinker
 {
-    private $generator;
+    private TupleGenerator $generator;
+    /**
+     * @var callable $assertion
+     */
     private $assertion;
-    private $goodShrinkConditions = [];
-    private $onAttempt = [];
+    /**
+     * @var callable[] $goodShrinkConditions
+     */
+    private array $goodShrinkConditions = [];
+    /**
+     * @var callable[] $onAttempt
+     */
+    private array $onAttempt = [];
+    private TimeLimit $timeLimit;
 
-    public function __construct(array $generators, callable $assertion)
+    /**
+     * @param Generator[] $generators
+     * @param callable $assertion
+     */
+    public function __construct(array $generators, $assertion)
     {
         $this->generator = new TupleGenerator($generators);
         $this->assertion = $assertion;
         $this->timeLimit = new NoTimeLimit();
     }
 
-    public function setTimeLimit(TimeLimit $timeLimit)
+    public function setTimeLimit(TimeLimit $timeLimit): self
     {
         $this->timeLimit = $timeLimit;
         return $this;
     }
 
-    public function addGoodShrinkCondition(callable $condition)
+    /**
+     * @param callable $condition
+     */
+    public function addGoodShrinkCondition($condition): self
     {
         $this->goodShrinkConditions[] = $condition;
         return $this;
     }
-    
-    public function onAttempt(callable $listener)
+
+    /**
+     * @param callable $listener
+     */
+    public function onAttempt($listener): self
     {
         $this->onAttempt[] = $listener;
         return $this;
@@ -42,11 +66,14 @@ class Multiple implements Shrinker
     /**
      * Precondition: $values should fail $this->assertion
      */
-    public function from(GeneratedValueSingle $elements, $exception)
+    public function from(GeneratedValue $elements, Throwable $exception): void
     {
+        /**
+         * @var GeneratedValue[] $branches
+         */
         $branches = [];
 
-        $shrink = function ($elements) use (&$elementsAfterShrink, &$branches) {
+        $shrink = function (GeneratedValue $elements) use (&$elementsAfterShrink, &$branches): array {
             $branches = [];
             $elementsAfterShrink = $this->generator->shrink($elements);
             if ($elementsAfterShrink instanceof GeneratedValueOptions) {
@@ -59,7 +86,7 @@ class Multiple implements Shrinker
             return $branches;
         };
 
-        $onGoodShrink = function ($elementsAfterShrink, $exceptionAfterShrink) use (&$elements, &$exception, &$branches, $shrink) {
+        $onGoodShrink = function (GeneratedValue $elementsAfterShrink, Throwable $exceptionAfterShrink) use (&$elements, &$exception, &$branches, $shrink): void {
             $elements = $elementsAfterShrink;
             $exception = $exceptionAfterShrink;
             $branches = $shrink($elements);
@@ -71,7 +98,7 @@ class Multiple implements Shrinker
             if ($this->timeLimit->hasBeenReached()) {
                 throw new \RuntimeException(
                     "Eris has reached the time limit for shrinking ($this->timeLimit), here it is presenting the simplest failure case." . PHP_EOL
-                    . "If you can afford to spend more time to find a simpler failing input, increase it with the annotation \'@eris-shrink {seconds}\'.",
+                        . "If you can afford to spend more time to find a simpler failing input, increase it with the annotation \'@eris-shrink {seconds}\'.",
                     -1,
                     $exception
                 );
@@ -101,7 +128,7 @@ class Multiple implements Shrinker
         throw $exception;
     }
 
-    private function checkGoodShrinkConditions(GeneratedValueSingle $values)
+    private function checkGoodShrinkConditions(GeneratedValue $values): bool
     {
         foreach ($this->goodShrinkConditions as $condition) {
             if (!$condition($values)) {

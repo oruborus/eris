@@ -1,22 +1,31 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 use InvalidArgumentException;
 use Eris\Random\RandomRange;
+use Exception;
 
 /**
  * @return FrequencyGenerator
  */
 function frequency(/*$frequencyAndGenerator, $frequencyAndGenerator, ...*/)
+
 {
     return new FrequencyGenerator(func_get_args());
 }
 
 class FrequencyGenerator implements Generator
 {
-    private $generators;
+    /**
+     * @psalm-var (array{"frequency":int, "generator":Generator})[] $generators
+     */
+    private array $generators;
 
+    /**
+     * @psalm-param (array{0:int, 1:mixed})[] $generatorsWithFrequency
+     */
     public function __construct(array $generatorsWithFrequency)
     {
         if (empty($generatorsWithFrequency)) {
@@ -26,7 +35,11 @@ class FrequencyGenerator implements Generator
         }
         $this->generators = array_reduce(
             $generatorsWithFrequency,
-            function ($generators, $generatorWithFrequency) {
+            /**
+             * @psalm-param (array{0?:positive-int, 1?:mixed, "frequency":positive-int, "generator":Generator})[] $generators
+             * @psalm-param (array{0:positive-int, 1:mixed}) $generatorWithFrequency
+             */
+            function ($generators, $generatorWithFrequency): array {
                 list($frequency, $generator) = $generatorWithFrequency;
                 $frequency = $this->ensureIsFrequency($generatorWithFrequency[0]);
                 $generator = ensureIsGenerator($generatorWithFrequency[1]);
@@ -42,7 +55,7 @@ class FrequencyGenerator implements Generator
         );
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         list($index, $generator) = $this->pickFrom($this->generators, $rand);
         $originalValue = $generator->__invoke($size, $rand);
@@ -56,6 +69,9 @@ class FrequencyGenerator implements Generator
         );
     }
 
+    /**
+     * @return GeneratedValueSingle
+     */
     public function shrink(GeneratedValue $element)
     {
         $input = $element->input();
@@ -74,9 +90,10 @@ class FrequencyGenerator implements Generator
     }
 
     /**
+     * @psalm-param (array{"frequency":int, "generator":Generator})[] $generators
      * @return array  two elements: index and Generator object
      */
-    private function pickFrom($generators, RandomRange $rand)
+    private function pickFrom(array $generators, RandomRange $rand)
     {
         $acc = 0;
         $frequencies = $this->frequenciesFrom($generators);
@@ -92,19 +109,26 @@ class FrequencyGenerator implements Generator
         );
     }
 
-    private function frequenciesFrom($generators)
+    /**
+     * @psalm-param (array{"frequency":int, "generator":Generator})[] $generators
+     * @return int[]
+     */
+    private function frequenciesFrom($generators): array
     {
         return array_map(
-            function ($generatorWithFrequency) {
+            /**
+             * @psalm-param (array{"frequency":int, "generator":Generator}) $generatorWithFrequency
+             */
+            function ($generatorWithFrequency): int {
                 return $generatorWithFrequency['frequency'];
             },
             $generators
         );
     }
 
-    private function ensureIsFrequency($frequency)
+    private function ensureIsFrequency(int $frequency): int
     {
-        if (!is_int($frequency) || $frequency < 0) {
+        if ($frequency < 0) {
             throw new InvalidArgumentException(
                 'Frequency must be an integer greater or equal than 0, given: ' . var_export($frequency, true)
             );

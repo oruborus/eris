@@ -1,10 +1,11 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
 
-function float()
+function float(): FloatGenerator
 {
     return new FloatGenerator();
 }
@@ -15,7 +16,7 @@ class FloatGenerator implements Generator
     {
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         $denominator = $rand->rand(1, $size) ?: 1;
 
@@ -27,6 +28,9 @@ class FloatGenerator implements Generator
         return GeneratedValueSingle::fromJustValue($signedValue, 'float');
     }
 
+    /**
+     * @return GeneratedValueSingle
+     */
     public function shrink(GeneratedValue $element)
     {
         $value = $element->unbox();

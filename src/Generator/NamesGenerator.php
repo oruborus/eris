@@ -1,10 +1,12 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use InvalidArgumentException;
 
-function names()
+function names(): NamesGenerator
 {
     return NamesGenerator::defaultDataSet();
 }
@@ -15,8 +17,10 @@ class NamesGenerator implements Generator
 
     /**
      * @link http://data.bfontaine.net/names/firstnames.txt
+     *
+     * @return self
      */
-    public static function defaultDataSet()
+    public static function defaultDataSet(): self
     {
         return new self(
             array_map(
@@ -33,7 +37,7 @@ class NamesGenerator implements Generator
         $this->list = $list;
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         $candidateNames = $this->filterDataSet(
             $this->lengthLessThanOrEqualTo($size)
@@ -45,6 +49,9 @@ class NamesGenerator implements Generator
         return GeneratedValueSingle::fromJustValue($candidateNames[$index], 'names');
     }
 
+    /**
+     * @return GeneratedValue
+     */
     public function shrink(GeneratedValue $value)
     {
         $candidateNames = $this->filterDataSet(
@@ -58,7 +65,13 @@ class NamesGenerator implements Generator
         return GeneratedValueSingle::fromJustValue($this->minimumDistanceName($distances), 'names');
     }
 
-    private function filterDataSet(callable $predicate)
+    /**
+     * @param callable(mixed, mixed=):scalar $predicate
+     * @return array
+     *
+     * @psalm-return list<mixed>
+     */
+    private function filterDataSet($predicate): array
     {
         return array_values(array_filter(
             $this->list,
@@ -66,14 +79,24 @@ class NamesGenerator implements Generator
         ));
     }
 
-    private function lengthLessThanOrEqualTo($size)
+    /**
+     * @return \Closure
+     *
+     * @psalm-return \Closure(mixed):bool
+     */
+    private function lengthLessThanOrEqualTo(int $size): \Closure
     {
         return function ($name) use ($size) {
             return strlen($name) <= $size;
         };
     }
 
-    private function lengthSlightlyLessThan($size)
+    /**
+     * @return \Closure
+     *
+     * @psalm-return \Closure(mixed):bool
+     */
+    private function lengthSlightlyLessThan(int $size): \Closure
     {
         $lowerLength = $size - 1;
         return function ($name) use ($lowerLength) {
@@ -81,7 +104,12 @@ class NamesGenerator implements Generator
         };
     }
 
-    private function distancesBy($value, array $candidateNames)
+    /**
+     * @param string[] $candidateNames
+     * @return int[]
+     * @psalm-return array<array-key, int>
+     */
+    private function distancesBy(string $value, array $candidateNames): array
     {
         $distances = [];
         foreach ($candidateNames as $name) {
@@ -90,8 +118,17 @@ class NamesGenerator implements Generator
         return $distances;
     }
 
-    private function minimumDistanceName($distances)
+    /**
+     * @return (int|string)
+     *
+     * @psalm-return array-key
+     * @param int[] $distances
+     */
+    private function minimumDistanceName(array $distances)
     {
+        if (empty($distances)) {
+            throw new InvalidArgumentException('At least one distance must be provided');
+        }
         $minimumDistance = min($distances);
         $candidatesWithEqualDistance = array_filter(
             $distances,

@@ -1,22 +1,15 @@
 <?php
+
 namespace Eris\Random;
 
 interface Source
 {
-    /**
-     * @param integer $seed
-     * @return self
-     */
-    public function seed($seed);
+    public function seed(int $seed): self;
 
     /**
      * Returns a random number between 0 and @see max().
-     * @return integer
      */
-    public function extractNumber();
+    public function extractNumber(): int;
 
-    /**
-     * @return integer
-     */
-    public function max();
+    public function max(): int;
 }

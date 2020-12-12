@@ -1,8 +1,10 @@
 <?php
+
 use Eris\Generator;
 use Eris\Listener;
+use PHPUnit\Framework\TestCase;
 
-class SuchThatTest extends \PHPUnit_Framework_TestCase
+class SuchThatTest extends TestCase
 {
     use Eris\TestTrait;
 
@@ -55,7 +57,7 @@ class SuchThatTest extends \PHPUnit_Framework_TestCase
                     )
                 )
             )
-            ->hook(Listener\log(sys_get_temp_dir().'/eris-such-that.log'))
+            ->hook(Listener\log(sys_get_temp_dir() . '/eris-such-that.log'))
             ->then($this->allNumbersAreBiggerThan(42));
     }
 
@@ -101,8 +103,7 @@ class SuchThatTest extends \PHPUnit_Framework_TestCase
             )
             ->then(function (array $ints) use (&$i) {
                 $this->assertGreaterThanOrEqual(1, count($ints));
-            })
-        ;
+            });
     }
 
     public function allNumbersAreBiggerThan($lowerLimit)

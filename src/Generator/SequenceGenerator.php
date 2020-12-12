@@ -1,14 +1,18 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
 
-function seq(Generator $singleElementGenerator)
+/**
+                 * @psalm-suppress TypeDoesNotContainType
+                 * TODO: Generator::box($singleElementGenerator);
+ */
+function seq(Generator $singleElementGenerator): SequenceGenerator
 {
-    // TODO: Generator::box($singleElementGenerator);
     if (!($singleElementGenerator instanceof Generator)) {
-        $singleElementGenerator = new Constant($singleElementGenerator);
+        $singleElementGenerator = new ConstantGenerator($singleElementGenerator);
     }
     return new SequenceGenerator($singleElementGenerator);
 }
@@ -22,12 +26,15 @@ class SequenceGenerator implements Generator
         $this->singleElementGenerator = $singleElementGenerator;
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         $sequenceLength = $rand->rand(0, $size);
         return $this->vector($sequenceLength)->__invoke($size, $rand);
     }
 
+    /**
+     * @return GeneratedValueOptions
+     */
     public function shrink(GeneratedValue $sequence)
     {
         $options = [];
@@ -46,7 +53,7 @@ class SequenceGenerator implements Generator
         return new GeneratedValueOptions($options);
     }
 
-    private function shrinkInSize($sequence)
+    private function shrinkInSize(GeneratedValue $sequence): GeneratedValue
     {
         if (count($sequence->unbox()) === 0) {
             return $sequence;
@@ -58,6 +65,11 @@ class SequenceGenerator implements Generator
         $input = array_values($input);
         return GeneratedValueSingle::fromValueAndInput(
             array_map(
+                /**
+                 * @template T
+                 * @param GeneratedValue<T> $element
+                 * @return T
+                 */
                 function ($element) {
                     return $element->unbox();
                 },
@@ -69,14 +81,14 @@ class SequenceGenerator implements Generator
     }
 
     /**
-     * @return GeneratedValueOptions
+     * @return GeneratedValue
      */
-    private function shrinkTheElements($sequence)
+    private function shrinkTheElements(GeneratedValue $sequence)
     {
         return $this->vector(count($sequence->unbox()))->shrink($sequence);
     }
 
-    private function vector($size)
+    private function vector(int $size): VectorGenerator
     {
         return new VectorGenerator($size, $this->singleElementGenerator);
     }

@@ -1,17 +1,21 @@
 <?php
+
 namespace Eris\Generator;
 
 use Countable;
 use IteratorAggregate;
+use Stringable;
 
-interface GeneratedValue extends IteratorAggregate, Countable
+/**
+ * @template T
+ * @psalm-template T
+ */
+interface GeneratedValue extends IteratorAggregate, Countable, Stringable
 {
     /**
      * @param callable $applyToValue
-     * @param string $generatorName
-     * @return GeneratedValue
      */
-    public function map(callable $applyToValue, $generatorName);
+    public function map($applyToValue, string $generatorName): self;
 
     /**
      * @return mixed
@@ -22,4 +26,6 @@ interface GeneratedValue extends IteratorAggregate, Countable
      * @return mixed
      */
     public function unbox();
+
+    public function generatorName(): ?string;
 }

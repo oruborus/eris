@@ -1,14 +1,18 @@
 <?php
+
 namespace Eris\Quantifier;
 
 use Eris\Antecedent;
 use Eris\Generator;
+use Eris\Generator\GeneratedValue;
 use Eris\Generator\GeneratedValueSingle;
 use Eris\Generator\SkipValueException;
+use Eris\Shrinker\ShrinkerFactory;
 use BadMethodCallException;
 use PHPUnit_Framework_Constraint;
 use PHPUnit\Framework\Constraint\Constraint;
 use Exception;
+use Throwable;
 use RuntimeException;
 use Eris\Listener;
 use Eris\Random\RandomRange;
@@ -17,27 +21,34 @@ class ForAll
 {
     const DEFAULT_MAX_SIZE = 200;
 
-    private $generators;
-    private $iterations;
-    private $maxSize;
-    private $shrinkerFactory;
-    private $antecedents = [];
-    private $ordinaryEvaluations = 0;
-    private $aliases = [
+    /**
+     * @var Generator[] $generators
+     */
+    private array $generators;
+    private int $iterations;
+    private int $maxSize;
+    private ShrinkerFactory $shrinkerFactory;
+    private array $antecedents = [];
+    private int $ordinaryEvaluations = 0;
+
+    /**
+     * @var array<string, string> $aliases
+     */
+    private array $aliases = [
         'and' => 'when',
         'then' => '__invoke',
     ];
-    private $terminationConditions = [];
-    private $listeners = [];
-    private $shrinkerFactoryMethod;
-
+    private array $terminationConditions = [];
     /**
-     * @var RandomRange
+     * @var Listener[] $listeners
      */
-    private $rand;
-    private $shrinkingEnabled = true;
+    private array $listeners = [];
+    private string $shrinkerFactoryMethod;
 
-    public function __construct(array $generators, $iterations, $shrinkerFactory, $shrinkerFactoryMethod, RandomRange $rand)
+    private RandomRange $rand;
+    private bool $shrinkingEnabled = true;
+
+    public function __construct(array $generators, int $iterations, ShrinkerFactory $shrinkerFactory, string $shrinkerFactoryMethod, RandomRange $rand)
     {
         $this->generators = $this->generatorsFrom($generators);
         $this->iterations = $iterations;
@@ -96,8 +107,6 @@ class ForAll
         $arguments = func_get_args();
         if ($arguments[0] instanceof Antecedent) {
             $antecedent = $arguments[0];
-        } elseif ($arguments[0] instanceof PHPUnit_Framework_Constraint) {
-            $antecedent = Antecedent\IndependentConstraintsAntecedent::fromAll($arguments);
         } elseif ($arguments[0] instanceof Constraint) {
             $antecedent = Antecedent\IndependentConstraintsAntecedent::fromAll($arguments);
         } elseif ($arguments && count($arguments) == 1) {
@@ -109,17 +118,21 @@ class ForAll
         return $this;
     }
 
-    public function __invoke(callable $assertion)
+    /**
+     * @param callable $assertion
+     */
+    public function __invoke($assertion)
     {
         $sizes = Size::withTriangleGrowth($this->maxSize)
             ->limit($this->iterations);
+        $redTestException = null;
+        $values = [];
         try {
-            $redTestException = null;
             $this->notifyListeners('startPropertyVerification');
             for (
                 $iteration = 0;
                 $iteration < $this->iterations
-                && !$this->terminationConditionsAreSatisfied();
+                    && !$this->terminationConditionsAreSatisfied();
                 $iteration++
             ) {
                 $generatedValues = [];
@@ -151,7 +164,7 @@ class ForAll
                 Evaluation::of($assertion)
                     // TODO: coupling between here and the TupleGenerator used inside?
                     ->with($generation)
-                    ->onFailure(function ($generatedValues, $exception) use ($assertion) {
+                    ->onFailure(function (GeneratedValue $generatedValues, Throwable $exception) use ($assertion): void {
                         $this->notifyListeners('failure', $generatedValues->unbox(), $exception);
                         if (!$this->shrinkingEnabled) {
                             throw $exception;
@@ -172,13 +185,14 @@ class ForAll
             }
         } catch (Exception $e) {
             $redTestException = $e;
+
             if ((bool) getenv('ERIS_ORIGINAL_INPUT')) {
                 $message = "Original input: " . var_export($values, true) . PHP_EOL
                     . "Possibly shrinked input follows." . PHP_EOL;
                 throw new RuntimeException($message, -1, $e);
-            } else {
-                throw $e;
             }
+
+            throw $redTestException;
         } finally {
             $this->notifyListeners(
                 'endPropertyVerification',
@@ -195,7 +209,7 @@ class ForAll
      * @method implies($assertion)
      * @method imply($assertion)
      */
-    public function __call($method, $arguments)
+    public function __call(string $method, array $arguments)
     {
         if (isset($this->aliases[$method])) {
             return call_user_func_array(
@@ -206,7 +220,12 @@ class ForAll
         throw new BadMethodCallException("Method " . __CLASS__ . "::{$method} does not exist");
     }
 
-    private function generatorsFrom($supposedToBeGenerators)
+    /**
+     * @return Generator[]
+     *
+     * @psalm-return list<Generator>
+     */
+    private function generatorsFrom(array $supposedToBeGenerators): array
     {
         $generators = [];
         foreach ($supposedToBeGenerators as $supposedToBeGenerator) {
@@ -219,7 +238,7 @@ class ForAll
         return $generators;
     }
 
-    private function notifyListeners(/*$event, [$parameterA[, $parameterB[, ...]]]*/)
+    private function notifyListeners(/*$event, [$parameterA[, $parameterB[, ...]]]*/): void
     {
         $arguments = func_get_args();
         $event = array_shift($arguments);
@@ -231,7 +250,7 @@ class ForAll
         }
     }
 
-    private function antecedentsAreSatisfied(array $values)
+    private function antecedentsAreSatisfied(array $values): bool
     {
         foreach ($this->antecedents as $antecedentToVerify) {
             if (!call_user_func(
@@ -244,7 +263,7 @@ class ForAll
         return true;
     }
 
-    private function terminationConditionsAreSatisfied()
+    private function terminationConditionsAreSatisfied(): bool
     {
         foreach ($this->terminationConditions as $terminationCondition) {
             if ($terminationCondition->shouldTerminate()) {

@@ -1,37 +1,53 @@
 <?php
+
 namespace Eris\Listener;
 
+use Eris\Generator\GeneratedValue;
 use Eris\Listener;
 use InvalidArgumentException;
 use Exception;
 
-function collectFrequencies(callable $collectFunction = null)
+/**
+ * @param ?callable $collectFunction
+ */
+function collectFrequencies($collectFunction = null): CollectFrequencies
 {
     return new CollectFrequencies($collectFunction);
 }
 
 class CollectFrequencies extends EmptyListener implements Listener
 {
+    /**
+     * @var callable $collectFunction
+     */
     private $collectFunction;
-    private $collectedValues = [];
-    
+    private array $collectedValues = [];
+
+    /**
+     * @param ?callable $collectFunction
+     */
     public function __construct($collectFunction = null)
     {
         if ($collectFunction === null) {
-            $collectFunction = function (/*...*/) {
-                $generatedValues = func_get_args();
-                if (count($generatedValues) === 1) {
-                    $value = $generatedValues[0];
-                } else {
-                    $value = $generatedValues;
-                }
+            $collectFunction =
+                /**
+                 * @return false|int|string
+                 */
+                function (/*...*/) {
+                    /** @var mixed[] $generatedValues */
+                    $generatedValues = func_get_args();
+                    if (count($generatedValues) === 1) {
+                        $value = $generatedValues[0];
+                    } else {
+                        $value = $generatedValues;
+                    }
 
-                if (is_string($value) || is_integer($value)) {
-                    return $value;
-                } else {
-                    return json_encode($value);
-                }
-            };
+                    if (is_string($value) || is_integer($value)) {
+                        return $value;
+                    } else {
+                        return json_encode($value);
+                    }
+                };
         }
         $this->collectFunction = $collectFunction;
     }

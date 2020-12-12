@@ -1,7 +1,9 @@
 <?php
-use Eris\Generator;
 
-class VectorTest extends PHPUnit_Framework_TestCase
+use Eris\Generator;
+use PHPUnit\Framework\TestCase;
+
+class VectorTest extends TestCase
 {
     use Eris\TestTrait;
 

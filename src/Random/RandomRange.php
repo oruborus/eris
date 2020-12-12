@@ -1,4 +1,5 @@
 <?php
+
 namespace Eris\Random;
 
 /**
@@ -12,17 +13,14 @@ function purePhpMtRand()
 // TODO: Extract Interface
 class RandomRange
 {
-    private $source;
-    
-    public function __construct($source)
+    private Source $source;
+
+    public function __construct(Source $source)
     {
         $this->source = $source;
     }
 
-    /**
-     * @return void
-     */
-    public function seed($seed)
+    public function seed(int $seed): void
     {
         $this->source->seed($seed);
     }
@@ -32,14 +30,10 @@ class RandomRange
      * If $lower and $upper are specified, the number will fall into their
      * inclusive range.
      * Otherwise the number from the source will be directly returned.
-     *
-     * @param integer|null $lower
-     * @param integer|null $upper
-     * @return integer
      */
-    public function rand($lower = null, $upper = null)
+    public function rand(?int $lower = null, ?int $upper = null): int
     {
-        if ($lower === null && $upper === null) {
+        if ($lower === null || $upper === null) { //changed to logical or following the description
             return $this->source->extractNumber();
         }
 

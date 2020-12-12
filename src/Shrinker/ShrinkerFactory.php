@@ -1,10 +1,13 @@
 <?php
+
 namespace Eris\Shrinker;
+
+use Eris\Generator;
 
 class ShrinkerFactory
 {
     private $options;
-    
+
     /**
      * @param array $options
      *  'timeLimit' => null|integer  in seconds. The maximum time that should
@@ -15,15 +18,19 @@ class ShrinkerFactory
         $this->options = $options;
     }
 
-    public function multiple(array $generators, callable $assertion)
+    /**
+     * @param Generator[] $generators
+     * @param callable $assertion
+     */
+    public function multiple(array $generators, $assertion): Multiple
     {
         return $this->configureShrinker(new Multiple($generators, $assertion));
     }
 
-    private function configureShrinker($shrinker)
+    private function configureShrinker(Multiple $shrinker): Multiple
     {
         if ($this->options['timeLimit'] !== null) {
-            $shrinker->setTimeLimit(FixedTimeLimit::realTime($this->options['timeLimit']));
+            $shrinker->setTimeLimit(FixedTimeLimit::realTime((int) $this->options['timeLimit']));
         }
         return $shrinker;
     }

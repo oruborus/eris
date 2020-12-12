@@ -1,10 +1,14 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
 
-function bind(Generator $innerGenerator, callable $outerGeneratorFactory)
+/**
+ * @param callable $outerGeneratorFactory
+ */
+function bind(Generator $innerGenerator, $outerGeneratorFactory): BindGenerator
 {
     return new BindGenerator(
         $innerGenerator,
@@ -14,16 +18,23 @@ function bind(Generator $innerGenerator, callable $outerGeneratorFactory)
 
 class BindGenerator implements Generator
 {
-    private $innerGenerator;
+    private Generator $innerGenerator;
+
+    /**
+     * @var callable $outerGeneratorFactory
+     */
     private $outerGeneratorFactory;
-    
-    public function __construct($innerGenerator, $outerGeneratorFactory)
+
+    /**
+     * @param callable $outerGeneratorFactory
+     */
+    public function __construct(Generator $innerGenerator, $outerGeneratorFactory)
     {
         $this->innerGenerator = $innerGenerator;
         $this->outerGeneratorFactory = $outerGeneratorFactory;
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         $innerGeneratorValue = $this->innerGenerator->__invoke($size, $rand);
         $outerGenerator = call_user_func($this->outerGeneratorFactory, $innerGeneratorValue->unbox());
@@ -34,6 +45,9 @@ class BindGenerator implements Generator
         );
     }
 
+    /**
+     * @return GeneratedValueSingle
+     */
     public function shrink(GeneratedValue $element)
     {
         list($outerGeneratorValue, $innerGeneratorValue) = $element->input();
@@ -46,7 +60,7 @@ class BindGenerator implements Generator
         );
     }
 
-    private function packageGeneratedValueSingle($outerGeneratorValue, $innerGeneratorValue)
+    private function packageGeneratedValueSingle(GeneratedValue $outerGeneratorValue, GeneratedValue $innerGeneratorValue): GeneratedValueSingle
     {
         return GeneratedValueSingle::fromValueAndInput(
             $outerGeneratorValue->unbox(),

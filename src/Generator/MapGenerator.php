@@ -1,27 +1,37 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
 
-// TODO: support calls like ($function . $generator)
-function map(callable $function, Generator $generator)
+/**
+ * TODO: support calls like ($function . $generator)
+ * @param callable $function
+ */
+function map($function, Generator $generator): MapGenerator
 {
     return new MapGenerator($function, $generator);
 }
 
 class MapGenerator implements Generator
 {
+    /**
+     * @var callable $map
+     */
     private $map;
-    private $generator;
-    
-    public function __construct(callable $map, $generator)
+    private Generator $generator;
+
+    /**
+     * @param callable $map
+     */
+    public function __construct($map, Generator $generator)
     {
         $this->map = $map;
         $this->generator = $generator;
     }
 
-    public function __invoke($_size, RandomRange $rand)
+    public function __invoke(int $_size, RandomRange $rand)
     {
         $input = $this->generator->__invoke($_size, $rand);
         return $input->map(

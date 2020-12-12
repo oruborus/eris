@@ -1,21 +1,26 @@
 <?php
+
 namespace Eris\Shrinker;
 
 class FixedTimeLimit implements TimeLimit
 {
-    private $maximumIntervalLength;
+    private int $maximumIntervalLength;
+    /**
+     * @var callable $clock
+     */
     private $clock;
-    private $startOfTheInterval;
+    private int $startOfTheInterval = 0;
 
-    public static function realTime($maximumIntervalLength)
+    public static function realTime(int $maximumIntervalLength): self
     {
         return new self($maximumIntervalLength, 'time');
     }
-    
+
     /**
      * @param int $maximumIntervalLength  in seconds
+     * @param callable $clock
      */
-    public function __construct($maximumIntervalLength, callable $clock)
+    public function __construct(int $maximumIntervalLength, $clock)
     {
         $this->maximumIntervalLength = $maximumIntervalLength;
         $this->clock = $clock;
@@ -23,18 +28,18 @@ class FixedTimeLimit implements TimeLimit
 
     public function start()
     {
-        $this->startOfTheInterval = call_user_func($this->clock);
+        $this->startOfTheInterval = (int) call_user_func($this->clock);
     }
 
     public function hasBeenReached()
     {
-        $actualIntervalLength = call_user_func($this->clock) - $this->startOfTheInterval;
+        $actualIntervalLength = (int) call_user_func($this->clock) - $this->startOfTheInterval;
         return $actualIntervalLength >= $this->maximumIntervalLength;
     }
 
     public function __toString()
     {
-        $actualIntervalLength = call_user_func($this->clock) - $this->startOfTheInterval;
+        $actualIntervalLength = (int) call_user_func($this->clock) - $this->startOfTheInterval;
         return "{$actualIntervalLength}s elapsed of {$this->maximumIntervalLength}s";
     }
 }

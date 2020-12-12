@@ -1,7 +1,9 @@
 <?php
-use Eris\Generator;
 
-class ReadmeTest extends \PHPUnit_Framework_TestCase
+use Eris\Generator;
+use PHPUnit\Framework\TestCase;
+
+class ReadmeTest extends TestCase
 {
     use Eris\TestTrait;
 

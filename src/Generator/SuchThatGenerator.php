@@ -1,56 +1,56 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
 use LogicException;
-use PHPUnit_Framework_Constraint;
 use PHPUnit\Framework\Constraint\Constraint;
-use PHPUnit_Framework_ExpectationFailedException;
 use PHPUnit\Framework\ExpectationFailedException;
 use Traversable;
 
 /**
- * @param callable|PHPUnit_Framework_Constraint|Constraint $filter
- * @return SuchThatGenerator
+ * @param callable|Constraint $filter
  */
-function filter($filter, Generator $generator, $maximumAttempts = 100)
+function filter($filter, Generator $generator, int $maximumAttempts = 100): SuchThatGenerator
 {
     return suchThat($filter, $generator, $maximumAttempts);
 }
 
 /**
- * @param callable|PHPUnit_Framework_Constraint|Constraint $filter
- * @return SuchThatGenerator
+ * @param callable|Constraint $filter
  */
-function suchThat($filter, Generator $generator, $maximumAttempts = 100)
+function suchThat($filter, Generator $generator, int $maximumAttempts = 100): SuchThatGenerator
 {
     return new SuchThatGenerator($filter, $generator, $maximumAttempts);
 }
 
 class SuchThatGenerator implements Generator
 {
-    private $filter;
-    private $generator;
-    private $maximumAttempts;
-    
     /**
-     * @param callable|PHPUnit_Framework_Constraint|Constraint
+     * @var callable|Constraint $filter
      */
-    public function __construct($filter, $generator, $maximumAttempts = 100)
+    private $filter;
+    private Generator $generator;
+    private int $maximumAttempts;
+
+    /**
+     * @param callable|Constraint $filter
+     */
+    public function __construct($filter, Generator $generator, int $maximumAttempts = 100)
     {
         $this->filter = $filter;
         $this->generator = $generator;
         $this->maximumAttempts = $maximumAttempts;
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         $value = $this->generator->__invoke($size, $rand);
         $attempts = 0;
         while (!$this->predicate($value)) {
             if ($attempts >= $this->maximumAttempts) {
-                throw new SkipValueException("Tried to satisfy predicate $attempts times, but could not generate a good value. You should try to improve your generator to make it more likely to output good values, or to use a less restrictive condition. Last generated value was: " . $value);
+                throw new SkipValueException("Tried to satisfy predicate $attempts times, but could not generate a good value. You should try to improve your generator to make it more likely to output good values, or to use a less restrictive condition. Last generated value was: " . $value->__toString());
             }
             $value = $this->generator->__invoke($size, $rand);
             $attempts++;
@@ -58,10 +58,14 @@ class SuchThatGenerator implements Generator
         return $value;
     }
 
+    /**
+     * @return GeneratedValue
+     */
     public function shrink(GeneratedValue $value)
     {
         $shrunk = $this->generator->shrink($value);
         $attempts = 0;
+        $filtered = [];
         while (!($filtered = $this->filterForPredicate($shrunk))) {
             if ($attempts >= $this->maximumAttempts) {
                 return $value;
@@ -73,9 +77,10 @@ class SuchThatGenerator implements Generator
     }
 
     /**
-     * @return array  of GeneratedValueSingle
+     * @param GeneratedValueSingle[]|GeneratedValue $options
+     * @return GeneratedValue[]
      */
-    private function filterForPredicate(Traversable $options)
+    private function filterForPredicate($options)
     {
         $goodOnes = [];
         foreach ($options as $option) {
@@ -86,22 +91,20 @@ class SuchThatGenerator implements Generator
         return $goodOnes;
     }
 
-    private function predicate(GeneratedValueSingle $value)
+    private function predicate(GeneratedValue $value): bool
     {
-        if ($this->filter instanceof PHPUnit_Framework_Constraint || $this->filter instanceof Constraint) {
+        if ($this->filter instanceof Constraint) {
             try {
                 $this->filter->evaluate($value->unbox());
                 return true;
-            } catch (PHPUnit_Framework_ExpectationFailedException $e) {
-                return false;
             } catch (ExpectationFailedException $e) {
                 return false;
             }
         }
 
-        if (is_callable($this->filter)) {
-            return call_user_func($this->filter, $value->unbox());
-        }
+        // if (is_callable($this->filter)) {
+        return (bool) call_user_func($this->filter, $value->unbox());
+        // }
 
         throw new LogicException("Specified filter does not seem to be of the correct type. Please pass a callable or a PHPUnit\Framework\Constraint instead of " . var_export($this->filter, true));
     }

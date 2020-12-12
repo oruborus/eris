@@ -1,7 +1,9 @@
 <?php
-use Eris\Generator;
 
-class ErrorTest extends \PHPUnit_Framework_TestCase
+use Eris\Generator;
+use PHPUnit\Framework\TestCase;
+
+class ErrorTest extends TestCase
 {
     use Eris\TestTrait;
 

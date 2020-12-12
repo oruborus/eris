@@ -1,8 +1,10 @@
 <?php
+
 use Eris\Generator;
 use Eris\TestTrait;
+use PHPUnit\Framework\TestCase;
 
-class BooleanTest extends PHPUnit_Framework_TestCase
+class BooleanTest extends TestCase
 {
     use TestTrait;
 

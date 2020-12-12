@@ -2,8 +2,9 @@
 
 use Eris\Generator;
 use Eris\TestTrait;
+use PHPUnit\Framework\TestCase;
 
-class GeneratorSamplesTest extends PHPUnit_Framework_TestCase
+class GeneratorSamplesTest extends TestCase
 {
     use TestTrait;
 

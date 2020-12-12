@@ -1,8 +1,9 @@
 <?php
+
 namespace Eris\Quantifier;
 
-use Eris\Generator\GeneratedValueSingle;
-use PHPUnit_Framework_AssertionFailedError;
+use Eris\Generator\GeneratedValue;
+use Eris\Generator\GeneratedValueOptions;
 use PHPUnit\Framework\AssertionFailedError;
 
 /**
@@ -10,43 +11,68 @@ use PHPUnit\Framework\AssertionFailedError;
  */
 final class Evaluation
 {
+    /**
+     * @var callable $assertion
+     */
     private $assertion;
+    /**
+     * @var callable $onFailure
+     */
     private $onFailure;
+    /**
+     * @var callable $onSuccess
+     */
     private $onSuccess;
-    private $values;
+    private GeneratedValue $values;
 
-    public static function of($assertion)
+    /**
+     * @param callable $assertion
+     */
+    public static function of($assertion): self
     {
         return new self($assertion);
     }
 
+    /**
+     * @param callable $assertion
+     */
     private function __construct($assertion)
     {
         $this->assertion = $assertion;
-        $this->onFailure = function () {
+        $this->onFailure = function (): void {
         };
-        $this->onSuccess = function () {
+        $this->onSuccess = function (): void {
         };
+        $this->values = new GeneratedValueOptions([]);
     }
 
-    public function with(GeneratedValueSingle $values)
+    public function with(GeneratedValue $values): self
     {
         $this->values = $values;
         return $this;
     }
 
-    public function onFailure(callable $action)
+    /**
+     * @param callable $action
+     */
+    public function onFailure($action): self
     {
         $this->onFailure = $action;
         return $this;
     }
 
-    public function onSuccess(callable $action)
+    /**
+     * @param callable $action
+     */
+    public function onSuccess($action): self
     {
         $this->onSuccess = $action;
         return $this;
     }
 
+    /**
+     * @return void
+     */
     public function execute()
     {
         try {
@@ -54,9 +80,6 @@ final class Evaluation
                 $this->assertion,
                 $this->values->unbox()
             );
-        } catch (PHPUnit_Framework_AssertionFailedError $e) {
-            call_user_func($this->onFailure, $this->values, $e);
-            return;
         } catch (AssertionFailedError $e) {
             call_user_func($this->onFailure, $this->values, $e);
             return;

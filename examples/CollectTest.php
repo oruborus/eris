@@ -1,9 +1,11 @@
 <?php
+
 use Eris\Generator;
 use Eris\TestTrait;
 use Eris\Listener;
+use PHPUnit\Framework\TestCase;
 
-class CollectTest extends PHPUnit_Framework_TestCase
+class CollectTest extends TestCase
 {
     use TestTrait;
 

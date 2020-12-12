@@ -1,12 +1,13 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
 
 /**
- * @param Generator $singleElementGenerator
- * @return SetGenerator
+                 * @param Generator $singleElementGenerator
+                 * @return SetGenerator
  */
 function set($singleElementGenerator)
 {
@@ -15,14 +16,14 @@ function set($singleElementGenerator)
 
 class SetGenerator implements Generator
 {
-    private $singleElementGenerator;
+    private Generator $singleElementGenerator;
 
     public function __construct(Generator $singleElementGenerator)
     {
         $this->singleElementGenerator = $singleElementGenerator;
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         $setSize = rand(0, $size);
         $set = [];
@@ -40,6 +41,9 @@ class SetGenerator implements Generator
         return GeneratedValueSingle::fromValueAndInput($set, $input, 'set');
     }
 
+    /**
+     * @return GeneratedValue
+     */
     public function shrink(GeneratedValue $set)
     {
         if (count($set->input()) === 0) {
@@ -53,9 +57,17 @@ class SetGenerator implements Generator
         unset($input[$indexOfElementToRemove]);
         $input = array_values($input);
         return GeneratedValueSingle::fromValueAndInput(
-            array_map(function ($element) {
-                return $element->unbox();
-            }, $input),
+            array_map(
+                /**
+                 * @template T
+                 * @param GeneratedValue<T> $element
+                 * @return T
+                 */
+                function (GeneratedValue $element) {
+                    return $element->unbox();
+                },
+                $input
+            ),
             array_values($input),
             'set'
         );

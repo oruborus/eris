@@ -1,4 +1,5 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
@@ -7,26 +8,30 @@ use Eris\Random\RandomRange;
 /**
  * Generates a positive or negative integer (with absolute value bounded by
  * the generation size).
+ *
+ * @return IntegerGenerator
  */
-function int()
+function int(): IntegerGenerator
 {
     return new IntegerGenerator();
 }
 
 /**
  * Generates a positive integer (bounded by the generation size).
+ *
+ * @return IntegerGenerator
  */
-function pos()
+function pos(): IntegerGenerator
 {
-    $mustBeStrictlyPositive = function ($n) {
+    $mustBeStrictlyPositive = function (int $n): float {
         return abs($n) + 1;
     };
     return new IntegerGenerator($mustBeStrictlyPositive);
 }
 
-function nat()
+function nat(): IntegerGenerator
 {
-    $mustBeNatural = function ($n) {
+    $mustBeNatural = function (int $n): int {
         return abs($n);
     };
     return new IntegerGenerator($mustBeNatural);
@@ -34,25 +39,33 @@ function nat()
 
 /**
  * Generates a negative integer (bounded by the generation size).
+ *
+ * @return IntegerGenerator
  */
-function neg()
+function neg(): IntegerGenerator
 {
-    $mustBeStrictlyNegative = function ($n) {
+    $mustBeStrictlyNegative = function (int $n): int {
         return (-1) * (abs($n) + 1);
     };
     return new IntegerGenerator($mustBeStrictlyNegative);
 }
 
-function byte()
+function byte(): ChooseGenerator
 {
     return new ChooseGenerator(0, 255);
 }
 
 class IntegerGenerator implements Generator
 {
+    /**
+     * @var callable(int):int $mapFn
+     */
     private $mapFn;
 
-    public function __construct(callable $mapFn = null)
+    /**
+     * @param ?callable(int):int $mapFn
+     */
+    public function __construct($mapFn = null)
     {
         if (is_null($mapFn)) {
             $this->mapFn = $this->identity();
@@ -61,20 +74,23 @@ class IntegerGenerator implements Generator
         }
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         $value = $rand->rand(0, $size);
         $mapFn = $this->mapFn;
 
         $result = $rand->rand(0, 1) === 0
-                          ? $mapFn($value)
-                          : $mapFn($value * (-1));
+            ? $mapFn($value)
+            : $mapFn($value * (-1));
         return GeneratedValueSingle::fromJustValue(
             $result,
             'integer'
         );
     }
 
+    /**
+     * @return GeneratedValueOptions|GeneratedValueSingle
+     */
     public function shrink(GeneratedValue $element)
     {
         $mapFn = $this->mapFn;
@@ -104,9 +120,12 @@ class IntegerGenerator implements Generator
         return GeneratedValueSingle::fromJustValue($element, 'integer');
     }
 
+    /**
+     * @return callable(int):int
+     */
     private function identity()
     {
-        return function ($n) {
+        return function (int $n): int {
             return $n;
         };
     }

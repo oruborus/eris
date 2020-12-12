@@ -2,8 +2,9 @@
 
 use Eris\Generator;
 use Eris\TestTrait;
+use PHPUnit\Framework\TestCase;
 
-class LimitToTest extends PHPUnit_Framework_TestCase
+class LimitToTest extends TestCase
 {
     use TestTrait;
 

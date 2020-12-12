@@ -3,12 +3,12 @@ namespace Eris\Antecedent;
 
 use Eris\Antecedent;
 
-function printableCharacter()
+function printableCharacter(): PrintableCharacter
 {
     return new PrintableCharacter();
 }
 
-function printableCharacters()
+function printableCharacters(): PrintableCharacter
 {
     return new PrintableCharacter();
 }

@@ -1,8 +1,10 @@
 <?php
+
 use Eris\Generator;
 use Eris\Antecedent;
+use PHPUnit\Framework\TestCase;
 
-class CharacterTest extends PHPUnit_Framework_TestCase
+class CharacterTest extends TestCase
 {
     use Eris\TestTrait;
 

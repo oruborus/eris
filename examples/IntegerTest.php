@@ -1,8 +1,10 @@
 <?php
+
 use Eris\Generator;
 use Eris\TestTrait;
+use PHPUnit\Framework\TestCase;
 
-class IntegerTest extends PHPUnit_Framework_TestCase
+class IntegerTest extends TestCase
 {
     use TestTrait;
 

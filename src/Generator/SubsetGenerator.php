@@ -26,10 +26,10 @@ class SubsetGenerator implements Generator
         $this->universe = $universe;
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         $relativeSize = $size / ForAll::DEFAULT_MAX_SIZE;
-        $maximumSubsetIndex = floor(pow(2, count($this->universe)) * $relativeSize);
+        $maximumSubsetIndex = (int) floor(pow(2, count($this->universe)) * $relativeSize);
         $subsetIndex = $rand->rand(0, $maximumSubsetIndex);
         $binaryDescription = str_pad(decbin($subsetIndex), count($this->universe), "0", STR_PAD_LEFT);
         $subset = [];
@@ -43,6 +43,9 @@ class SubsetGenerator implements Generator
         return GeneratedValueSingle::fromJustValue($subset, 'subset');
     }
 
+    /**
+     * @return GeneratedValue
+     */
     public function shrink(GeneratedValue $set)
     {
         // TODO: see SetGenerator::shrink()

@@ -2,6 +2,9 @@
 
 namespace Eris;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 class Facade
 {
     use TestTrait;
@@ -12,7 +15,17 @@ class Facade
         $this->erisSetup();
     }
 
-    protected function getName(): string
+    protected function getName(bool $withDataSet = true): string
+    {
+        return '';
+    }
+
+    public function hasFailed(): bool
+    {
+        return false;
+    }
+
+    public function toString(): string
     {
         return '';
     }

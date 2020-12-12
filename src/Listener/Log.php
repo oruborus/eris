@@ -1,26 +1,39 @@
 <?php
+
 namespace Eris\Listener;
 
 use Eris\Listener;
 use Eris\Listener\EmptyListener;
 use Exception;
 
-function log($file)
+function log(string $file): Log
 {
     return new Log($file, 'time', getmypid());
 }
 
 class Log extends EmptyListener implements Listener
 {
-    private $file;
+    private string $file;
+    /**
+     * @var resource $fp
+     */
     private $fp;
+    /**
+     * @var callable $time
+     */
     private $time;
-    private $pid;
+    private int $pid;
 
-    public function __construct($file, $time, $pid)
+    /**
+     * @param callable $time
+     */
+    public function __construct(string $file, $time, int $pid)
     {
         $this->file = $file;
-        $this->fp = fopen($file, 'w');
+        if (($this->fp = fopen($file, 'w')) === false) {
+            throw new Exception("File could not be opened", 1);
+        }
+
         $this->time = $time;
         $this->pid = $pid;
     }
@@ -37,6 +50,9 @@ class Log extends EmptyListener implements Listener
         ));
     }
 
+    /**
+     * @psalm-suppress InvalidPropertyAssignmentValue
+     */
     public function endPropertyVerification($ordinaryEvaluations, $iterations, Exception $exception = null)
     {
         fclose($this->fp);
@@ -61,13 +77,13 @@ class Log extends EmptyListener implements Listener
         ));
     }
 
-    private function log($text)
+    private function log(string $text): void
     {
         fwrite(
             $this->fp,
             sprintf(
                 "[%s][%s] %s" . PHP_EOL,
-                date('c', call_user_func($this->time)),
+                date('c', (int) call_user_func($this->time)),
                 $this->pid,
                 $text
             )

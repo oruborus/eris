@@ -1,4 +1,5 @@
 <?php
+
 namespace Eris\Generator;
 
 use BadFunctionCallException;
@@ -24,9 +25,9 @@ function regex($expression)
 
 class RegexGenerator implements Generator
 {
-    private $expression;
+    private string $expression;
 
-    public function __construct($expression)
+    public function __construct(string $expression)
     {
         if (!class_exists("ReverseRegex\Parser")) {
             throw new BadFunctionCallException("Please install the suggested dependency icomefromthenet/reverse-regex to run this Generator.");
@@ -34,7 +35,7 @@ class RegexGenerator implements Generator
         $this->expression = $expression;
     }
 
-    public function __invoke($_size, RandomRange $rand)
+    public function __invoke(int $_size, RandomRange $rand)
     {
         $lexer = new Lexer($this->expression);
         $gen   = new SimpleRandom($rand->rand());
@@ -46,6 +47,9 @@ class RegexGenerator implements Generator
         return GeneratedValueSingle::fromJustValue($result, 'regex');
     }
 
+    /**
+     * @return GeneratedValue
+     */
     public function shrink(GeneratedValue $value)
     {
         return $value;

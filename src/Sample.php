@@ -1,30 +1,33 @@
 <?php
+
 namespace Eris;
 
+use Eris\Generator\GeneratedValue;
 use Eris\Generator\GeneratedValueOptions;
+use Eris\Random\RandomRange;
 
 class Sample
 {
     const DEFAULT_SIZE = 10;
 
-    private $generator;
-    private $rand;
-    private $size;
-    private $collected = [];
+    private Generator $generator;
+    private RandomRange $rand;
+    private int $size;
+    private array $collected = [];
 
-    public static function of($generator, $rand, $size = null)
+    public static function of(Generator $generator, RandomRange $rand, ?int $size = null): self
     {
         return new self($generator, $rand, $size);
     }
 
-    private function __construct($generator, $rand, $size = null)
+    private function __construct(Generator $generator, RandomRange $rand, ?int $size = null)
     {
-        $this->size = isset($size) ? (int) $size : self::DEFAULT_SIZE;
+        $this->size = $size ?? self::DEFAULT_SIZE;
         $this->generator = $generator;
         $this->rand = $rand;
     }
 
-    public function repeat($times)
+    public function repeat(int $times): self
     {
         for ($i = 0; $i < $times; $i++) {
             $this->collected[] = $this->generator->__invoke($this->size, $this->rand)->unbox();
@@ -32,11 +35,10 @@ class Sample
         return $this;
     }
 
-    public function shrink($nextValue = null)
+    public function shrink(?GeneratedValue $nextValue = null): self
     {
-        if ($nextValue === null) {
-            $nextValue = $this->generator->__invoke($this->size, $this->rand);
-        }
+        $nextValue ??= $this->generator->__invoke($this->size, $this->rand);
+
         $this->collected[] = $nextValue->unbox();
         while ($value = $this->generator->shrink($nextValue)) {
             if ($value->unbox() === $nextValue->unbox()) {
@@ -48,7 +50,7 @@ class Sample
         return $this;
     }
 
-    public function collected()
+    public function collected(): array
     {
         return $this->collected;
     }

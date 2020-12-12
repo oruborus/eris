@@ -1,8 +1,10 @@
 <?php
+
 use Eris\Generator;
 use Eris\TestTrait;
+use PHPUnit\Framework\TestCase;
 
-class DisableShrinkingTest extends \PHPUnit_Framework_TestCase
+class DisableShrinkingTest extends TestCase
 {
     use TestTrait;
 

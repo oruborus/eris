@@ -1,14 +1,20 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 
-function ensureAreAllGenerators(array $generators)
+/**
+ * @return Generator[]
+ */
+function ensureAreAllGenerators(array $generators): array
 {
     return array_map('Eris\Generator\ensureIsGenerator', $generators);
 }
-
-function ensureIsGenerator($generator)
+/**
+ * @param mixed $generator
+ */
+function ensureIsGenerator($generator): Generator
 {
     if ($generator instanceof Generator) {
         return $generator;

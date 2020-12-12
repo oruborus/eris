@@ -1,17 +1,27 @@
 <?php
+
 namespace Eris\Antecedent;
 
 use Eris\Antecedent;
 
 class SingleCallbackAntecedent implements Antecedent
 {
+    /**
+     * @var callable $callback
+     */
     private $callback;
 
-    public static function from($callback)
+    /**
+     * @param callable $callback
+     */
+    public static function from($callback): self
     {
         return new self($callback);
     }
 
+    /**
+     * @param callable $callback
+     */
     private function __construct($callback)
     {
         $this->callback = $callback;

@@ -1,7 +1,9 @@
 <?php
-use Eris\Generator;
 
-class MapTest extends PHPUnit_Framework_TestCase
+use Eris\Generator;
+use PHPUnit\Framework\TestCase;
+
+class MapTest extends TestCase
 {
     use Eris\TestTrait;
 

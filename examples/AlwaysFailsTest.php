@@ -1,8 +1,10 @@
 <?php
+
 use Eris\Generator;
 use Eris\TestTrait;
+use PHPUnit\Framework\TestCase;
 
-class AlwaysFailsTest extends \PHPUnit_Framework_TestCase
+class AlwaysFailsTest extends TestCase
 {
     use TestTrait;
 

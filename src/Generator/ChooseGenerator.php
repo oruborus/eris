@@ -1,4 +1,5 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
@@ -19,20 +20,20 @@ if (!defined('ERIS_PHP_INT_MIN')) {
  * @param $y int The other boundary of the range
  * @return Generator\ChooseGenerator
  */
-function choose($lowerLimit, $upperLimit)
+function choose(int $lowerLimit, int $upperLimit)
 {
     return new ChooseGenerator($lowerLimit, $upperLimit);
 }
 
 class ChooseGenerator implements Generator
 {
-    private $lowerLimit;
-    private $upperLimit;
-    private $shrinkTarget;
+    private int $lowerLimit;
+    private int $upperLimit;
+    private int $shrinkTarget;
 
-    public function __construct($x, $y)
+    public function __construct(int $x, int $y)
     {
-        $this->checkLimits($x, $y);
+        // $this->checkLimits($x, $y);
 
         $this->lowerLimit = min($x, $y);
         $this->upperLimit = max($x, $y);
@@ -42,13 +43,16 @@ class ChooseGenerator implements Generator
         );
     }
 
-    public function __invoke($_size, RandomRange $rand)
+    public function __invoke(int $_size, RandomRange $rand)
     {
         $value = $rand->rand($this->lowerLimit, $this->upperLimit);
 
         return GeneratedValueSingle::fromJustValue($value, 'choose');
     }
 
+    /**
+     * @return GeneratedValue
+     */
     public function shrink(GeneratedValue $element)
     {
         if ($element->input() > $this->shrinkTarget) {
@@ -61,14 +65,18 @@ class ChooseGenerator implements Generator
         return $element;
     }
 
-    private function checkLimits($lowerLimit, $upperLimit)
+    /**
+     * @param mixed $lowerLimit
+     * @param mixed $upperLimit
+     */
+    private function checkLimits($lowerLimit, $upperLimit): void
     {
         // TODO: the problem with the random number generator is still here.
         if ((!is_int($lowerLimit)) || (!is_int($upperLimit))) {
             throw new InvalidArgumentException(
                 'lowerLimit (' . var_export($lowerLimit, true) . ') and ' .
-                'upperLimit (' . var_export($upperLimit, true) . ') should ' .
-                'be Integers between ' . ERIS_PHP_INT_MIN . ' and ' . PHP_INT_MAX
+                    'upperLimit (' . var_export($upperLimit, true) . ') should ' .
+                    'be Integers between ' . ERIS_PHP_INT_MIN . ' and ' . PHP_INT_MAX
             );
         }
     }

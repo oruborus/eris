@@ -1,8 +1,9 @@
 <?php
 
 use Eris\Generator;
+use PHPUnit\Framework\TestCase;
 
-class ConstantTest extends \PHPUnit_Framework_TestCase
+class ConstantTest extends TestCase
 {
     use Eris\TestTrait;
 

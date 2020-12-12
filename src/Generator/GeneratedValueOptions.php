@@ -1,8 +1,10 @@
 <?php
+
 namespace Eris\Generator;
 
 use ArrayIterator;
 use LogicException;
+use RuntimeException;
 
 /**
  * Parametric with respect to the type <T> of its value,
@@ -19,14 +21,20 @@ use LogicException;
  */
 class GeneratedValueOptions implements GeneratedValue
 {
-    private $generatedValues;
-    
+    /**
+     * @var GeneratedValue[] $generatedValues
+     */
+    private array $generatedValues;
+
+    /**
+     * @param GeneratedValue[] $generatedValues
+     */
     public function __construct(array $generatedValues)
     {
         $this->generatedValues = $generatedValues;
     }
 
-    public static function mostPessimisticChoice(GeneratedValue $value)
+    public static function mostPessimisticChoice(GeneratedValue $value): GeneratedValue
     {
         if ($value instanceof GeneratedValueOptions) {
             return $value->last();
@@ -34,12 +42,12 @@ class GeneratedValueOptions implements GeneratedValue
         return $value;
     }
 
-    public function first()
+    public function first(): GeneratedValue
     {
         return $this->generatedValues[0];
     }
 
-    public function last()
+    public function last(): GeneratedValue
     {
         if (count($this->generatedValues) == 0) {
             throw new LogicException("This GeneratedValueOptions is empty");
@@ -47,17 +55,20 @@ class GeneratedValueOptions implements GeneratedValue
         return $this->generatedValues[count($this->generatedValues) - 1];
     }
 
-    public function map(callable $callable, $generatorName)
+    /**
+     * @param callable $applyToValue
+     */
+    public function map($applyToValue, string $generatorName): self
     {
         return new self(array_map(
-            function ($value) use ($callable, $generatorName) {
-                return $value->map($callable, $generatorName);
+            function (GeneratedValue $value) use ($applyToValue, $generatorName): GeneratedValue {
+                return $value->map($applyToValue, $generatorName);
             },
             $this->generatedValues
         ));
     }
-    
-    public function derivedIn($generatorName)
+
+    public function derivedIn(string $generatorName): void
     {
         throw new RuntimeException("GeneratedValueOptions::derivedIn() is needed, uncomment it");
     }
@@ -73,7 +84,7 @@ class GeneratedValueOptions implements GeneratedValue
         ));
     }
 
-    public function remove(GeneratedValue $value)
+    public function remove(GeneratedValue $value): self
     {
         $generatedValues = $this->generatedValues;
         $index = array_search($value, $generatedValues);
@@ -111,7 +122,7 @@ class GeneratedValueOptions implements GeneratedValue
      * @override
      * @return string
      */
-    public function generatorName()
+    public function generatorName(): ?string
     {
         return $this->last()->generatorName();
     }
@@ -126,7 +137,10 @@ class GeneratedValueOptions implements GeneratedValue
         return count($this->generatedValues);
     }
 
-    public function cartesianProduct($generatedValueOptions, callable $merge)
+    /**
+     * @param callable $merge
+     */
+    public function cartesianProduct(self $generatedValueOptions, $merge): self
     {
         $options = [];
         foreach ($this as $firstPart) {

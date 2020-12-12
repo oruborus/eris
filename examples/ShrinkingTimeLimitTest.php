@@ -1,5 +1,7 @@
 <?php
+
 use Eris\Generator;
+use PHPUnit\Framework\TestCase;
 
 function very_slow_concatenation($first, $second)
 {
@@ -10,7 +12,7 @@ function very_slow_concatenation($first, $second)
     return $first . $second;
 }
 
-class ShrinkingTimeLimitTest extends PHPUnit_Framework_TestCase
+class ShrinkingTimeLimitTest extends TestCase
 {
     use Eris\TestTrait;
 

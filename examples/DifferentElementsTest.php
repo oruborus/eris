@@ -1,6 +1,8 @@
 <?php
+
 use Eris\Generator;
 use Eris\TestTrait;
+use PHPUnit\Framework\TestCase;
 
 class Type
 {
@@ -31,7 +33,7 @@ class Type
     }
 }
 
-class DifferentElementsTest extends \PHPUnit_Framework_TestCase
+class DifferentElementsTest extends TestCase
 {
     use TestTrait;
 

@@ -1,17 +1,18 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
 
-function string()
+function string(): StringGenerator
 {
     return new StringGenerator();
 }
 
 class StringGenerator implements Generator
 {
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         $length = $rand->rand(0, $size);
 
@@ -22,6 +23,9 @@ class StringGenerator implements Generator
         return GeneratedValueSingle::fromJustValue($built, 'string');
     }
 
+    /**
+     * @return GeneratedValue
+     */
     public function shrink(GeneratedValue $element)
     {
         if ($element->unbox() === '') {

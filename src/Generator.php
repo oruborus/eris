@@ -1,27 +1,29 @@
 <?php
+
 namespace Eris;
 
 use Eris\Generator\GeneratedValue;
-use Eris\Generator\GeneratedValueSingle;
 
 /**
+ * @template T
+ * @psalm-template T
  * Generic interface for a type <T>.
  */
 interface Generator
 {
     /**
      * @param int The generation size
-     * @param Random\RandomRange
-     * @return GeneratedValueSingle<T>
+     * @param Random\RandomRange $rand
+     * @return GeneratedValue<T>
      */
-    public function __invoke($size, Random\RandomRange $rand);
+    public function __invoke(int $size, Random\RandomRange $rand);
 
     /**
      * The conditions for terminating are either:
      * - returning the same GeneratedValueSingle passed in
      * - returning an empty GeneratedValueOptions
      *
-     * @param GeneratedValue<T>
+     * @param GeneratedValue<T> $element
      * @return GeneratedValue<T>
      */
     public function shrink(GeneratedValue $element);

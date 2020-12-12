@@ -1,7 +1,9 @@
 <?php
-use Eris\Generator;
 
-class RegexTest extends \PHPUnit_Framework_TestCase
+use Eris\Generator;
+use PHPUnit\Framework\TestCase;
+
+class RegexTest extends TestCase
 {
     use Eris\TestTrait;
 

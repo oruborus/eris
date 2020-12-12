@@ -1,4 +1,5 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
@@ -14,21 +15,30 @@ function associative(array $generators)
 
 class AssociativeArrayGenerator implements Generator
 {
-    private $generators;
-    private $tupleGenerator;
+    /**
+     * @var Generator[] $generators
+     */
+    private array $generators;
+    private TupleGenerator $tupleGenerator;
 
+    /**
+     * @param Generator[] $generators
+     */
     public function __construct(array $generators)
     {
         $this->generators = $generators;
         $this->tupleGenerator = new TupleGenerator(array_values($generators));
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         $tuple = $this->tupleGenerator->__invoke($size, $rand);
         return $this->mapToAssociativeArray($tuple);
     }
 
+    /**
+     * @return GeneratedValue
+     */
     public function shrink(GeneratedValue $element)
     {
         $input = $element->input();
@@ -36,10 +46,10 @@ class AssociativeArrayGenerator implements Generator
         return $this->mapToAssociativeArray($shrunkInput);
     }
 
-    private function mapToAssociativeArray(GeneratedValue $tuple)
+    private function mapToAssociativeArray(GeneratedValue $tuple): GeneratedValue
     {
         return $tuple->map(
-            function ($value) {
+            function (array $value): array {
                 $associativeArray = [];
                 $keys = array_keys($this->generators);
                 for ($i = 0; $i < count($value); $i++) {

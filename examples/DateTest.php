@@ -1,7 +1,9 @@
 <?php
-use Eris\Generator;
 
-class DateTest extends PHPUnit_Framework_TestCase
+use Eris\Generator;
+use PHPUnit\Framework\TestCase;
+
+class DateTest extends TestCase
 {
     use Eris\TestTrait;
 
@@ -42,16 +44,16 @@ class DateTest extends PHPUnit_Framework_TestCase
             Generator\choose(0, 364),
             Generator\choose(0, 364)
         )
-        ->then(function ($year, $dayOfYear, $anotherDayOfYear) {
-            $day = fromZeroBasedDayOfYear($year, $dayOfYear);
-            $anotherDay = fromZeroBasedDayOfYear($year, $anotherDayOfYear);
-            $this->assertEquals(
-                abs($dayOfYear - $anotherDayOfYear) * 86400,
-                abs($day->getTimestamp() - $anotherDay->getTimestamp()),
-                "Days of the year $year: $dayOfYear, $anotherDayOfYear" . PHP_EOL
-                . "{$day->format(DateTime::ISO8601)}, {$anotherDay->format(DateTime::ISO8601)}"
-            );
-        });
+            ->then(function ($year, $dayOfYear, $anotherDayOfYear) {
+                $day = fromZeroBasedDayOfYear($year, $dayOfYear);
+                $anotherDay = fromZeroBasedDayOfYear($year, $anotherDayOfYear);
+                $this->assertEquals(
+                    abs($dayOfYear - $anotherDayOfYear) * 86400,
+                    abs($day->getTimestamp() - $anotherDay->getTimestamp()),
+                    "Days of the year $year: $dayOfYear, $anotherDayOfYear" . PHP_EOL
+                        . "{$day->format(DateTime::ISO8601)}, {$anotherDay->format(DateTime::ISO8601)}"
+                );
+            });
     }
 }
 
@@ -59,7 +61,7 @@ function fromZeroBasedDayOfYear($year, $dayOfYear)
 {
     return DateTime::createFromFormat(
         'z Y H i s',
-        $dayOfYear . ' '. $year . ' 00 00 00',
+        $dayOfYear . ' ' . $year . ' 00 00 00',
         new DateTimeZone("UTC")
     );
 }

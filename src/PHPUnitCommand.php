@@ -1,18 +1,19 @@
 <?php
+
 namespace Eris;
 
 final class PHPUnitCommand
 {
-    private $seed;
-    private $name;
+    private int $seed;
+    private string $name;
 
-    private function __construct($seed, $name)
+    private function __construct(int $seed, string $name)
     {
         $this->seed = $seed;
         $this->name = $name;
     }
 
-    public static function fromSeedAndName($seed, $name)
+    public static function fromSeedAndName(int $seed, string $name): self
     {
         return new self(
             $seed,

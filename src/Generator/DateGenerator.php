@@ -1,22 +1,31 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
 use DateTime;
 
-function date($lowerLimit = null, $upperLimit = null)
+/**
+ * @param null|string|DateTime $lowerLimit
+ * @param null|string|DateTime $upperLimit
+ */
+function date($lowerLimit = null, $upperLimit = null): DateGenerator
 {
-    $box = function ($date) {
-        if ($date === null) {
-            return $date;
-        }
-        if ($date instanceof DateTime) {
-            return $date;
-        }
-        return new DateTime($date);
-    };
-    $withDefault = function ($value, $default) {
+    $box =
+        /**
+         * @param null|string|DateTime $date
+         */
+        function ($date): ?DateTime {
+            if ($date === null) {
+                return $date;
+            }
+            if ($date instanceof DateTime) {
+                return $date;
+            }
+            return new DateTime($date);
+        };
+    $withDefault = function (?DateTime $value, DateTime $default): DateTime {
         if ($value !== null) {
             return $value;
         }
@@ -31,9 +40,9 @@ function date($lowerLimit = null, $upperLimit = null)
 
 class DateGenerator implements Generator
 {
-    private $lowerLimit;
-    private $upperLimit;
-    private $intervalInSeconds;
+    private DateTime $lowerLimit;
+    private DateTime $upperLimit;
+    private int $intervalInSeconds;
 
     public function __construct(DateTime $lowerLimit, DateTime $upperLimit)
     {
@@ -42,7 +51,7 @@ class DateGenerator implements Generator
         $this->intervalInSeconds = $upperLimit->getTimestamp() - $lowerLimit->getTimestamp();
     }
 
-    public function __invoke($_size, RandomRange $rand)
+    public function __invoke(int $_size, RandomRange $rand)
     {
         $generatedOffset = $rand->rand(0, $this->intervalInSeconds);
         return GeneratedValueSingle::fromJustValue(
@@ -51,10 +60,13 @@ class DateGenerator implements Generator
         );
     }
 
+    /**
+     * @return GeneratedValueSingle
+     */
     public function shrink(GeneratedValue $element)
     {
         $timeOffset = $element->unbox()->getTimestamp() - $this->lowerLimit->getTimestamp();
-        $halvedOffset = floor($timeOffset / 2);
+        $halvedOffset = (int) floor($timeOffset / 2);
         return GeneratedValueSingle::fromJustValue(
             $this->fromOffset($halvedOffset),
             'date'

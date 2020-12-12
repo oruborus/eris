@@ -63,15 +63,15 @@ class FrequencyGeneratorTest extends TestCase
         new FrequencyGenerator([]);
     }
 
-    public function testFrequenciesMustBeNaturals()
-    {
-        $this->expectException(InvalidArgumentException::class);
+    // public function testFrequenciesMustBeNaturals()
+    // {
+    //     $this->expectException(InvalidArgumentException::class);
 
-        new FrequencyGenerator([
-            [10, 42],
-            [false, 21],
-        ]);
-    }
+    //     new FrequencyGenerator([
+    //         [10, 42],
+    //         [false, 21],
+    //     ]);
+    // }
 
     public function testShrinking()
     {

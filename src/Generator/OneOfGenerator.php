@@ -1,4 +1,5 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
@@ -14,14 +15,17 @@ function oneOf(/*$a, $b, ...*/)
 
 class OneOfGenerator implements Generator
 {
-    private $generator;
+    private FrequencyGenerator $generator;
 
+    /**
+     * @param Generator[] $generators
+     */
     public function __construct($generators)
     {
         $this->generator = new FrequencyGenerator($this->allWithSameFrequency($generators));
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand)
     {
         return $this->generator->__invoke($size, $rand);
     }
@@ -31,10 +35,15 @@ class OneOfGenerator implements Generator
         return $this->generator->shrink($element);
     }
 
-    private function allWithSameFrequency($generators)
+    /**
+     * @param Generator[] $generators
+     * @return (int|Generator)[][]
+     * @psalm-return array<array-key, array{0: int, 1: Generator}>
+     */
+    private function allWithSameFrequency(array $generators): array
     {
         return array_map(
-            function ($generator) {
+            function ($generator): array {
                 return [1, $generator];
             },
             $generators

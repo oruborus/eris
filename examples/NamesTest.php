@@ -1,8 +1,9 @@
 <?php
 
 use Eris\Generator;
+use PHPUnit\Framework\TestCase;
 
-class NamesTest extends PHPUnit_Framework_TestCase
+class NamesTest extends TestCase
 {
     use Eris\TestTrait;
 
@@ -12,7 +13,7 @@ class NamesTest extends PHPUnit_Framework_TestCase
             Generator\names()
         )->then(function ($name) {
             $this->assertIsString($name);
-            var_dump($name);
+            // var_dump($name);
         });
     }
 

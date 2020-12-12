@@ -1,27 +1,33 @@
 <?php
+
 namespace Eris\Quantifier;
 
 use Countable;
+use OutOfBoundsException;
 
 class Size implements Countable
 {
-    private $list;
-    
-    public static function withTriangleGrowth($maximum)
+    /** @var int[] $list */
+    private array $list;
+
+    public static function withTriangleGrowth(int $maximum): self
     {
         return self::generateList($maximum, __CLASS__ . '::triangleNumber');
     }
 
-    public static function withLinearGrowth($maximum)
+    public static function withLinearGrowth(int $maximum): self
     {
         return self::generateList($maximum, __CLASS__ . '::linearGrowth');
     }
 
-    private static function generateList($maximum, callable $growth)
+    /**
+     * @param callable $growth
+     */
+    private static function generateList(int $maximum, $growth): self
     {
         $sizes = [];
         for ($x = 0; $x <= $maximum; $x++) {
-            $candidateSize = call_user_func($growth, $x);
+            $candidateSize = (int) call_user_func($growth, $x);
             if ($candidateSize <= $maximum) {
                 $sizes[] = $candidateSize;
             } else {
@@ -31,7 +37,7 @@ class Size implements Countable
         return new self($sizes);
     }
 
-    private static function linearGrowth($n)
+    private static function linearGrowth(int $n): int
     {
         return $n;
     }
@@ -46,42 +52,48 @@ class Size implements Countable
      *  . .
      * . . .
      */
-    private static function triangleNumber($n)
+    private static function triangleNumber(int $n): int
     {
         if ($n === 0) {
             return 0;
         }
-        return ($n * ($n + 1)) / 2;
+        return (int) (($n * ($n + 1)) / 2);
     }
-    
+
+    /**
+    @param int[] $list */
     private function __construct(array $list)
     {
         $this->list = $list;
     }
 
-    public function at($position)
+    public function at(int $position): int
     {
         $index = $position % count($this->list);
         return $this->list[$index];
     }
 
-    public function max()
+    public function max(): int
     {
+        if (empty($this->list)) {
+            throw new OutOfBoundsException("List is empty");
+        }
+
         return max($this->list);
     }
 
-    public function limit($maximumNumber)
+    public function limit(int $maximumNumber): self
     {
         $uniformSample = [];
         $factor = count($this->list) / ($maximumNumber - 1);
         for ($i = 0; $i < $maximumNumber; $i++) {
-            $position = min(floor($i * $factor), count($this->list) - 1);
+            $position = (int) min(floor($i * $factor), count($this->list) - 1);
             $uniformSample[] = $this->at($position);
         }
         return new self($uniformSample);
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->list);
     }

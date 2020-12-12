@@ -6,6 +6,7 @@ use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use TypeError;
 
 class ChooseGeneratorTest extends TestCase
 {
@@ -74,7 +75,7 @@ class ChooseGeneratorTest extends TestCase
 
     public function testExceptionWhenDomainBoundariesAreNotIntegers()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
         $generator = new ChooseGenerator("zero", "twenty");
     }
 

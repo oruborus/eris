@@ -1,8 +1,11 @@
 <?php
+
 namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+
+use function Eris\Generator\ensureAreAllGenerators;
 
 /**
  * One Generator for each member of the Tuple:
@@ -24,26 +27,33 @@ function tuple()
 
 class TupleGenerator implements Generator
 {
-    private $generators;
-    private $numberOfGenerators;
+    /**
+     * @var Generator[] $generators
+     */
+    private array $generators;
+    private int $numberOfGenerators;
 
+    /**
+     * @param Generator[] $generators
+     */
     public function __construct(array $generators)
     {
         $this->generators = ensureAreAllGenerators($generators);
         $this->numberOfGenerators = count($generators);
     }
 
-    public function __invoke($size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand): GeneratedValue
     {
         $input = array_map(
-            function ($generator) use ($size, $rand) {
+            function (Generator $generator) use ($size, $rand) {
                 return $generator($size, $rand);
             },
             $this->generators
         );
         return GeneratedValueSingle::fromValueAndInput(
             array_map(
-                function ($value) {
+                /** @return mixed */
+                function (GeneratedValue $value) {
                     return $value->unbox();
                 },
                 $input
@@ -61,7 +71,7 @@ class TupleGenerator implements Generator
      * Rewrite to something that does not overflow the stack
      * @return GeneratedValueOptions
      */
-    private function optionsFromTheseGenerators($generators, $inputSubset)
+    private function optionsFromTheseGenerators(array $generators, array $inputSubset)
     {
         $optionsForThisElement = $generators[0]->shrink($inputSubset[0]);
         // so that it can be used in combination with other shrunk elements
@@ -83,14 +93,14 @@ class TupleGenerator implements Generator
                     array_slice($generators, 1),
                     array_slice($inputSubset, 1)
                 ),
-                function ($first, $second) {
+                function (array $first, array $second) {
                     return array_merge($first, $second);
                 }
             );
         }
     }
 
-    public function shrink(GeneratedValue $tuple)
+    public function shrink(GeneratedValue $tuple): GeneratedValue
     {
         $input = $tuple->input();
 
@@ -98,20 +108,25 @@ class TupleGenerator implements Generator
             ->remove($tuple);
     }
 
-    private function ensureAreAllGenerators(array $generators)
+    /**
+     * @return Generator[]
+     *
+     * @psalm-return array<array-key, Generator>
+     */
+    private function ensureAreAllGenerators(array $generators): array
     {
         return array_map(
             function ($generator) {
                 if ($generator instanceof Generator) {
                     return $generator;
                 }
-                return new Constant($generator);
+                return new ConstantGenerator($generator);
             },
             $generators
         );
     }
 
-    private function domainsTupleAsString()
+    private function domainsTupleAsString(): string
     {
         $domainOfElements = '(';
         foreach ($this->generators as $generator) {

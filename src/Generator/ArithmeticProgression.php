@@ -1,4 +1,5 @@
 <?php
+
 namespace Eris\Generator;
 
 /**
@@ -10,19 +11,19 @@ namespace Eris\Generator;
  */
 class ArithmeticProgression
 {
-    private $lowerLimit;
-    
-    public static function discrete($lowerLimit)
+    private int $lowerLimit;
+
+    public static function discrete(int $lowerLimit): self
     {
         return new self($lowerLimit);
     }
-    
-    private function __construct($lowerLimit)
+
+    private function __construct(int $lowerLimit)
     {
         $this->lowerLimit = $lowerLimit;
     }
 
-    public function next($currentValue)
+    public function next(int $currentValue): int
     {
         if ($currentValue > $this->lowerLimit) {
             return $currentValue - 1;
