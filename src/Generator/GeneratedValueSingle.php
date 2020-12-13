@@ -1,22 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use InvalidArgumentException;
 use ArrayIterator;
-use Generator;
 
 /**
- * Parametric with respect to the type <T> of its value.
+ * Parametric with respect to the type <TValue> of its value.
  * Immutable object, modifiers return a new GeneratedValueSingle instance.
  *
- * @template TT
- * @psalm-template TT
+ * @template TValue
+ * @psalm-template TValue
  */
-final class GeneratedValueSingle implements GeneratedValue // TODO? interface ShrunkValue extends IteratorAggregate[, Countable]
+final class GeneratedValueSingle implements GeneratedValue
 {
     /**
-     * @var TT $value
+     * @var TValue $value
      */
     private $value;
 
@@ -27,18 +28,16 @@ final class GeneratedValueSingle implements GeneratedValue // TODO? interface Sh
 
     private ?string $generatorName;
 
-    private array $annotations;
-
     /**
      * A value and the input that was used to derive it.
      * The input usually comes from another Generator.
-     * @template T
-     * @param T $value
+     *
+     * @template TValueStatic
+     * @param TValueStatic $value
      * @param mixed $input
-     * @param null|string $generatorName  'tuple'
-     * @return GeneratedValueSingle
+     * @return self<TValueStatic>
      */
-    public static function fromValueAndInput($value, $input, $generatorName = null)
+    public static function fromValueAndInput($value, $input, ?string $generatorName = null): self
     {
         return new self($value, $input, $generatorName);
     }
@@ -46,29 +45,29 @@ final class GeneratedValueSingle implements GeneratedValue // TODO? interface Sh
     /**
      * Input will be copied from value.
      *
-     * @template T
-     * @param T $value
-     * @param string $generatorName  'tuple'
-     * @return GeneratedValueSingle<T>
+     * @template TValueStatic
+     * @param TValueStatic $value
+     * @return self<TValueStatic>
      */
-    public static function fromJustValue($value, $generatorName = null)
+    public static function fromJustValue($value, ?string $generatorName = null): self
     {
         return new self($value, $value, $generatorName);
     }
 
     /**
-     * @param TT $value
+     * @param TValue $value
      * @param mixed $input
+     * @throws InvalidArgumentException
      */
-    private function __construct($value, $input, ?string $generatorName, array $annotations = [])
+    private function __construct($value, $input, ?string $generatorName)
     {
         if ($value instanceof self) {
             throw new InvalidArgumentException("It looks like you are trying to build a GeneratedValueSingle whose value is another GeneratedValueSingle. This is almost always an error as values will be passed as-is to properties and GeneratedValueSingle should be hidden from them.");
         }
+
         $this->value = $value;
         $this->input = $input;
         $this->generatorName = $generatorName;
-        $this->annotations = $annotations;
     }
 
     /**
@@ -80,14 +79,14 @@ final class GeneratedValueSingle implements GeneratedValue // TODO? interface Sh
     }
 
     /**
-     * @return TT
+     * @return TValue
      */
     public function unbox()
     {
         return $this->value;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return var_export($this, true);
     }
@@ -102,37 +101,22 @@ final class GeneratedValueSingle implements GeneratedValue // TODO? interface Sh
      * and that is labelled with $generatorName.
      * $applyToValue is mapped over the value
      * to build the outer GeneratedValueSingle object $this->value field.
+     *
      * @param callable $applyToValue
      */
     public function map($applyToValue, string $generatorName): self
     {
-        return new self(
-            $applyToValue($this->value),
-            $this,
-            $generatorName
-        );
+        return new self($applyToValue($this->value), $this, $generatorName);
     }
 
     /**
      * Basically changes the name of the Generator,
      * but without introducing an additional layer
      * of wrapping of GeneratedValueSingle objects.
-     *
-     * @param string $generatorName  'tuple', 'vector'
-     * @return GeneratedValueSingle
      */
-    public function derivedIn($generatorName)
+    public function derivedIn(string $generatorName): self
     {
-        return $this->map(
-            /**
-             * @param mixed $value
-             * @return mixed
-             */
-            function ($value) {
-                return $value;
-            },
-            $generatorName
-        );
+        return new self($this->value, $this, $generatorName);
     }
 
     public function getIterator()
@@ -142,7 +126,7 @@ final class GeneratedValueSingle implements GeneratedValue // TODO? interface Sh
         ]);
     }
 
-    public function count()
+    public function count(): int
     {
         return 1;
     }
@@ -155,18 +139,16 @@ final class GeneratedValueSingle implements GeneratedValue // TODO? interface Sh
         if ($another->generatorName !== $this->generatorName) {
             throw new InvalidArgumentException("Trying to merge a {$this->generatorName} GeneratedValueSingle with a {$another->generatorName} GeneratedValueSingle");
         }
+
         return self::fromValueAndInput(
-            $merge($this->unbox(), $another->unbox()),
-            $merge($this->input(), $another->input()),
+            $merge($this->value, $another->value),
+            $merge($this->input, $another->input),
             $this->generatorName
         );
     }
 
     public function add(GeneratedValueSingle $value): GeneratedValueOptions
     {
-        return new GeneratedValueOptions([
-            $this,
-            $value,
-        ]);
+        return new GeneratedValueOptions([$this, $value]);
     }
 }
