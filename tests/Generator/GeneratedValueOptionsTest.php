@@ -1,26 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use PHPUnit\Framework\TestCase;
 
-// TODO: complete *unit* test coverage
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 class GeneratedValueOptionsTest extends TestCase
 {
-    public function testMapsOverAllTheOptions()
+    /**
+     * @test
+     * @covers Eris\Generator\GeneratedValueOptions::map
+     * @uses Eris\Generator\GeneratedValueOptions::__construct
+     *
+     * @uses Eris\Generator\GeneratedValueSingle
+     */
+    public function mapsOverAllTheOptions(): void
     {
-        $value = GeneratedValueSingle::fromJustValue(42);
-        $options = new GeneratedValueOptions([$value]);
-        $double = function ($n) {
-            return $n * 2;
-        };
-        $this->assertEquals(
-            new GeneratedValueOptions([$value->map($double, 'doubler')]),
-            $options->map($double, 'doubler')
-        );
+        $doubleFn     = fn (int $e): int => 2 * $e;
+        $initFn       = fn (int $e): GeneratedValueSingle => GeneratedValueSingle::fromJustValue($e, 'single');
+        $doubleInitFn = fn (int $e): GeneratedValueSingle => GeneratedValueSingle::fromJustValue($e, 'single')
+            ->map($doubleFn, 'double');
+
+        $values   = [41, 42, 43, 44, 45, 46];
+        $initial  = new GeneratedValueOptions(\array_map($initFn, $values));
+        $expected = new GeneratedValueOptions(\array_map($doubleInitFn, $values));
+
+        $actual = $initial->map($doubleFn, 'double');
+
+        $this->assertEquals($expected, $actual);
     }
 
-    public function testAddingAndRemoving()
+    /**
+     * @test
+     * @covers Eris\Generator\GeneratedValueOptions::add
+     * @covers Eris\Generator\GeneratedValueOptions::remove
+     * @uses Eris\Generator\GeneratedValueOptions::__construct
+     *
+     * @uses Eris\Generator\GeneratedValueSingle
+     */
+    public function instancesCanBeAddedAndRemoved(): void
     {
         $someOptions = new GeneratedValueOptions([
             GeneratedValueSingle::fromJustValue(42),
@@ -41,11 +63,19 @@ class GeneratedValueOptionsTest extends TestCase
         );
     }
 
-    public function testCount()
+    /**
+     * @test
+     * @covers Eris\Generator\GeneratedValueOptions::count
+     * @covers Eris\Generator\GeneratedValueOptions::remove
+     * @uses Eris\Generator\GeneratedValueOptions::__construct
+     *
+     * @uses Eris\Generator\GeneratedValueSingle
+     */
+    public function canBeCounted(): void
     {
         $this->assertEquals(
             3,
-            count(new GeneratedValueOptions([
+            \count(new GeneratedValueOptions([
                 GeneratedValueSingle::fromJustValue(44),
                 GeneratedValueSingle::fromJustValue(45),
                 GeneratedValueSingle::fromJustValue(46),
@@ -53,7 +83,16 @@ class GeneratedValueOptionsTest extends TestCase
         );
     }
 
-    public function testCartesianProductWithOtherValues()
+    /**
+     * @test
+     * @covers Eris\Generator\GeneratedValueOptions::cartesianProduct
+     * @uses Eris\Generator\GeneratedValueOptions::__construct
+     * @uses Eris\Generator\GeneratedValueOptions::count
+     * @uses Eris\Generator\GeneratedValueOptions::getIterator
+     *
+     * @uses Eris\Generator\GeneratedValueSingle
+     */
+    public function cartesianProductWithOtherValues(): void
     {
         $former = new GeneratedValueOptions([
             GeneratedValueSingle::fromJustValue('a'),
@@ -67,7 +106,7 @@ class GeneratedValueOptionsTest extends TestCase
         $product = $former->cartesianProduct($latter, function ($first, $second) {
             return $first . $second;
         });
-        $this->assertEquals(6, count($product));
+        $this->assertCount(6, $product);
         foreach ($product as $value) {
             $this->assertMatchesRegularExpression('/^[ab][123]$/', $value->unbox());
         }
