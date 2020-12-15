@@ -7,8 +7,8 @@ use IteratorAggregate;
 use Stringable;
 
 /**
- * @template T
- * @psalm-template T
+ * @template TValue
+ * @extends IteratorAggregate<array-key, self<TValue>>
  */
 interface GeneratedValue extends IteratorAggregate, Countable, Stringable
 {
@@ -23,7 +23,7 @@ interface GeneratedValue extends IteratorAggregate, Countable, Stringable
     public function input();
 
     /**
-     * @return mixed
+     * @return TValue
      */
     public function unbox();
 

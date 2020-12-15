@@ -6,8 +6,8 @@ use Eris\Generator;
 use Eris\Random\RandomRange;
 
 /**
-                 * @psalm-suppress TypeDoesNotContainType
-                 * TODO: Generator::box($singleElementGenerator);
+ * @psalm-suppress TypeDoesNotContainType
+ * TODO: Generator::box($singleElementGenerator);
  */
 function seq(Generator $singleElementGenerator): SequenceGenerator
 {
@@ -33,6 +33,7 @@ class SequenceGenerator implements Generator
     }
 
     /**
+     * @param GeneratedValue<array> $sequence
      * @return GeneratedValueOptions
      */
     public function shrink(GeneratedValue $sequence)

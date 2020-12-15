@@ -44,7 +44,7 @@ class GeneratedValueOptionsTest extends TestCase
      */
     public function instancesCanBeAddedAndRemoved(): void
     {
-        $someOptions = new GeneratedValueOptions([
+        $initial = new GeneratedValueOptions([
             GeneratedValueSingle::fromJustValue(42),
             GeneratedValueSingle::fromJustValue(43),
             GeneratedValueSingle::fromJustValue(44),
@@ -55,7 +55,7 @@ class GeneratedValueOptionsTest extends TestCase
                 GeneratedValueSingle::fromJustValue(45),
                 GeneratedValueSingle::fromJustValue(46),
             ]),
-            $someOptions
+            $initial
                 ->add(GeneratedValueSingle::fromJustValue(45))
                 ->remove(GeneratedValueSingle::fromJustValue(42))
                 ->add(GeneratedValueSingle::fromJustValue(46))
@@ -98,16 +98,19 @@ class GeneratedValueOptionsTest extends TestCase
             GeneratedValueSingle::fromJustValue('a'),
             GeneratedValueSingle::fromJustValue('b'),
         ]);
+
         $latter = new GeneratedValueOptions([
             GeneratedValueSingle::fromJustValue('1'),
             GeneratedValueSingle::fromJustValue('2'),
             GeneratedValueSingle::fromJustValue('3'),
         ]);
-        $product = $former->cartesianProduct($latter, function ($first, $second) {
-            return $first . $second;
-        });
-        $this->assertCount(6, $product);
-        foreach ($product as $value) {
+
+        $mergeFn = fn (string $first, string $second): string => $first . $second;
+
+        $actual = $former->cartesianProduct($latter, $mergeFn);
+
+        $this->assertCount(6, $actual);
+        foreach ($actual as $value) {
             $this->assertMatchesRegularExpression('/^[ab][123]$/', $value->unbox());
         }
     }

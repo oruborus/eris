@@ -12,7 +12,7 @@ use ArrayIterator;
  * Immutable object, modifiers return a new GeneratedValueSingle instance.
  *
  * @template TValue
- * @psalm-template TValue
+ * @implements GeneratedValue<TValue>
  */
 final class GeneratedValueSingle implements GeneratedValue
 {

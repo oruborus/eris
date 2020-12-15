@@ -8,7 +8,7 @@ use Eris\Random\RandomRange;
 /**
                  * @param Generator $singleElementGenerator
                  * @return SetGenerator
- */
+                 */
 function set($singleElementGenerator)
 {
     return new SetGenerator($singleElementGenerator);
@@ -59,9 +59,9 @@ class SetGenerator implements Generator
         return GeneratedValueSingle::fromValueAndInput(
             array_map(
                 /**
-                 * @template T
-                 * @param GeneratedValue<T> $element
-                 * @return T
+                 * @template TValue
+                 * @param GeneratedValue<TValue> $element
+                 * @return TValue
                  */
                 function (GeneratedValue $element) {
                     return $element->unbox();

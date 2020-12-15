@@ -18,22 +18,29 @@ use RuntimeException;
  * backwards compatibility. So it can be used in context where a single
  * value is expected. The last of the options is usually the more conservative
  * in shrinking, for example subtracting 1 for the IntegerGenerator.
+ * 
+ * @template TValue
+ * @implements GeneratedValue<TValue>
  */
 class GeneratedValueOptions implements GeneratedValue
 {
     /**
-     * @var GeneratedValue[] $generatedValues
+     * @var GeneratedValueSingle<TValue>[] $generatedValues
      */
     private array $generatedValues;
 
     /**
-     * @param GeneratedValue[] $generatedValues
+     * @param GeneratedValueSingle<TValue>[] $generatedValues
      */
     public function __construct(array $generatedValues)
     {
         $this->generatedValues = $generatedValues;
     }
 
+    /**
+     * @todo Remove from
+     * @see C:\Users\JahnFe\Desktop\USB\10_Projekte\eris\src\Sample.php:45
+     */
     public static function mostPessimisticChoice(GeneratedValue $value): GeneratedValue
     {
         if ($value instanceof GeneratedValueOptions) {
@@ -42,12 +49,18 @@ class GeneratedValueOptions implements GeneratedValue
         return $value;
     }
 
-    public function first(): GeneratedValue
+    /**
+     * @return GeneratedValueSingle<TValue>
+     */
+    public function first(): GeneratedValueSingle
     {
         return $this->generatedValues[0];
     }
 
-    public function last(): GeneratedValue
+    /**
+     * @return GeneratedValueSingle<TValue>
+     */
+    public function last(): GeneratedValueSingle
     {
         if (count($this->generatedValues) == 0) {
             throw new LogicException("This GeneratedValueOptions is empty");
@@ -74,9 +87,10 @@ class GeneratedValueOptions implements GeneratedValue
     }
 
     /**
-     * @return self
+     * @param GeneratedValueSingle<TValue> $value
+     * @return self<TValue>
      */
-    public function add(GeneratedValueSingle $value)
+    public function add(GeneratedValueSingle $value): self
     {
         return new self(array_merge(
             $this->generatedValues,
@@ -84,6 +98,10 @@ class GeneratedValueOptions implements GeneratedValue
         ));
     }
 
+    /**
+     * @param GeneratedValue<TValue> $value
+     * @return self<TValue>
+     */
     public function remove(GeneratedValue $value): self
     {
         $generatedValues = $this->generatedValues;
@@ -95,7 +113,7 @@ class GeneratedValueOptions implements GeneratedValue
     }
 
     /**
-     * @override
+     * @return TValue
      */
     public function unbox()
     {
@@ -103,30 +121,26 @@ class GeneratedValueOptions implements GeneratedValue
     }
 
     /**
-     * @override
+     * @return mixed
      */
     public function input()
     {
         return $this->last()->input();
     }
 
-    /**
-     * @override
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return var_export($this, true);
     }
 
-    /**
-     * @override
-     * @return string
-     */
     public function generatorName(): ?string
     {
         return $this->last()->generatorName();
     }
 
+    /**
+     * @return ArrayIterator<array-key, GeneratedValueSingle<TValue>>
+     */
     public function getIterator()
     {
         return new ArrayIterator($this->generatedValues);
@@ -138,6 +152,8 @@ class GeneratedValueOptions implements GeneratedValue
     }
 
     /**
+     * @template TValue2
+     * @param self<TValue2> $generatedValueOptions
      * @param callable $merge
      */
     public function cartesianProduct(self $generatedValueOptions, $merge): self
