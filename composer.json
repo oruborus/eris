@@ -30,7 +30,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Eris\\": "src/"
+            "Eris\\": "src/",
+            "Test\\": "tests/"
         },
         "files": [
             "src/Generator/functions.php"
