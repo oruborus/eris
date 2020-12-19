@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 use function Eris\Generator\ensureAreAllGenerators;
 
@@ -42,7 +44,10 @@ class TupleGenerator implements Generator
         $this->numberOfGenerators = count($generators);
     }
 
-    public function __invoke(int $size, RandomRange $rand): GeneratedValue
+    /**
+     * @return Value<array>
+     */
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         $input = array_map(
             function (Generator $generator) use ($size, $rand) {
@@ -50,18 +55,16 @@ class TupleGenerator implements Generator
             },
             $this->generators
         );
-        return GeneratedValueSingle::fromValueAndInput(
+
+        return new Value(
             array_map(
-                /** @return mixed */
-                function (GeneratedValue $value) {
-                    return $value->unbox();
-                },
+                /**
+                 * @return mixed
+                 */
+                fn (Value $value) => $value->unbox(),
                 $input
             ),
-            $input,
-            // TODO: sometimes this should be 'vector'
-            // due to delegation?
-            'tuple'
+            $input
         );
     }
 
@@ -69,43 +72,46 @@ class TupleGenerator implements Generator
      * TODO: recursion may cause problems here as other Generators
      * like Vector use this with a high number of elements.
      * Rewrite to something that does not overflow the stack
-     * @return GeneratedValueOptions
+     * @return ValueCollection<array>
      */
-    private function optionsFromTheseGenerators(array $generators, array $inputSubset)
+    private function optionsFromTheseGenerators(array $generators, array $inputSubset): ValueCollection
     {
+        if (!$inputSubset[0] instanceof Value) {
+            $inputSubset[0] = new Value($inputSubset[0]);
+        }
         $optionsForThisElement = $generators[0]->shrink($inputSubset[0]);
         // so that it can be used in combination with other shrunk elements
         $optionsForThisElement = $optionsForThisElement->add($inputSubset[0]);
-        $options = [];
+
+        $options = new ValueCollection();
         foreach ($optionsForThisElement as $value) {
-            $options[] = GeneratedValueSingle::fromValueAndInput(
-                [$value->unbox()],
-                [$value],
-                'tuple'
-            );
+            $options[] = new Value([$value->unbox()], [$value]);
         }
-        $options = new GeneratedValueOptions($options);
+
         if (count($generators) == 1) {
             return $options;
-        } else {
-            return $options->cartesianProduct(
-                $this->optionsFromTheseGenerators(
-                    array_slice($generators, 1),
-                    array_slice($inputSubset, 1)
-                ),
-                function (array $first, array $second) {
-                    return array_merge($first, $second);
-                }
-            );
         }
+
+        return $options->cartesianProduct(
+            $this->optionsFromTheseGenerators(
+                array_slice($generators, 1),
+                array_slice($inputSubset, 1)
+            ),
+            function (array $first, array $second) {
+                return array_merge($first, $second);
+            }
+        );
     }
 
-    public function shrink(GeneratedValue $tuple): GeneratedValue
+    /**
+     * @param Value<array> $tuple
+     * @return ValueCollection<array>
+     */
+    public function shrink(Value $tuple): ValueCollection
     {
         $input = $tuple->input();
 
-        return $this->optionsFromTheseGenerators($this->generators, $input)
-            ->remove($tuple);
+        return $this->optionsFromTheseGenerators($this->generators, $input)->remove($tuple);
     }
 
     /**

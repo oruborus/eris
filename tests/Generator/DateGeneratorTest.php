@@ -5,6 +5,7 @@ namespace Eris\Generator;
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
 use DateTime;
+use Eris\Value\Value;
 use PHPUnit\Framework\TestCase;
 
 class DateGeneratorTest extends TestCase
@@ -33,10 +34,7 @@ class DateGeneratorTest extends TestCase
         );
         $this->assertEquals(
             new DateTime("2014-01-01T16:00:00"),
-            $generator->shrink(GeneratedValueSingle::fromJustValue(
-                new DateTime("2014-01-02T08:00:00"),
-                'date'
-            ))->unbox()
+            $generator->shrink(new Value(new DateTime("2014-01-02T08:00:00")))->unbox()
         );
     }
 
@@ -46,12 +44,9 @@ class DateGeneratorTest extends TestCase
             $lowerLimit = new DateTime("2014-01-01T00:00:00"),
             new DateTime("2014-01-02T23:59:59")
         );
-        $value = GeneratedValueSingle::fromJustValue(
-            new DateTime("2014-01-01T00:01:00"),
-            'date'
-        );
+        $value = new Value(new DateTime("2014-01-01T00:01:00"));
         for ($i = 0; $i < 10; $i++) {
-            $value = $generator->shrink($value);
+            $value = $generator->shrink($value)->last();
         }
         $this->assertEquals(
             $lowerLimit,

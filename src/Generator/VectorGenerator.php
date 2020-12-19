@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 function vector(int $size, Generator $elementsGenerator): VectorGenerator
 {
@@ -30,17 +32,18 @@ class VectorGenerator implements Generator
     }
 
     /**
-     * @return GeneratedValue<mixed>
+     * @return Value<array>
      */
-    public function __invoke(int $size, RandomRange $rand): GeneratedValue
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         return $this->generator->__invoke($size, $rand);
     }
 
     /**
-     * @return GeneratedValue<mixed>
+     * @param Value<array> $vector
+     * @return ValueCollection<array>
      */
-    public function shrink(GeneratedValue $vector): GeneratedValue
+    public function shrink(Value $vector): ValueCollection
     {
         return $this->generator->shrink($vector);
     }

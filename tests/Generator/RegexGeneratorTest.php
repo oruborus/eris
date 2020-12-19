@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 use PHPUnit\Framework\TestCase;
 
 class RegexGeneratorTest extends TestCase
@@ -41,7 +43,7 @@ class RegexGeneratorTest extends TestCase
     public function testShrinkingIsNotImplementedYet()
     {
         $generator = new RegexGenerator(".*");
-        $word = GeneratedValueSingle::fromJustValue("something");
-        $this->assertEquals($word, $generator->shrink($word));
+        $word = new Value("something");
+        $this->assertEquals(new ValueCollection([$word]), $generator->shrink($word));
     }
 }

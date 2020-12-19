@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 /**
  * @psalm-suppress TypeDoesNotContainType
@@ -26,19 +28,22 @@ class SequenceGenerator implements Generator
         $this->singleElementGenerator = $singleElementGenerator;
     }
 
-    public function __invoke(int $size, RandomRange $rand)
+    /**
+     * @return Value<array>
+     */
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         $sequenceLength = $rand->rand(0, $size);
         return $this->vector($sequenceLength)->__invoke($size, $rand);
     }
 
     /**
-     * @param GeneratedValue<array> $sequence
-     * @return GeneratedValueOptions
+     * @param Value<array> $sequence
+     * @return ValueCollection<array>
      */
-    public function shrink(GeneratedValue $sequence)
+    public function shrink(Value $sequence): ValueCollection
     {
-        $options = [];
+        $options = new ValueCollection();
         if (count($sequence->unbox()) > 0) {
             $options[] = $this->shrinkInSize($sequence);
             // TODO: try to shrink the elements also of longer sequences
@@ -51,10 +56,14 @@ class SequenceGenerator implements Generator
             }
         }
 
-        return new GeneratedValueOptions($options);
+        return $options;
     }
 
-    private function shrinkInSize(GeneratedValue $sequence): GeneratedValue
+    /**
+     * @param Value<array> $sequence
+     * @return Value<array>
+     */
+    private function shrinkInSize(Value $sequence): Value
     {
         if (count($sequence->unbox()) === 0) {
             return $sequence;
@@ -64,27 +73,23 @@ class SequenceGenerator implements Generator
         $indexOfElementToRemove = array_rand($input);
         unset($input[$indexOfElementToRemove]);
         $input = array_values($input);
-        return GeneratedValueSingle::fromValueAndInput(
+
+        return new Value(
             array_map(
                 /**
-                 * @template T
-                 * @param GeneratedValue<T> $element
-                 * @return T
+                 * @return mixed
                  */
-                function ($element) {
-                    return $element->unbox();
-                },
+                fn (Value $element) => $element->unbox(),
                 $input
             ),
-            $input,
-            'sequence'
+            $input
         );
     }
 
     /**
-     * @return GeneratedValue
+     * @return ValueCollection<array>
      */
-    private function shrinkTheElements(GeneratedValue $sequence)
+    private function shrinkTheElements(Value $sequence): ValueCollection
     {
         return $this->vector(count($sequence->unbox()))->shrink($sequence);
     }

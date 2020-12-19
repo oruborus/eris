@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 function bool(): BooleanGenerator
 {
@@ -12,19 +14,23 @@ function bool(): BooleanGenerator
 
 class BooleanGenerator implements Generator
 {
-    public function __invoke(int $_size, RandomRange $rand)
+    /**
+     * @return Value<bool>
+     */
+    public function __invoke(int $_size, RandomRange $rand): Value
     {
         $booleanValues = [true, false];
         $randomIndex = $rand->rand(0, count($booleanValues) - 1);
 
-        return GeneratedValueSingle::fromJustValue($booleanValues[$randomIndex], 'boolean');
+        return new Value($booleanValues[$randomIndex]);
     }
 
     /**
-     * @return GeneratedValueSingle
+     * @param Value<bool> $element
+     * @return ValueCollection<bool>
      */
-    public function shrink(GeneratedValue $element)
+    public function shrink(Value $element): ValueCollection
     {
-        return GeneratedValueSingle::fromJustValue(false);
+        return new ValueCollection([new Value(false)]);
     }
 }

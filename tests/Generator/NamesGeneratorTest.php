@@ -4,6 +4,7 @@ namespace Eris\Generator;
 
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
+use Eris\Value\Value;
 use PHPUnit\Framework\TestCase;
 
 class NamesGeneratorTest extends TestCase
@@ -59,7 +60,7 @@ class NamesGeneratorTest extends TestCase
         $generator = NamesGenerator::defaultDataSet();
         $this->assertEquals(
             $shrunk,
-            $generator->shrink(GeneratedValueSingle::fromJustValue($original))->unbox()
+            $generator->shrink(new Value($original))->unbox()
         );
     }
 }

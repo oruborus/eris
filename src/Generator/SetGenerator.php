@@ -4,11 +4,13 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 /**
-                 * @param Generator $singleElementGenerator
-                 * @return SetGenerator
-                 */
+ * @param Generator $singleElementGenerator
+ * @return SetGenerator
+ */
 function set($singleElementGenerator)
 {
     return new SetGenerator($singleElementGenerator);
@@ -23,7 +25,10 @@ class SetGenerator implements Generator
         $this->singleElementGenerator = $singleElementGenerator;
     }
 
-    public function __invoke(int $size, RandomRange $rand)
+    /**
+     * @return Value<array>
+     */
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         $setSize = rand(0, $size);
         $set = [];
@@ -38,16 +43,18 @@ class SetGenerator implements Generator
             $set[] = $candidateNewElement->unbox();
             $input[] = $candidateNewElement;
         }
-        return GeneratedValueSingle::fromValueAndInput($set, $input, 'set');
+
+        return new Value($set, $input);
     }
 
     /**
-     * @return GeneratedValue
+     * @param Value<array> $set
+     * @return ValueCollection<array>
      */
-    public function shrink(GeneratedValue $set)
+    public function shrink(Value $set): ValueCollection
     {
         if (count($set->input()) === 0) {
-            return $set;
+            return new ValueCollection([$set]);
         }
 
         $input = $set->input();
@@ -56,20 +63,18 @@ class SetGenerator implements Generator
         $indexOfElementToRemove = array_rand($input);
         unset($input[$indexOfElementToRemove]);
         $input = array_values($input);
-        return GeneratedValueSingle::fromValueAndInput(
-            array_map(
-                /**
-                 * @template TValue
-                 * @param GeneratedValue<TValue> $element
-                 * @return TValue
-                 */
-                function (GeneratedValue $element) {
-                    return $element->unbox();
-                },
-                $input
-            ),
-            array_values($input),
-            'set'
-        );
+
+        return new ValueCollection([
+            new Value(
+                array_map(
+                    /**
+                     * @return mixed
+                     */
+                    fn (Value $element) => $element->unbox(),
+                    $input
+                ),
+                array_values($input),
+            )
+        ]);
     }
 }

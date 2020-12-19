@@ -4,8 +4,6 @@ namespace Eris;
 
 use BadMethodCallException;
 use DateInterval;
-use Eris\Generator\GeneratedValue;
-use InvalidArgumentException;
 use Eris\Listener\MinimumEvaluations;
 use Eris\Quantifier\ForAll;
 use Eris\Quantifier\TerminationCondition;
@@ -14,6 +12,7 @@ use Eris\Random\MtRandSource;
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
 use Eris\Shrinker\ShrinkerFactory;
+use Eris\Value\Value;
 use PHPUnit\Util\Test;
 
 trait TestTrait
@@ -250,7 +249,7 @@ trait TestTrait
         return Sample::of($generator, $this->randRange, $size)->repeat($times);
     }
 
-    public function sampleShrink(Generator $generator, ?GeneratedValue $fromValue = null, ?int $size = null): Sample
+    public function sampleShrink(Generator $generator, ?Value $fromValue = null, ?int $size = null): Sample
     {
         return Sample::of($generator, $this->randRange, $size)->shrink($fromValue);
     }

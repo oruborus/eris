@@ -38,7 +38,7 @@ class ChooseGeneratorTest extends TestCase
         $target = 10;
         $distance = abs($target - $value->unbox());
         for ($i = 0; $i < 190; $i++) {
-            $newValue = $generator->shrink($value);
+            $newValue = $generator->shrink($value)->last();
             $newDistance = abs($target - $newValue->unbox());
             $this->assertTrue(
                 $newDistance <= $distance,

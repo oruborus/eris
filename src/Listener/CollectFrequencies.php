@@ -2,7 +2,6 @@
 
 namespace Eris\Listener;
 
-use Eris\Generator\GeneratedValue;
 use Eris\Listener;
 use InvalidArgumentException;
 use Exception;
@@ -34,12 +33,12 @@ class CollectFrequencies extends EmptyListener implements Listener
                  * @return false|int|string
                  */
                 function (/*...*/) {
-                    /** @var mixed[] $generatedValues */
-                    $generatedValues = func_get_args();
-                    if (count($generatedValues) === 1) {
-                        $value = $generatedValues[0];
+                    /** @var mixed[] $values */
+                    $values = func_get_args();
+                    if (count($values) === 1) {
+                        $value = $values[0];
                     } else {
-                        $value = $generatedValues;
+                        $value = $values;
                     }
 
                     if (is_string($value) || is_integer($value)) {

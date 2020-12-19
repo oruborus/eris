@@ -5,6 +5,8 @@ namespace Eris\Generator;
 use Eris\Generator;
 use Eris\Random\RandomRange;
 use DateTime;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 /**
  * @param null|string|DateTime $lowerLimit
@@ -51,33 +53,29 @@ class DateGenerator implements Generator
         $this->intervalInSeconds = $upperLimit->getTimestamp() - $lowerLimit->getTimestamp();
     }
 
-    public function __invoke(int $_size, RandomRange $rand)
+    /**
+     * @return Value<DateTime>
+     */
+    public function __invoke(int $_size, RandomRange $rand): Value
     {
         $generatedOffset = $rand->rand(0, $this->intervalInSeconds);
-        return GeneratedValueSingle::fromJustValue(
-            $this->fromOffset($generatedOffset),
-            'date'
-        );
+
+        return new Value($this->fromOffset($generatedOffset));
     }
 
     /**
-     * @return GeneratedValueSingle
+     * @param Value<DateTime> $element
+     * @return ValueCollection<DateTime>
      */
-    public function shrink(GeneratedValue $element)
+    public function shrink(Value $element): ValueCollection
     {
         $timeOffset = $element->unbox()->getTimestamp() - $this->lowerLimit->getTimestamp();
         $halvedOffset = (int) floor($timeOffset / 2);
-        return GeneratedValueSingle::fromJustValue(
-            $this->fromOffset($halvedOffset),
-            'date'
-        );
+
+        return new ValueCollection([new Value($this->fromOffset($halvedOffset))]);
     }
 
-    /**
-     * @param integer $offset  seconds to be added to lower limit
-     * @return DateTime
-     */
-    private function fromOffset($offset)
+    private function fromOffset(int $offset): DateTime
     {
         $chosenTimestamp = $this->lowerLimit->getTimestamp() + $offset;
         $element = new DateTime();

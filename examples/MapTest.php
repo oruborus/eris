@@ -7,7 +7,7 @@ class MapTest extends TestCase
 {
     use Eris\TestTrait;
 
-    public function testApplyingAFunctionToGeneratedValues()
+    public function testApplyingAFunctionToValues()
     {
         $this->forAll(
             Generator\vector(

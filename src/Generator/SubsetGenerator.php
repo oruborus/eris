@@ -7,6 +7,8 @@ namespace Eris\Generator;
 use Eris\Quantifier\ForAll;
 use Eris\Random\RandomRange;
 use Eris\Generator;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 /**
  * @param array $input
@@ -26,7 +28,10 @@ class SubsetGenerator implements Generator
         $this->universe = $universe;
     }
 
-    public function __invoke(int $size, RandomRange $rand)
+    /**
+     * @return Value<array>
+     */
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         $relativeSize = $size / ForAll::DEFAULT_MAX_SIZE;
         $maximumSubsetIndex = (int) floor(pow(2, count($this->universe)) * $relativeSize);
@@ -40,26 +45,25 @@ class SubsetGenerator implements Generator
             }
         }
 
-        return GeneratedValueSingle::fromJustValue($subset, 'subset');
+        return new Value($subset);
     }
 
     /**
-     * @return GeneratedValue
+     * @param Value<array> $set
+     * @return ValueCollection<array>
      */
-    public function shrink(GeneratedValue $set)
+    public function shrink(Value $set): ValueCollection
     {
         // TODO: see SetGenerator::shrink()
         if (count($set->unbox()) === 0) {
-            return $set;
+            return new ValueCollection([$set]);
         }
 
         $input = $set->input();
-        // TODO: make deterministic by returning an array of GeneratedValues
+        // TODO: make deterministic by returning an array of Values
         $indexOfElementToRemove = array_rand($input);
         unset($input[$indexOfElementToRemove]);
-        return GeneratedValueSingle::fromJustValue(
-            array_values($input),
-            'subset'
-        );
+
+        return new ValueCollection([new Value(array_values($input))]);
     }
 }

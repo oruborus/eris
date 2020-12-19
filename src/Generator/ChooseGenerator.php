@@ -5,6 +5,8 @@ namespace Eris\Generator;
 use Eris\Generator;
 use InvalidArgumentException;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 if (!defined('ERIS_PHP_INT_MIN')) {
     define('ERIS_PHP_INT_MIN', ~PHP_INT_MAX);
@@ -43,26 +45,30 @@ class ChooseGenerator implements Generator
         );
     }
 
-    public function __invoke(int $_size, RandomRange $rand)
+    /**
+     * @return Value<int>
+     */
+    public function __invoke(int $_size, RandomRange $rand): Value
     {
         $value = $rand->rand($this->lowerLimit, $this->upperLimit);
 
-        return GeneratedValueSingle::fromJustValue($value, 'choose');
+        return new Value($value);
     }
 
     /**
-     * @return GeneratedValue
+     * @param Value<int> $element
+     * @return ValueCollection<int>
      */
-    public function shrink(GeneratedValue $element)
+    public function shrink(Value $element): ValueCollection
     {
         if ($element->input() > $this->shrinkTarget) {
-            return GeneratedValueSingle::fromJustValue($element->input() - 1);
+            return new ValueCollection([new Value($element->input() - 1)]);
         }
         if ($element->input() < $this->shrinkTarget) {
-            return GeneratedValueSingle::fromJustValue($element->input() + 1);
+            return new ValueCollection([new Value($element->input() + 1)]);
         }
 
-        return $element;
+        return new ValueCollection([$element]);
     }
 
     /**

@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 use InvalidArgumentException;
 
 function names(): NamesGenerator
@@ -13,7 +15,10 @@ function names(): NamesGenerator
 
 class NamesGenerator implements Generator
 {
-    private $list;
+    /**
+     * @var string[] $list
+     */
+    private array $list;
 
     /**
      * @link http://data.bfontaine.net/names/firstnames.txt
@@ -32,44 +37,51 @@ class NamesGenerator implements Generator
         );
     }
 
+    /**
+     * @param string[] $list
+     */
     public function __construct(array $list)
     {
         $this->list = $list;
     }
 
-    public function __invoke(int $size, RandomRange $rand)
+    /**
+     * @return Value<string>
+     */
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         $candidateNames = $this->filterDataSet(
             $this->lengthLessThanOrEqualTo($size)
         );
         if (!$candidateNames) {
-            return GeneratedValueSingle::fromJustValue('', 'names');
+            return new Value('');
         }
         $index = $rand->rand(0, count($candidateNames) - 1);
-        return GeneratedValueSingle::fromJustValue($candidateNames[$index], 'names');
+
+        return new Value($candidateNames[$index]);
     }
 
     /**
-     * @return GeneratedValue
+     * @param Value<string> $element
+     * @return ValueCollection<string>
      */
-    public function shrink(GeneratedValue $value)
+    public function shrink(Value $value): ValueCollection
     {
         $candidateNames = $this->filterDataSet(
             $this->lengthSlightlyLessThan(strlen($value->unbox()))
         );
 
         if (!$candidateNames) {
-            return $value;
+            return new ValueCollection([$value]);
         }
         $distances = $this->distancesBy($value->unbox(), $candidateNames);
-        return GeneratedValueSingle::fromJustValue($this->minimumDistanceName($distances), 'names');
+
+        return new ValueCollection([new Value($this->minimumDistanceName($distances))]);
     }
 
     /**
-     * @param callable(mixed, mixed=):scalar $predicate
-     * @return array
-     *
-     * @psalm-return list<mixed>
+     * @param callable(string):bool $predicate
+     * @return string[]
      */
     private function filterDataSet($predicate): array
     {
@@ -80,28 +92,20 @@ class NamesGenerator implements Generator
     }
 
     /**
-     * @return \Closure
-     *
-     * @psalm-return \Closure(mixed):bool
+     * @return callable(string):bool
      */
-    private function lengthLessThanOrEqualTo(int $size): \Closure
+    private function lengthLessThanOrEqualTo(int $size)
     {
-        return function ($name) use ($size) {
-            return strlen($name) <= $size;
-        };
+        return fn (string $name): bool => strlen($name) <= $size;
     }
 
     /**
-     * @return \Closure
-     *
-     * @psalm-return \Closure(mixed):bool
+     * @return callable(string):bool
      */
     private function lengthSlightlyLessThan(int $size): \Closure
     {
         $lowerLength = $size - 1;
-        return function ($name) use ($lowerLength) {
-            return strlen($name) === $lowerLength;
-        };
+        return fn (string $name): bool => strlen($name) === $lowerLength;
     }
 
     /**

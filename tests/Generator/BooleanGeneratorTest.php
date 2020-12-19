@@ -17,8 +17,8 @@ class BooleanGeneratorTest extends TestCase
     {
         $generator = new BooleanGenerator();
         for ($i = 0; $i < 10; $i++) {
-            $generatedValue = $generator($_size = 0, $this->rand);
-            $this->assertIsBool($generatedValue->unbox());
+            $value = $generator($_size = 0, $this->rand);
+            $this->assertIsBool($value->unbox());
         }
     }
 
@@ -26,8 +26,8 @@ class BooleanGeneratorTest extends TestCase
     {
         $generator = new BooleanGenerator();
         for ($i = 0; $i < 10; $i++) {
-            $generatedValue = $generator($_size = 10, $this->rand);
-            $this->assertFalse($generator->shrink($generatedValue)->unbox());
+            $value = $generator($_size = 10, $this->rand);
+            $this->assertFalse($generator->shrink($value)->unbox());
         }
     }
 }

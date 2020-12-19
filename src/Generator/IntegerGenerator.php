@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 /**
  * Generates a positive or negative integer (with absolute value bounded by
@@ -67,14 +69,13 @@ class IntegerGenerator implements Generator
      */
     public function __construct($mapFn = null)
     {
-        if (is_null($mapFn)) {
-            $this->mapFn = $this->identity();
-        } else {
-            $this->mapFn = $mapFn;
-        }
+        $this->mapFn = $mapFn ?? fn (int $n): int => $n;
     }
 
-    public function __invoke(int $size, RandomRange $rand)
+    /**
+     * @return Value<int>
+     */
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         $value = $rand->rand(0, $size);
         $mapFn = $this->mapFn;
@@ -82,16 +83,15 @@ class IntegerGenerator implements Generator
         $result = $rand->rand(0, 1) === 0
             ? $mapFn($value)
             : $mapFn($value * (-1));
-        return GeneratedValueSingle::fromJustValue(
-            $result,
-            'integer'
-        );
+
+        return new Value($result);
     }
 
     /**
-     * @return GeneratedValueOptions|GeneratedValueSingle
+     * @param Value<int> $element
+     * @return ValueCollection<int>
      */
-    public function shrink(GeneratedValue $element)
+    public function shrink(Value $element): ValueCollection
     {
         $mapFn = $this->mapFn;
         $element = $element->input();
@@ -100,33 +100,20 @@ class IntegerGenerator implements Generator
             $options = [];
             $nextHalf = $element;
             while (($nextHalf = (int) floor($nextHalf / 2)) > 0) {
-                $options[] = GeneratedValueSingle::fromJustValue(
-                    $mapFn($element - $nextHalf),
-                    'integer'
-                );
+                $options[] = new Value($mapFn($element - $nextHalf));
             }
             $options = array_unique($options, SORT_REGULAR);
             if ($options) {
-                return new GeneratedValueOptions($options);
+                return new ValueCollection($options);
             } else {
-                return GeneratedValueSingle::fromJustValue($mapFn($element - 1), 'integer');
+                return new ValueCollection([new Value($mapFn($element - 1))]);
             }
         }
         if ($element < 0) {
             // TODO: shrink with options also negative values
-            return GeneratedValueSingle::fromJustValue($mapFn($element + 1), 'integer');
+            return new ValueCollection([new Value($mapFn($element + 1))]);
         }
 
-        return GeneratedValueSingle::fromJustValue($element, 'integer');
-    }
-
-    /**
-     * @return callable(int):int
-     */
-    private function identity()
-    {
-        return function (int $n): int {
-            return $n;
-        };
+        return new ValueCollection([new Value($element)]);
     }
 }

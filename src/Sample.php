@@ -2,9 +2,8 @@
 
 namespace Eris;
 
-use Eris\Generator\GeneratedValue;
-use Eris\Generator\GeneratedValueOptions;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
 
 class Sample
 {
@@ -35,7 +34,7 @@ class Sample
         return $this;
     }
 
-    public function shrink(?GeneratedValue $nextValue = null): self
+    public function shrink(?Value $nextValue = null): self
     {
         $nextValue ??= $this->generator->__invoke($this->size, $this->rand);
 
@@ -45,7 +44,8 @@ class Sample
                 break;
             }
             $this->collected[] = $value->unbox();
-            $nextValue = GeneratedValueOptions::mostPessimisticChoice($value);
+
+            $nextValue = $value->last();
         }
         return $this;
     }

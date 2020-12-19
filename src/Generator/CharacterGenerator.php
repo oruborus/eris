@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 /**
  * Generates character in the ASCII 0-127 range.
@@ -51,17 +53,22 @@ class CharacterGenerator implements Generator
         $this->shrinkingProgression = ArithmeticProgression::discrete($this->lowerLimit);
     }
 
-    public function __invoke(int $_size, RandomRange $rand)
+    /**
+     * @return Value<string>
+     */
+    public function __invoke(int $_size, RandomRange $rand): Value
     {
-        return GeneratedValueSingle::fromJustValue(chr($rand->rand($this->lowerLimit, $this->upperLimit)), 'character');
+        return new Value(chr($rand->rand($this->lowerLimit, $this->upperLimit)));
     }
 
     /**
-     * @return GeneratedValueSingle
+     * @param Value<string> $element
+     * @return ValueCollection<string>
      */
-    public function shrink(GeneratedValue $element)
+    public function shrink(Value $element): ValueCollection
     {
         $shrinkedValue = chr($this->shrinkingProgression->next(ord($element->unbox())));
-        return GeneratedValueSingle::fromJustValue($shrinkedValue, 'character');
+
+        return new ValueCollection([new Value($shrinkedValue)]);
     }
 }

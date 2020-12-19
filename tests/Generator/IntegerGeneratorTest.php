@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 use PHPUnit\Framework\TestCase;
 
 class IntegerGeneratorTest extends TestCase
@@ -27,8 +29,7 @@ class IntegerGeneratorTest extends TestCase
         $generator = new IntegerGenerator();
         $value = $generator($this->size, $this->rand);
         for ($i = 0; $i < 20; $i++) {
-            $value = GeneratedValueOptions::mostPessimisticChoice($value);
-            $value = $generator->shrink($value);
+            $value = $generator->shrink($value)->last();
         }
         $this->assertSame(0, $value->unbox());
     }
@@ -36,16 +37,16 @@ class IntegerGeneratorTest extends TestCase
     public function testOffersMultiplePossibilitiesForShrinkingProgressivelySubtracting()
     {
         $generator = new IntegerGenerator();
-        $value = GeneratedValueSingle::fromJustValue(100, 'integer');
+        $value = new Value(100);
         $shrinkingOptions = $generator->shrink($value);
         $this->assertEquals(
-            new GeneratedValueOptions([
-                GeneratedValueSingle::fromJustValue(50, 'integer'),
-                GeneratedValueSingle::fromJustValue(75, 'integer'),
-                GeneratedValueSingle::fromJustValue(88, 'integer'),
-                GeneratedValueSingle::fromJustValue(94, 'integer'),
-                GeneratedValueSingle::fromJustValue(97, 'integer'),
-                GeneratedValueSingle::fromJustValue(99, 'integer'),
+            new ValueCollection([
+                new Value(50),
+                new Value(75),
+                new Value(88),
+                new Value(94),
+                new Value(97),
+                new Value(99),
             ]),
             $shrinkingOptions
         );
@@ -85,7 +86,7 @@ class IntegerGeneratorTest extends TestCase
         $generator = pos();
         $value = $generator->__invoke(10, $this->rand);
         for ($i = 0; $i < 20; $i++) {
-            $value = $generator->shrink(GeneratedValueOptions::mostPessimisticChoice($value));
+            $value = $generator->shrink($value)->last();
             $this->assertNotEquals(0, $value->unbox());
         }
     }
@@ -101,7 +102,7 @@ class IntegerGeneratorTest extends TestCase
         $generator = neg();
         $value = $generator->__invoke(10, $this->rand);
         for ($i = 0; $i < 20; $i++) {
-            $value = $generator->shrink(GeneratedValueOptions::mostPessimisticChoice($value));
+            $value = $generator->shrink($value)->last();
             $this->assertNotEquals(0, $value->unbox());
         }
     }

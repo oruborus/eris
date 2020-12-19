@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 /**
  * @param mixed $value  the only value to generate
@@ -13,16 +15,20 @@ function constant($value)
 {
     return ConstantGenerator::box($value);
 }
-
+/**
+ * @template TValue
+ */
 class ConstantGenerator implements Generator
 {
     /**
-     * @var mixed $value
+     * @var TValue $value
      */
     private $value;
 
     /**
-     * @param mixed $value
+     * @template TStaticValue
+     * @param TStaticValue $value
+     * @return self<TStaticValue>
      */
     public static function box($value): self
     {
@@ -30,23 +36,27 @@ class ConstantGenerator implements Generator
     }
 
     /**
-     * @param mixed $value
+     * @param TValue $value
      */
     public function __construct($value)
     {
         $this->value = $value;
     }
 
-    public function __invoke(int $_size, RandomRange $rand)
+    /**
+     * @return Value<TValue>
+     */
+    public function __invoke(int $_size, RandomRange $rand): Value
     {
-        return GeneratedValueSingle::fromJustValue($this->value, 'constant');
+        return new Value($this->value);
     }
 
     /**
-     * @return GeneratedValueSingle
+     * @param Value<TValue> $element
+     * @return ValueCOllection<TValue>
      */
-    public function shrink(GeneratedValue $element)
+    public function shrink(Value $element): ValueCollection
     {
-        return GeneratedValueSingle::fromJustValue($this->value, 'constant');
+        return new ValueCollection([new Value($this->value)]);
     }
 }

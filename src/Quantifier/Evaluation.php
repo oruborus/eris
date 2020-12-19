@@ -2,8 +2,7 @@
 
 namespace Eris\Quantifier;
 
-use Eris\Generator\GeneratedValue;
-use Eris\Generator\GeneratedValueOptions;
+use Eris\Value\Value;
 use PHPUnit\Framework\AssertionFailedError;
 
 /**
@@ -23,7 +22,7 @@ final class Evaluation
      * @var callable $onSuccess
      */
     private $onSuccess;
-    private GeneratedValue $values;
+    private Value $values;
 
     /**
      * @param callable $assertion
@@ -43,10 +42,10 @@ final class Evaluation
         };
         $this->onSuccess = function (): void {
         };
-        $this->values = new GeneratedValueOptions([]);
+        // $this->values = new Value();
     }
 
-    public function with(GeneratedValue $values): self
+    public function with(Value $values): self
     {
         $this->values = $values;
         return $this;

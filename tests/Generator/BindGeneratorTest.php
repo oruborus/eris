@@ -4,6 +4,7 @@ namespace Eris\Generator;
 
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
+use Eris\Value\ValueCollection;
 use PHPUnit\Framework\TestCase;
 
 class BindGeneratorTest extends TestCase
@@ -14,7 +15,7 @@ class BindGeneratorTest extends TestCase
         $this->rand = new RandomRange(new RandSource());
     }
 
-    public function testGeneratesAGeneratedValueObject()
+    public function testGeneratesAValueObject()
     {
         $generator = new BindGenerator(
             // TODO: order of parameters should be consistent with map, or not?
@@ -28,6 +29,7 @@ class BindGeneratorTest extends TestCase
 
     public function testShrinksTheOuterGenerator()
     {
+        // $this->markTestSkipped('Test fails in current configuration.');
         $generator = new BindGenerator(
             new ChooseGenerator(0, 5),
             function ($n) {
@@ -37,8 +39,9 @@ class BindGeneratorTest extends TestCase
         $value = $generator->__invoke($this->size, $this->rand);
         for ($i = 0; $i < 20; $i++) {
             $this->assertIsInt($value->unbox());
-            $value = $generator->shrink($value);
+            $value = $generator->shrink($value)->last();
         }
+
         $this->assertLessThanOrEqual(5, $value->unbox());
     }
 
@@ -74,16 +77,18 @@ class BindGeneratorTest extends TestCase
 
     public function testShrinkBindGeneratorWithCompositeValue()
     {
-        $bindGenerator     = new BindGenerator(
+        $bindGenerator = new BindGenerator(
             new ChooseGenerator(0, 5),
             function ($n) {
                 return new TupleGenerator([$n]);
             }
         );
-        $generatedValue    = $bindGenerator->__invoke($this->size, $this->rand);
-        $firstShrunkValue  = $bindGenerator->shrink($generatedValue);
-        $secondShrunkValue = $bindGenerator->shrink($firstShrunkValue);
-        $this->assertInstanceOf('\Eris\Generator\GeneratedValue', $secondShrunkValue);
+
+        $value             = $bindGenerator->__invoke($this->size, $this->rand);
+        $firstShrunkValue  = $bindGenerator->shrink($value);
+        $secondShrunkValue = $bindGenerator->shrink($firstShrunkValue->last());
+
+        $this->assertInstanceOf(ValueCollection::class, $secondShrunkValue);
     }
 
     private function assertIsAnArrayOfX0OrX1Elements(array $value)

@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 /**
  * @return AssociativeArrayGenerator
@@ -30,23 +32,37 @@ class AssociativeArrayGenerator implements Generator
         $this->tupleGenerator = new TupleGenerator(array_values($generators));
     }
 
-    public function __invoke(int $size, RandomRange $rand)
+    /**
+     * @return Value<array>
+     */
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         $tuple = $this->tupleGenerator->__invoke($size, $rand);
         return $this->mapToAssociativeArray($tuple);
     }
 
     /**
-     * @return GeneratedValue
+     * @param Value<array> $element
+     * @return ValueCollection<array>
      */
-    public function shrink(GeneratedValue $element)
+    public function shrink(Value $element): ValueCollection
     {
         $input = $element->input();
+
+        if (!$input instanceof Value) {
+            $input = new Value(array_values($input));
+        }
+
         $shrunkInput = $this->tupleGenerator->shrink($input);
         return $this->mapToAssociativeArray($shrunkInput);
     }
 
-    private function mapToAssociativeArray(GeneratedValue $tuple): GeneratedValue
+    /**
+     * @template TTuple of Value<array>|ValueCollection<array>
+     * @param TTuple $tuple
+     * @return TTuple
+     */
+    private function mapToAssociativeArray($tuple)
     {
         return $tuple->map(
             function (array $value): array {
@@ -57,8 +73,7 @@ class AssociativeArrayGenerator implements Generator
                     $associativeArray[$key] = $value[$i];
                 }
                 return $associativeArray;
-            },
-            'associative'
+            }
         );
     }
 }

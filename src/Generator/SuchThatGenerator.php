@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 use LogicException;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
@@ -44,7 +46,7 @@ class SuchThatGenerator implements Generator
         $this->maximumAttempts = $maximumAttempts;
     }
 
-    public function __invoke(int $size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         $value = $this->generator->__invoke($size, $rand);
         $attempts = 0;
@@ -58,31 +60,26 @@ class SuchThatGenerator implements Generator
         return $value;
     }
 
-    /**
-     * @return GeneratedValue
-     */
-    public function shrink(GeneratedValue $value)
+    public function shrink(Value $value): ValueCollection
     {
         $shrunk = $this->generator->shrink($value);
         $attempts = 0;
-        $filtered = [];
-        while (!($filtered = $this->filterForPredicate($shrunk))) {
+
+        $filtered = new ValueCollection();
+        while (!count($filtered = $this->filterForPredicate($shrunk))) {
             if ($attempts >= $this->maximumAttempts) {
-                return $value;
+                return new ValueCollection([$value]);
             }
-            $shrunk = $this->generator->shrink($shrunk);
+            $shrunk = $this->generator->shrink($shrunk->last());
             $attempts++;
         }
-        return new GeneratedValueOptions($filtered);
+
+        return $filtered;
     }
 
-    /**
-     * @param GeneratedValueSingle[]|GeneratedValue $options
-     * @return GeneratedValue[]
-     */
-    private function filterForPredicate($options)
+    private function filterForPredicate(ValueCollection $options): ValueCollection
     {
-        $goodOnes = [];
+        $goodOnes = new ValueCollection();
         foreach ($options as $option) {
             if ($this->predicate($option)) {
                 $goodOnes[] = $option;
@@ -91,7 +88,7 @@ class SuchThatGenerator implements Generator
         return $goodOnes;
     }
 
-    private function predicate(GeneratedValue $value): bool
+    private function predicate(Value $value): bool
     {
         if ($this->filter instanceof Constraint) {
             try {

@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 function string(): StringGenerator
 {
@@ -12,7 +14,10 @@ function string(): StringGenerator
 
 class StringGenerator implements Generator
 {
-    public function __invoke(int $size, RandomRange $rand)
+    /**
+     * @return Value<string>
+     */
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         $length = $rand->rand(0, $size);
 
@@ -20,20 +25,18 @@ class StringGenerator implements Generator
         for ($i = 0; $i < $length; $i++) {
             $built .= chr($rand->rand(33, 126));
         }
-        return GeneratedValueSingle::fromJustValue($built, 'string');
+        return new Value($built);
     }
 
     /**
-     * @return GeneratedValue
+     * @param Value<string> $element
+     * @return ValueCollection<string>
      */
-    public function shrink(GeneratedValue $element)
+    public function shrink(Value $element): ValueCollection
     {
         if ($element->unbox() === '') {
-            return $element;
+            return new ValueCollection([$element]);
         }
-        return GeneratedValueSingle::fromJustValue(
-            substr($element->unbox(), 0, -1),
-            'string'
-        );
+        return new ValueCollection([new Value(substr($element->unbox(), 0, -1))]);
     }
 }

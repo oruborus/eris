@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 function elements(/*$a, $b, ...*/): ElementsGenerator
 {
@@ -30,17 +32,21 @@ class ElementsGenerator implements Generator
         $this->domain = $domain;
     }
 
-    public function __invoke(int $_size, RandomRange $rand)
+    /**
+     * @return Value<mixed>
+     */
+    public function __invoke(int $_size, RandomRange $rand): Value
     {
         $index = $rand->rand(0, count($this->domain) - 1);
-        return GeneratedValueSingle::fromJustValue($this->domain[$index], 'elements');
+        return new Value($this->domain[$index]);
     }
 
     /**
-     * @return GeneratedValue
+     * @param Value<mixed> $element
+     * @return ValueCollection<mixed>
      */
-    public function shrink(GeneratedValue $element)
+    public function shrink(Value $element): ValueCollection
     {
-        return $element;
+        return new ValueCollection([$element]);
     }
 }

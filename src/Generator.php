@@ -2,7 +2,9 @@
 
 namespace Eris;
 
-use Eris\Generator\GeneratedValue;
+use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 /**
  * @template TValue
@@ -13,18 +15,18 @@ interface Generator
 {
     /**
      * @param int The generation size
-     * @param Random\RandomRange $rand
-     * @return GeneratedValue<TValue>
+     * @param RandomRange $rand
+     * @return Value<TValue>
      */
-    public function __invoke(int $size, Random\RandomRange $rand);
+    public function __invoke(int $size, RandomRange $rand);
 
     /**
      * The conditions for terminating are either:
-     * - returning the same GeneratedValueSingle passed in
-     * - returning an empty GeneratedValueOptions
+     * - returning the same Value passed in
+     * - returning an empty ValueCollection
      *
-     * @param GeneratedValue<TValue> $element
-     * @return GeneratedValue<TValue>
+     * @param Value<TValue> $element
+     * @return ValueCollection<TValue>
      */
-    public function shrink(GeneratedValue $element);
+    public function shrink(Value $element);
 }

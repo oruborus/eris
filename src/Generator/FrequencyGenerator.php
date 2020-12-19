@@ -5,13 +5,14 @@ namespace Eris\Generator;
 use Eris\Generator;
 use InvalidArgumentException;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 use Exception;
 
 /**
- * @return FrequencyGenerator
- */
+             * @return FrequencyGenerator
+             */
 function frequency(/*$frequencyAndGenerator, $frequencyAndGenerator, ...*/)
-
 {
     return new FrequencyGenerator(func_get_args());
 }
@@ -55,38 +56,42 @@ class FrequencyGenerator implements Generator
         );
     }
 
-    public function __invoke(int $size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         list($index, $generator) = $this->pickFrom($this->generators, $rand);
         $originalValue = $generator->__invoke($size, $rand);
-        return GeneratedValueSingle::fromValueAndInput(
+
+        return new Value(
             $originalValue->unbox(),
             [
                 'value' => $originalValue,
                 'generator' => $index,
-            ],
-            'frequency'
+            ]
         );
     }
 
-    /**
-     * @return GeneratedValueSingle
-     */
-    public function shrink(GeneratedValue $element)
+    public function shrink(Value $element): ValueCollection
     {
+        /**
+         * @var array{"generator": string, "value": Value} $input
+         */
         $input = $element->input();
         $originalGeneratorIndex = $input['generator'];
-        $shrinkedValue = $this->generators[$originalGeneratorIndex]['generator']->shrink($input['value']);
+        $shrinkedValue = $this
+            ->generators[$originalGeneratorIndex]['generator']
+            ->shrink($input['value'])
+            ->last();
 
         // TODO: take advantage of multiple shrinking
-        return GeneratedValueSingle::fromValueAndInput(
-            $shrinkedValue->unbox(),
-            [
-                'value' => $shrinkedValue,
-                'generator' => $originalGeneratorIndex,
-            ],
-            'frequency'
-        );
+        return new ValueCollection([
+            new Value(
+                $shrinkedValue->unbox(),
+                [
+                    'value' => $shrinkedValue,
+                    'generator' => $originalGeneratorIndex,
+                ]
+            )
+        ]);
     }
 
     /**

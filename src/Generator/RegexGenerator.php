@@ -5,6 +5,8 @@ namespace Eris\Generator;
 use BadFunctionCallException;
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 use ReverseRegex\Lexer;
 use ReverseRegex\Random\SimpleRandom;
 use ReverseRegex\Parser;
@@ -35,7 +37,10 @@ class RegexGenerator implements Generator
         $this->expression = $expression;
     }
 
-    public function __invoke(int $_size, RandomRange $rand)
+    /**
+     * @return Value<string>
+     */
+    public function __invoke(int $_size, RandomRange $rand): Value
     {
         $lexer = new Lexer($this->expression);
         $gen   = new SimpleRandom($rand->rand());
@@ -44,14 +49,15 @@ class RegexGenerator implements Generator
         $parser = new Parser($lexer, new Scope(), new Scope());
         $parser->parse()->getResult()->generate($result, $gen);
 
-        return GeneratedValueSingle::fromJustValue($result, 'regex');
+        return new Value($result);
     }
 
     /**
-     * @return GeneratedValue
+     * @param Value<string> $value
+     * @return ValueCollection<string>
      */
-    public function shrink(GeneratedValue $value)
+    public function shrink(Value $value): ValueCollection
     {
-        return $value;
+        return new ValueCollection([$value]);
     }
 }

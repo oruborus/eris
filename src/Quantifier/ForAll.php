@@ -4,8 +4,6 @@ namespace Eris\Quantifier;
 
 use Eris\Antecedent;
 use Eris\Generator;
-use Eris\Generator\GeneratedValue;
-use Eris\Generator\GeneratedValueSingle;
 use Eris\Generator\SkipValueException;
 use Eris\Shrinker\ShrinkerFactory;
 use BadMethodCallException;
@@ -16,6 +14,7 @@ use Throwable;
 use RuntimeException;
 use Eris\Listener;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
 
 class ForAll
 {
@@ -140,20 +139,16 @@ class ForAll
                 try {
                     foreach ($this->generators as $name => $generator) {
                         $value = $generator($sizes->at($iteration), $this->rand);
-                        if (!($value instanceof GeneratedValueSingle)) {
-                            throw new RuntimeException("The value returned by a generator should be an instance of GeneratedValueSingle, but it is " . var_export($value, true));
-                        }
+                        // if (!($value instanceof ValueCollection)) {
+                        //     throw new RuntimeException("The value returned by a generator should be an instance of Value, but it is " . var_export($value, true));
+                        // }
                         $generatedValues[] = $value;
                         $values[] = $value->unbox();
                     }
                 } catch (SkipValueException $e) {
                     continue;
                 }
-                $generation = GeneratedValueSingle::fromValueAndInput(
-                    $values,
-                    $generatedValues,
-                    'tuple'
-                );
+                $generation = new Value($values, $generatedValues);
                 $this->notifyListeners('newGeneration', $generation->unbox(), $iteration);
 
                 if (!$this->antecedentsAreSatisfied($values)) {
@@ -164,7 +159,7 @@ class ForAll
                 Evaluation::of($assertion)
                     // TODO: coupling between here and the TupleGenerator used inside?
                     ->with($generation)
-                    ->onFailure(function (GeneratedValue $generatedValues, Throwable $exception) use ($assertion): void {
+                    ->onFailure(function (Value $generatedValues, Throwable $exception) use ($assertion): void {
                         $this->notifyListeners('failure', $generatedValues->unbox(), $exception);
                         if (!$this->shrinkingEnabled) {
                             throw $exception;
@@ -173,10 +168,10 @@ class ForAll
                         $shrinking = $this->shrinkerFactory->$shrinkerFactoryMethod($this->generators, $assertion);
                         // MAYBE: put into ShrinkerFactory?
                         $shrinking
-                            ->addGoodShrinkCondition(function (GeneratedValueSingle $generatedValues) {
+                            ->addGoodShrinkCondition(function (Value $generatedValues) {
                                 return $this->antecedentsAreSatisfied($generatedValues->unbox());
                             })
-                            ->onAttempt(function (GeneratedValueSingle $generatedValues) {
+                            ->onAttempt(function (Value $generatedValues) {
                                 $this->notifyListeners('shrinking', $generatedValues->unbox());
                             })
                             ->from($generatedValues, $exception);

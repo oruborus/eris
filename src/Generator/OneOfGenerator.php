@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 /**
  * @return OneOfGenerator
@@ -25,12 +27,12 @@ class OneOfGenerator implements Generator
         $this->generator = new FrequencyGenerator($this->allWithSameFrequency($generators));
     }
 
-    public function __invoke(int $size, RandomRange $rand)
+    public function __invoke(int $size, RandomRange $rand): Value
     {
         return $this->generator->__invoke($size, $rand);
     }
 
-    public function shrink(GeneratedValue $element)
+    public function shrink(Value $element): ValueCollection
     {
         return $this->generator->shrink($element);
     }

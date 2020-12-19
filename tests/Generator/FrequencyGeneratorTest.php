@@ -104,7 +104,7 @@ class FrequencyGeneratorTest extends TestCase
         for ($i = 0; $i < 100; $i++) {
             $element = $generator($this->size, $this->rand);
             for ($j = 0; $j < 100; $j++) {
-                $element = $generator->shrink($element);
+                $element = $generator->shrink($element)->last();
             }
             $shrinkedTable[$element->unbox()] = true;
         }

@@ -7,7 +7,7 @@ class BindTest extends TestCase
 {
     use Eris\TestTrait;
 
-    public function testCreatingABrandNewGeneratorFromAGeneratedValueSingle()
+    public function testCreatingABrandNewGeneratorFromAValue()
     {
         $this->forAll(
             Generator\bind(

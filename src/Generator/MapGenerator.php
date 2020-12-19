@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Generator;
 use Eris\Random\RandomRange;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 
 /**
  * TODO: support calls like ($function . $generator)
@@ -31,22 +33,23 @@ class MapGenerator implements Generator
         $this->generator = $generator;
     }
 
-    public function __invoke(int $_size, RandomRange $rand)
+    public function __invoke(int $_size, RandomRange $rand): Value
     {
         $input = $this->generator->__invoke($_size, $rand);
-        return $input->map(
-            $this->map,
-            'map'
-        );
+
+        return $input->map($this->map);
     }
 
-    public function shrink(GeneratedValue $value)
+    public function shrink(Value $value): ValueCollection
     {
         $input = $value->input();
+
+        if (!$input instanceof Value) {
+            $input = new Value($input);
+        }
+
         $shrunkInput = $this->generator->shrink($input);
-        return $shrunkInput->map(
-            $this->map,
-            'map'
-        );
+
+        return $shrunkInput->map($this->map);
     }
 }

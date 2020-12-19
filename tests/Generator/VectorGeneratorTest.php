@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 
 class VectorGeneratorTest extends TestCase
 {
+    private VectorGenerator $vectorGenerator;
+
     protected function setUp(): void
     {
         $this->vectorSize = rand(5, 10);
@@ -40,8 +42,7 @@ class VectorGeneratorTest extends TestCase
 
         $previousSum = array_reduce($vector->unbox(), $this->sum);
         for ($i = 0; $i < 15; $i++) {
-            $vector = GeneratedValueOptions::mostPessimisticChoice($vector);
-            $vector = $generator->shrink($vector);
+            $vector = $generator->shrink($vector)->last();
             $currentSum = array_reduce($vector->unbox(), $this->sum);
             $this->assertLessThanOrEqual($previousSum, $currentSum);
             $previousSum = $currentSum;

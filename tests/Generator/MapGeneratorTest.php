@@ -14,7 +14,7 @@ class MapGeneratorTest extends TestCase
         $this->rand = new RandomRange(new RandSource());
     }
 
-    public function testGeneratesAGeneratedValueObject()
+    public function testGeneratesAValueObject()
     {
         $generator = new MapGenerator(
             function ($n) {
@@ -38,9 +38,10 @@ class MapGeneratorTest extends TestCase
         );
         $element = $generator->__invoke($this->size, $this->rand);
         $elementAfterShrink = $generator->shrink($element);
-        $this->assertTrue(
-            $elementAfterShrink->unbox() <= $element->unbox(),
-            "Element should have diminished in size"
-        );
+
+        $actual = $elementAfterShrink->unbox();
+        $expected = $element->unbox();
+
+        $this->assertLessThanOrEqual($expected, $actual, "Element should have diminished in size");
     }
 }

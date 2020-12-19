@@ -4,6 +4,7 @@ namespace Eris\Generator;
 
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
+use Eris\Value\Value;
 use PHPUnit\Framework\TestCase;
 
 class SuchThatGeneratorTest extends TestCase
@@ -14,7 +15,7 @@ class SuchThatGeneratorTest extends TestCase
         $this->rand = new RandomRange(new RandSource());
     }
 
-    public function testGeneratesAGeneratedValueObject()
+    public function testGeneratesAValueObject()
     {
         $generator = new SuchThatGenerator(
             function ($n) {
@@ -53,8 +54,10 @@ class SuchThatGeneratorTest extends TestCase
         $element = $generator->__invoke($this->size, $this->rand);
         for ($i = 0; $i < 100; $i++) {
             $element = $generator->shrink($element)->last();
-            $this->assertTrue(
-                $element->unbox() % 2 === 0,
+
+            $this->assertSame(
+                0,
+                $element->unbox() % 2,
                 "Element should still be filtered while shrinking: " . var_export($element, true)
             );
         }
@@ -80,10 +83,10 @@ class SuchThatGeneratorTest extends TestCase
             },
             new ChooseGenerator(0, 1000)
         );
-        $unshrinkable = GeneratedValueSingle::fromJustValue(470);
+        $unshrinkable = new Value(470);
         $this->assertEquals(
             $unshrinkable,
-            $generator->shrink($unshrinkable)
+            $generator->shrink($unshrinkable)->last()
         );
     }
 
@@ -95,7 +98,7 @@ class SuchThatGeneratorTest extends TestCase
             },
             new IntegerGenerator()
         );
-        $element = GeneratedValueSingle::fromJustValue(100);
+        $element = new Value(100);
         $options = $generator->shrink($element);
         foreach ($options as $option) {
             $this->assertTrue(
@@ -113,7 +116,7 @@ class SuchThatGeneratorTest extends TestCase
             },
             new IntegerGenerator()
         );
-        $unshrinkable = GeneratedValueSingle::fromJustValue(470);
+        $unshrinkable = new Value(470);
         $options = $generator->shrink($unshrinkable);
         $this->assertGreaterThan(0, count($options));
         foreach ($options as $option) {

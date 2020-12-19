@@ -4,6 +4,7 @@ namespace Eris\Generator;
 
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
+use Eris\Value\Value;
 use PHPUnit\Framework\TestCase;
 
 class TupleGeneratorTest extends TestCase
@@ -97,15 +98,11 @@ class TupleGeneratorTest extends TestCase
         $generator = new TupleGenerator([
             new IntegerGenerator()
         ]);
-        $value = GeneratedValueSingle::fromValueAndInput(
-            [100],
-            [GeneratedValueSingle::fromJustValue(100, 'integer')],
-            'tuple'
-        );
+        $value = new Value([100], [new Value(100)]);
         $shrunk = $generator->shrink($value);
         $this->assertGreaterThan(1, $shrunk->count());
         foreach ($shrunk as $option) {
-            $this->assertEquals('tuple', $option->generatorName());
+            // $this->assertEquals('tuple', $option->generatorName());
             $optionValue = $option->unbox();
             $this->assertIsArray($optionValue);
             $this->assertEquals(1, count($optionValue));
@@ -121,19 +118,18 @@ class TupleGeneratorTest extends TestCase
             new StringGenerator(),
             new StringGenerator(),
         ]);
-        $value = GeneratedValueSingle::fromValueAndInput(
+        $value = new Value(
             ['hello', 'world'],
             [
-                GeneratedValueSingle::fromJustValue('hello', 'string'),
-                GeneratedValueSingle::fromJustValue('world', 'string'),
-            ],
-            'tuple'
+                new Value('hello'),
+                new Value('world'),
+            ]
         );
         $shrunk = $generator->shrink($value);
         // shrinking (a), (b) or (a and b)
         $this->assertEquals(3, $shrunk->count());
         foreach ($shrunk as $option) {
-            $this->assertEquals('tuple', $option->generatorName());
+            // $this->assertEquals('tuple', $option->generatorName());
             $optionValue = $option->unbox();
             $this->assertIsArray($optionValue);
             $this->assertEquals(2, count($optionValue));
@@ -153,18 +149,17 @@ class TupleGeneratorTest extends TestCase
             new IntegerGenerator(),
             new IntegerGenerator(),
         ]);
-        $value = GeneratedValueSingle::fromValueAndInput(
+        $value = new Value(
             [100, 200],
             [
-                GeneratedValueSingle::fromJustValue(100, 'integer'),
-                GeneratedValueSingle::fromJustValue(200, 'integer'),
-            ],
-            'tuple'
+                new Value(100),
+                new Value(200),
+            ]
         );
         $shrunk = $generator->shrink($value);
         $this->assertGreaterThan(1, $shrunk->count());
         foreach ($shrunk as $option) {
-            $this->assertEquals('tuple', $option->generatorName());
+            // $this->assertEquals('tuple', $option->generatorName());
             $optionValue = $option->unbox();
             $this->assertIsArray($optionValue);
             $this->assertEquals(2, count($optionValue));

@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 use PHPUnit\Framework\TestCase;
 
 class CharacterGeneratorTest extends TestCase
@@ -18,8 +20,8 @@ class CharacterGeneratorTest extends TestCase
     {
         $generator = CharacterGenerator::ascii();
         for ($i = 0; $i < 100; $i++) {
-            $generatedValue = $generator($this->size, $this->rand);
-            $value = $generatedValue->unbox();
+            $value = $generator($this->size, $this->rand);
+            $value = $value->unbox();
             $this->assertEquals(1, strlen($value));
             $this->assertGreaterThanOrEqual(0, ord($value));
             $this->assertLessThanOrEqual(127, ord($value));
@@ -30,8 +32,8 @@ class CharacterGeneratorTest extends TestCase
     {
         $generator = CharacterGenerator::printableAscii();
         for ($i = 0; $i < 100; $i++) {
-            $generatedValue = $generator($this->size, $this->rand);
-            $value = $generatedValue->unbox();
+            $value = $generator($this->size, $this->rand);
+            $value = $value->unbox();
             $this->assertEquals(1, strlen($value));
             $this->assertGreaterThanOrEqual(32, ord($value));
             $this->assertLessThanOrEqual(127, ord($value));
@@ -41,13 +43,13 @@ class CharacterGeneratorTest extends TestCase
     public function testCharacterGeneratorsShrinkByConventionToTheLowestCodePoint()
     {
         $generator = CharacterGenerator::ascii();
-        $this->assertEquals('@', $generator->shrink(GeneratedValueSingle::fromJustValue('A', 'character'))->unbox());
+        $this->assertEquals('@', $generator->shrink(new Value('A'))->unbox());
     }
 
     public function testTheLowestCodePointCannotBeShrunk()
     {
         $generator = new CharacterGenerator(65, 90);
-        $lowest = GeneratedValueSingle::fromJustValue('A', 'character');
-        $this->assertEquals($lowest, $generator->shrink($lowest));
+        $lowest = new Value('A');
+        $this->assertEquals(new ValueCollection([$lowest]), $generator->shrink($lowest));
     }
 }

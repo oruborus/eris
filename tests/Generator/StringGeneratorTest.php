@@ -4,6 +4,7 @@ namespace Eris\Generator;
 
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
+use Eris\Value\Value;
 use PHPUnit\Framework\TestCase;
 
 class StringGeneratorTest extends TestCase
@@ -44,14 +45,14 @@ class StringGeneratorTest extends TestCase
     {
         $generator = new StringGenerator();
         $lastValue = $generator($size = 10, $this->rand);
-        $this->assertSame('abcde', $generator->shrink(GeneratedValueSingle::fromJustValue('abcdef'))->unbox());
+        $this->assertSame('abcde', $generator->shrink(new Value('abcdef'))->unbox());
     }
 
     public function testCannotShrinkTheEmptyString()
     {
         $generator = new StringGenerator();
-        $minimumValue = GeneratedValueSingle::fromJustValue('');
-        $this->assertEquals($minimumValue, $generator->shrink($minimumValue));
+        $minimumValue = new Value('');
+        $this->assertEquals($minimumValue, $generator->shrink($minimumValue)->last());
     }
 
     private function accumulateLengths(array $lengths, $length)

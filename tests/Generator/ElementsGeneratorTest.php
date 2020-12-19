@@ -4,6 +4,8 @@ namespace Eris\Generator;
 
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
+use Eris\Value\Value;
+use Eris\Value\ValueCollection;
 use PHPUnit\Framework\TestCase;
 
 class ElementsGeneratorTest extends TestCase
@@ -30,7 +32,8 @@ class ElementsGeneratorTest extends TestCase
     public function testASingleValueCannotShrinkGivenThereIsNoExplicitRelationshipBetweenTheValuesInTheDomain()
     {
         $generator = ElementsGenerator::fromArray(['A', 2, false]);
-        $singleValue = GeneratedValueSingle::fromJustValue(2, 'elements');
-        $this->assertEquals($singleValue, $generator->shrink($singleValue));
+        $singleValue = new Value(2);
+        $expected = new ValueCollection([$singleValue]);
+        $this->assertEquals($expected, $generator->shrink($singleValue));
     }
 }

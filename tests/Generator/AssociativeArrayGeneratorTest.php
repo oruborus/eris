@@ -48,8 +48,7 @@ class AssociativeArrayGeneratorTest extends TestCase
         $value = $generator($this->size, $this->rand);
 
         for ($i = 0; $i < 100; $i++) {
-            $value = GeneratedValueOptions::mostPessimisticChoice($value);
-            $value = $generator->shrink($value);
+            $value = $generator->shrink($value)->last();
             $array = $value->unbox();
             $this->assertEquals(2, count($array));
             $this->assertEquals(

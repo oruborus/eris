@@ -3,13 +3,12 @@
 namespace Eris\Shrinker;
 
 use Eris\Generator;
-use Eris\Generator\GeneratedValue;
-use Eris\Generator\GeneratedValueSingle;
-use Eris\Generator\GeneratedValueOptions;
 use Eris\Generator\TupleGenerator;
 use Eris\Quantifier\Evaluation;
 use Eris\Shrinker;
+use Eris\Value\Value;
 use Throwable;
+use Eris\Value\ValueCollection;
 
 class Multiple implements Shrinker
 {
@@ -66,27 +65,20 @@ class Multiple implements Shrinker
     /**
      * Precondition: $values should fail $this->assertion
      */
-    public function from(GeneratedValue $elements, Throwable $exception): void
+    public function from(Value $elements, Throwable $exception): void
     {
-        /**
-         * @var GeneratedValue[] $branches
-         */
-        $branches = [];
+        $branches = new ValueCollection();
 
-        $shrink = function (GeneratedValue $elements) use (&$elementsAfterShrink, &$branches): array {
-            $branches = [];
+        $shrink = function (Value $elements) use (&$elementsAfterShrink, &$branches): ValueCollection {
+            $branches = new ValueCollection();
             $elementsAfterShrink = $this->generator->shrink($elements);
-            if ($elementsAfterShrink instanceof GeneratedValueOptions) {
-                foreach ($elementsAfterShrink as $each) {
-                    $branches[] = $each;
-                }
-            } else {
-                $branches[] = $elementsAfterShrink;
+            foreach ($elementsAfterShrink as $each) {
+                $branches[] = $each;
             }
             return $branches;
         };
 
-        $onGoodShrink = function (GeneratedValue $elementsAfterShrink, Throwable $exceptionAfterShrink) use (&$elements, &$exception, &$branches, $shrink): void {
+        $onGoodShrink = function (Value $elementsAfterShrink, Throwable $exceptionAfterShrink) use (&$elements, &$exception, &$branches, $shrink): void {
             $elements = $elementsAfterShrink;
             $exception = $exceptionAfterShrink;
             $branches = $shrink($elements);
@@ -94,7 +86,15 @@ class Multiple implements Shrinker
 
         $this->timeLimit->start();
         $shrink($elements);
-        while ($elementsAfterShrink = array_shift($branches)) {
+        while (true) {
+
+            if (count($branches) === 0) {
+                break;
+            }
+
+            $elementsAfterShrink = $branches->first();
+            $branches->remove($elementsAfterShrink);
+
             if ($this->timeLimit->hasBeenReached()) {
                 throw new \RuntimeException(
                     "Eris has reached the time limit for shrinking ($this->timeLimit), here it is presenting the simplest failure case." . PHP_EOL
@@ -128,7 +128,7 @@ class Multiple implements Shrinker
         throw $exception;
     }
 
-    private function checkGoodShrinkConditions(GeneratedValue $values): bool
+    private function checkGoodShrinkConditions(Value $values): bool
     {
         foreach ($this->goodShrinkConditions as $condition) {
             if (!$condition($values)) {

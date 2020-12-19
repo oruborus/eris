@@ -2,7 +2,6 @@
 
 namespace Eris\Listener;
 
-use Eris\Generator\GeneratedValueSingle;
 use LogicException;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;

@@ -3,8 +3,7 @@
 namespace Eris\Shrinker;
 
 use Eris\Generator\IntegerGenerator;
-use Eris\Generator\GeneratedValueSingle;
-use Eris\Generator\GeneratedValueOptions;
+use Eris\Value\Value;
 use RuntimeException;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit_Framework_AssertionFailedError;
@@ -46,12 +45,12 @@ class MultipleTest extends TestCase
     {
         try {
             $this->shrinker->from(
-                GeneratedValueSingle::fromValueAndInput(
+                new Value(
                     [
                         $startingPoint
                     ],
                     [
-                        GeneratedValueSingle::fromJustValue($startingPoint, 'integer')
+                        new Value($startingPoint)
                     ]
                 ),
                 new RuntimeException()
@@ -66,8 +65,8 @@ class MultipleTest extends TestCase
     private function verifyAssertionFailure(Exception $e, $startingPoint)
     {
         $this->assertEquals("Failed asserting that 5001 is equal to 5000 or is less than 5000.", $e->getMessage());
-        $allValues = array_map(function ($generatedValue) {
-            return $generatedValue->unbox();
+        $allValues = array_map(function ($value) {
+            return $value->unbox();
         }, $this->attempts);
         $linearShrinkingAttempts = $startingPoint - 5000;
         $this->assertLessThan(0.2 * $linearShrinkingAttempts, count($allValues));

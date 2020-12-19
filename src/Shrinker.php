@@ -2,11 +2,9 @@
 
 namespace Eris;
 
-use Eris\Generator\GeneratedValueSingle;
-use Eris\Generator\TupleGenerator;
 use Eris\Shrinker\TimeLimit;
-
-use \Throwable;
+use Eris\Value\Value;
+use Throwable;
 
 /**
  * @private  this interface is not stable yet and may change in the future
@@ -16,11 +14,11 @@ interface Shrinker
     /**
      * Use its assertion to rethrow the minimal assertion failure derived
      * from shrinking $elements.
-     * $elements contains an array of GeneratedValueSingle objects corresponding
+     * $elements contains an array of Value objects corresponding
      * to the elements that lead to the original failure of the assertion.
      * @throws Throwable
      */
-    public function from(GeneratedValueSingle $elements, Throwable $exception): void;
+    public function from(Value $elements, Throwable $exception): void;
 
     /**
      * Configuration: allows specifying a time limit that should stop
