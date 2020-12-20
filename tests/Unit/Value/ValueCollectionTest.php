@@ -12,7 +12,6 @@ use Stringable;
 use function array_map;
 use function array_merge;
 use function iterator_to_array;
-use function PHPUnit\Framework\assertSame;
 use function rand;
 use function restore_error_handler;
 use function round;
