@@ -16,6 +16,12 @@
         <testsuite name="default">
             <directory suffix="Test.php">tests</directory>
         </testsuite>
+        <testsuite name="unit">
+            <directory suffix="Test.php">tests/Unit</directory>
+        </testsuite>
+        <testsuite name="e2e">
+            <directory suffix="Test.php">tests/E2E</directory>
+        </testsuite>
     </testsuites>
 
     <coverage cacheDirectory=".phpunit.cache/code-coverage"

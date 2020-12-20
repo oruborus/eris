@@ -25,7 +25,6 @@ class ValueCollectionTest extends TestCase
 {
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::__construct
      * @covers Eris\Value\ValueCollection::count
@@ -39,7 +38,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::__construct
      * @covers Eris\Value\ValueCollection::count
@@ -61,7 +59,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      * 
      * @covers Eris\Value\ValueCollection::getIterator
      *
@@ -86,7 +83,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::offsetSet
      * @covers Eris\Value\ValueCollection::offsetGet
@@ -118,7 +114,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::offsetGet
      *
@@ -136,7 +131,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::offsetGet
      *
@@ -157,7 +151,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::offsetExists
      * @covers Eris\Value\ValueCollection::offsetUnset
@@ -179,7 +172,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::__toString
      *
@@ -203,7 +195,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::map
      *
@@ -270,7 +261,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::cartesianProduct
      *
@@ -344,7 +334,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::first
      *
@@ -367,7 +356,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::first
      *
@@ -405,7 +393,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::last
      *
@@ -428,7 +415,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::last
      *
@@ -466,7 +452,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::add
      *
@@ -492,7 +477,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::remove
      *
@@ -517,7 +501,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::unbox
      *
@@ -538,7 +521,6 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\ValueCollection::input
      *

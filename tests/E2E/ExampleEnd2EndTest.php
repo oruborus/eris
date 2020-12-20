@@ -275,7 +275,7 @@ class ExampleEnd2EndTest extends TestCase
     private function runExample($testFile)
     {
         $this->testFile = $testFile;
-        $examplesDir = realpath(__DIR__ . '/../examples');
+        $examplesDir = realpath(__DIR__ . '/../../examples');
         $samplesTestCase = $examplesDir . DIRECTORY_SEPARATOR . $testFile;
         $logFile = tempnam(sys_get_temp_dir(), 'phpunit_log_');
         $environmentVariables = [];
@@ -300,7 +300,7 @@ class ExampleEnd2EndTest extends TestCase
 
     private function runScript($filename)
     {
-        $examplesDir = realpath(__DIR__ . '/../examples');
+        $examplesDir = realpath(__DIR__ . '/../../examples');
         $command = "php {$examplesDir}/{$filename}";
         exec($command, $outputLines, $exitCode);
         $this->assertEquals(0, $exitCode);

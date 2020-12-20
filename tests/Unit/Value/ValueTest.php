@@ -22,7 +22,6 @@ class ValueTest extends TestCase
 {
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\Value::__construct
      * @covers Eris\Value\Value::value
@@ -58,7 +57,6 @@ class ValueTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\Value::__construct
      * @covers Eris\Value\Value::value
@@ -93,7 +91,6 @@ class ValueTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\Value::map
      *
@@ -133,7 +130,6 @@ class ValueTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\Value::merge
      *
@@ -201,7 +197,6 @@ class ValueTest extends TestCase
 
     /**
      * @test
-     * @group unit
      *
      * @covers Eris\Value\Value::__toString
      *
