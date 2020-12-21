@@ -10,6 +10,8 @@ class Size implements Countable
     /** @var int[] $list */
     private array $list;
 
+    private int $maxSize;
+
     public static function withTriangleGrowth(int $maximum): self
     {
         return self::generateList($maximum, __CLASS__ . '::triangleNumber');
@@ -34,7 +36,7 @@ class Size implements Countable
                 break;
             }
         }
-        return new self($sizes);
+        return new self($sizes, $maximum);
     }
 
     private static function linearGrowth(int $n): int
@@ -61,10 +63,13 @@ class Size implements Countable
     }
 
     /**
-    @param int[] $list */
-    private function __construct(array $list)
+     * @param int[] $list
+     */
+    private function __construct(array $list, int $maxSize)
     {
         $this->list = $list;
+
+        $this->maxSize = $maxSize;
     }
 
     public function at(int $position): int
@@ -90,11 +95,16 @@ class Size implements Countable
             $position = (int) min(floor($i * $factor), count($this->list) - 1);
             $uniformSample[] = $this->at($position);
         }
-        return new self($uniformSample);
+        return new self($uniformSample, $this->maxSize);
     }
 
     public function count(): int
     {
         return count($this->list);
+    }
+
+    public function getMaxSize(): int
+    {
+        return $this->maxSize;
     }
 }
