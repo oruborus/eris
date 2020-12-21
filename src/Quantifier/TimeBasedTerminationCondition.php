@@ -2,7 +2,8 @@
 
 namespace Eris\Quantifier;
 
-use Eris\Listener;
+use Eris\Contracts\Listener;
+use Eris\Contracts\TerminationCondition;
 use Eris\Listener\EmptyListener;
 use DateTime;
 use DateInterval;

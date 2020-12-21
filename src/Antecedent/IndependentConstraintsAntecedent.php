@@ -2,8 +2,8 @@
 
 namespace Eris\Antecedent;
 
+use Eris\Contracts\Antecedent;
 use PHPUnit\Framework\ExpectationFailedException;
-use Eris\Antecedent;
 use PHPUnit\Framework\Constraint\Constraint;
 
 class IndependentConstraintsAntecedent implements Antecedent

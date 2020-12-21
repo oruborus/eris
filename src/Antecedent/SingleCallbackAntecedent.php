@@ -2,7 +2,7 @@
 
 namespace Eris\Antecedent;
 
-use Eris\Antecedent;
+use Eris\Contracts\Antecedent;
 
 class SingleCallbackAntecedent implements Antecedent
 {

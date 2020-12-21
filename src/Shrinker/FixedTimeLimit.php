@@ -2,6 +2,8 @@
 
 namespace Eris\Shrinker;
 
+use Eris\Contracts\TimeLimit;
+
 class FixedTimeLimit implements TimeLimit
 {
     private int $maximumIntervalLength;

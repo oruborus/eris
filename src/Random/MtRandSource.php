@@ -2,6 +2,8 @@
 
 namespace Eris\Random;
 
+use Eris\Contracts\Source;
+
 class MtRandSource implements Source
 {
     /**

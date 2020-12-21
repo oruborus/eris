@@ -1,5 +1,8 @@
 <?php
-namespace Eris\Shrinker;
+
+declare(strict_types=1);
+
+namespace Eris\Contracts;
 
 interface TimeLimit
 {

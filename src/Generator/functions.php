@@ -2,7 +2,7 @@
 
 namespace Eris\Generator;
 
-use Eris\Generator;
+use Eris\Contracts\Generator;
 
 /**
  * @return Generator[]

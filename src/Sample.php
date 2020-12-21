@@ -2,6 +2,7 @@
 
 namespace Eris;
 
+use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 

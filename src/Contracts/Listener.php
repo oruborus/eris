@@ -1,6 +1,8 @@
 <?php
 
-namespace Eris;
+declare(strict_types=1);
+
+namespace Eris\Contracts;
 
 use Exception;
 

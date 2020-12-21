@@ -1,7 +1,8 @@
 <?php
+
 namespace Eris\Listener;
 
-use Eris\Listener;
+use Eris\Contracts\Listener;
 use Exception;
 
 abstract class EmptyListener implements Listener

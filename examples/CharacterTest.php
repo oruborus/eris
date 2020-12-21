@@ -4,6 +4,10 @@ use Eris\Generator;
 use Eris\Antecedent;
 use PHPUnit\Framework\TestCase;
 
+use function Eris\Generator\char;
+use function Eris\Antecedent\printableCharacter;
+use function Eris\Antecedent\printableCharacters;
+
 class CharacterTest extends TestCase
 {
     use Eris\TestTrait;
@@ -11,7 +15,7 @@ class CharacterTest extends TestCase
     public function testLengthOfAsciiCharactersInPhp()
     {
         $this->forAll(
-            Generator\char(['basic-latin'])
+            char(['basic-latin'])
         )
             ->then(function ($char) {
                 $this->assertLenghtIs1($char);
@@ -21,9 +25,9 @@ class CharacterTest extends TestCase
     public function testLengthOfPrintableAsciiCharacters()
     {
         $this->forAll(
-            Generator\char(['basic-latin'])
+            char(['basic-latin'])
         )
-            ->when(Antecedent\printableCharacter())
+            ->when(printableCharacter())
             ->then(function ($char) {
                 $this->assertFalse(ord($char) < 32);
             });
@@ -34,10 +38,10 @@ class CharacterTest extends TestCase
         $this
             ->minimumEvaluationRatio(0.1)
             ->forAll(
-                Generator\char(['basic-latin']),
-                Generator\char(['basic-latin'])
+                char(['basic-latin']),
+                char(['basic-latin'])
             )
-            ->when(Antecedent\printableCharacters())
+            ->when(printableCharacters())
             ->then(function ($first, $second) {
                 $this->assertFalse(ord($first) < 32);
                 $this->assertFalse(ord($second) < 32);
@@ -51,10 +55,10 @@ class CharacterTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\char(['basic-latin']),
-                Generator\char(['basic-latin'])
+                char(['basic-latin']),
+                char(['basic-latin'])
             )
-            ->when(Antecedent\printableCharacters())
+            ->when(printableCharacters())
             ->then(function ($first, $second) {
                 $this->assertFalse(ord($first) < 32);
                 $this->assertFalse(ord($second) < 32);

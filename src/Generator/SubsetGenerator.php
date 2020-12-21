@@ -6,7 +6,7 @@ namespace Eris\Generator;
 // maybe inject the relative size?
 use Eris\Quantifier\ForAll;
 use Eris\Random\RandomRange;
-use Eris\Generator;
+use Eris\Contracts\Generator;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 

@@ -2,7 +2,7 @@
 
 namespace Eris\Generator;
 
-use Eris\Generator;
+use Eris\Contracts\Generator;
 use InvalidArgumentException;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
@@ -10,8 +10,8 @@ use Eris\Value\ValueCollection;
 use Exception;
 
 /**
-             * @return FrequencyGenerator
-             */
+ * @return FrequencyGenerator
+ */
 function frequency(/*$frequencyAndGenerator, $frequencyAndGenerator, ...*/)
 {
     return new FrequencyGenerator(func_get_args());

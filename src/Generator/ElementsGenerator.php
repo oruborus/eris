@@ -2,7 +2,7 @@
 
 namespace Eris\Generator;
 
-use Eris\Generator;
+use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
@@ -11,9 +11,9 @@ function elements(/*$a, $b, ...*/): ElementsGenerator
 {
     $arguments = func_get_args();
     if (count($arguments) == 1) {
-        return Generator\ElementsGenerator::fromArray($arguments[0]);
+        return ElementsGenerator::fromArray($arguments[0]);
     } else {
-        return Generator\ElementsGenerator::fromArray($arguments);
+        return ElementsGenerator::fromArray($arguments);
     }
 }
 

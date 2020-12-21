@@ -2,6 +2,7 @@
 
 namespace Eris\Random;
 
+use Eris\Contracts\Source;
 use RuntimeException;
 
 class MersenneTwister implements Source

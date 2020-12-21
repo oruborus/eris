@@ -2,7 +2,7 @@
 
 namespace Eris\Shrinker;
 
-use Eris\Generator;
+use Eris\Contracts\Generator;
 
 class ShrinkerFactory
 {

@@ -1,5 +1,8 @@
 <?php
+
 namespace Eris\Shrinker;
+
+use Eris\Contracts\TimeLimit;
 
 class NoTimeLimit implements TimeLimit
 {

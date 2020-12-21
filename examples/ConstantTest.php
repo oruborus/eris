@@ -3,6 +3,9 @@
 use Eris\Generator;
 use PHPUnit\Framework\TestCase;
 
+use function Eris\Generator\constant;
+use function Eris\Generator\nat;
+
 class ConstantTest extends TestCase
 {
     use Eris\TestTrait;
@@ -11,8 +14,8 @@ class ConstantTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\nat(),
-                Generator\constant(2)
+                nat(),
+                constant(2)
             )
             ->then(function ($number, $alwaysTwo) {
                 $this->assertTrue(($number * $alwaysTwo % 2) === 0);
@@ -23,7 +26,7 @@ class ConstantTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\nat(),
+                nat(),
                 2
             )
             ->then(function ($number, $alwaysTwo) {

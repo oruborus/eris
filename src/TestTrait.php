@@ -4,9 +4,11 @@ namespace Eris;
 
 use BadMethodCallException;
 use DateInterval;
+use Eris\Contracts\Generator;
+use Eris\Contracts\Listener;
 use Eris\Listener\MinimumEvaluations;
 use Eris\Quantifier\ForAll;
-use Eris\Quantifier\TerminationCondition;
+use Eris\Contracts\TerminationCondition;
 use Eris\Quantifier\TimeBasedTerminationCondition;
 use Eris\Random\MtRandSource;
 use Eris\Random\RandomRange;

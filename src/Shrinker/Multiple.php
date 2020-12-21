@@ -2,10 +2,11 @@
 
 namespace Eris\Shrinker;
 
-use Eris\Generator;
+use Eris\Contracts\Generator;
 use Eris\Generator\TupleGenerator;
 use Eris\Quantifier\Evaluation;
-use Eris\Shrinker;
+use Eris\Contracts\Shrinker;
+use Eris\Contracts\TimeLimit;
 use Eris\Value\Value;
 use Throwable;
 use Eris\Value\ValueCollection;

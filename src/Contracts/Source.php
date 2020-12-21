@@ -1,6 +1,8 @@
 <?php
 
-namespace Eris\Random;
+declare(strict_types=1);
+
+namespace Eris\Contracts;
 
 interface Source
 {

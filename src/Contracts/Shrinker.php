@@ -1,8 +1,9 @@
 <?php
 
-namespace Eris;
+declare(strict_types=1);
 
-use Eris\Shrinker\TimeLimit;
+namespace Eris\Contracts;
+
 use Eris\Value\Value;
 use Throwable;
 

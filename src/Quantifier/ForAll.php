@@ -2,17 +2,20 @@
 
 namespace Eris\Quantifier;
 
-use Eris\Antecedent;
-use Eris\Generator;
+use Eris\Contracts\Antecedent;
+use Eris\Contracts\Generator;
+use Eris\Contracts\Listener;
 use Eris\Generator\SkipValueException;
 use Eris\Shrinker\ShrinkerFactory;
 use BadMethodCallException;
-use PHPUnit_Framework_Constraint;
+use Eris\Antecedent\IndependentConstraintsAntecedent;
+use Eris\Antecedent\SingleCallbackAntecedent;
+use Eris\Contracts\TerminationCondition;
+use Eris\Generator\ConstantGenerator;
 use PHPUnit\Framework\Constraint\Constraint;
 use Exception;
 use Throwable;
 use RuntimeException;
-use Eris\Listener;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 
@@ -107,9 +110,9 @@ class ForAll
         if ($arguments[0] instanceof Antecedent) {
             $antecedent = $arguments[0];
         } elseif ($arguments[0] instanceof Constraint) {
-            $antecedent = Antecedent\IndependentConstraintsAntecedent::fromAll($arguments);
+            $antecedent = IndependentConstraintsAntecedent::fromAll($arguments);
         } elseif ($arguments && count($arguments) == 1) {
-            $antecedent = Antecedent\SingleCallbackAntecedent::from($arguments[0]);
+            $antecedent = SingleCallbackAntecedent::from($arguments[0]);
         } else {
             throw new \InvalidArgumentException("Invalid call to when(): " . var_export($arguments, true));
         }
@@ -225,7 +228,7 @@ class ForAll
         $generators = [];
         foreach ($supposedToBeGenerators as $supposedToBeGenerator) {
             if (!$supposedToBeGenerator instanceof Generator) {
-                $generators[] = new Generator\ConstantGenerator($supposedToBeGenerator);
+                $generators[] = new ConstantGenerator($supposedToBeGenerator);
             } else {
                 $generators[] = $supposedToBeGenerator;
             }

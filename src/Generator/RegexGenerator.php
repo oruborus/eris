@@ -3,7 +3,7 @@
 namespace Eris\Generator;
 
 use BadFunctionCallException;
-use Eris\Generator;
+use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;

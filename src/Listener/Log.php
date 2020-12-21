@@ -2,7 +2,7 @@
 
 namespace Eris\Listener;
 
-use Eris\Listener;
+use Eris\Contracts\Listener;
 use Eris\Listener\EmptyListener;
 use Exception;
 

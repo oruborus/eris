@@ -1,7 +1,8 @@
 <?php
+
 namespace Eris\Antecedent;
 
-use Eris\Antecedent;
+use Eris\Contracts\Antecedent;
 
 function printableCharacter(): PrintableCharacter
 {
