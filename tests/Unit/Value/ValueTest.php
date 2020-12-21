@@ -95,6 +95,7 @@ class ValueTest extends TestCase
      * @covers Eris\Value\Value::map
      *
      * @uses Eris\Value\Value::__construct
+     * @uses Eris\Value\Value::input
      * @uses Eris\Value\Value::value
      *
      * @dataProvider provideArgumentsForMapWithDifferentTypes
@@ -134,6 +135,7 @@ class ValueTest extends TestCase
      * @covers Eris\Value\Value::merge
      *
      * @uses Eris\Value\Value::__construct
+     * @uses Eris\Value\Value::input
      * @uses Eris\Value\Value::value
      *
      * @dataProvider provideArgumentsForMergeWithDifferentTypes
