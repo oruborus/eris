@@ -9,6 +9,7 @@ use Eris\Contracts\Listener;
 use Eris\Listener\MinimumEvaluations;
 use Eris\Quantifier\ForAll;
 use Eris\Contracts\TerminationCondition;
+use Eris\Growth\TriangularGrowth;
 use Eris\Quantifier\TimeBasedTerminationCondition;
 use Eris\Random\MtRandSource;
 use Eris\Random\RandomRange;
@@ -229,7 +230,7 @@ trait TestTrait
         $generators = func_get_args();
         $quantifier = new ForAll(
             $generators,
-            $this->iterations,
+            new TriangularGrowth(ForAll::DEFAULT_MAX_SIZE, $this->iterations),
             new ShrinkerFactory([
                 'timeLimit' => $this->shrinkingTimeLimit,
             ]),

@@ -2,22 +2,23 @@
 
 namespace Eris\Quantifier;
 
+use BadMethodCallException;
+use Exception;
+use RuntimeException;
+use Throwable;
+use Eris\Antecedent\IndependentConstraintsAntecedent;
+use Eris\Antecedent\SingleCallbackAntecedent;
 use Eris\Contracts\Antecedent;
 use Eris\Contracts\Generator;
 use Eris\Contracts\Listener;
-use Eris\Generator\SkipValueException;
-use Eris\Shrinker\ShrinkerFactory;
-use BadMethodCallException;
-use Eris\Antecedent\IndependentConstraintsAntecedent;
-use Eris\Antecedent\SingleCallbackAntecedent;
+use Eris\Contracts\Growth;
 use Eris\Contracts\TerminationCondition;
 use Eris\Generator\ConstantGenerator;
-use PHPUnit\Framework\Constraint\Constraint;
-use Exception;
-use Throwable;
-use RuntimeException;
+use Eris\Generator\SkipValueException;
+use Eris\Shrinker\ShrinkerFactory;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
+use PHPUnit\Framework\Constraint\Constraint;
 
 class ForAll
 {
@@ -27,11 +28,27 @@ class ForAll
      * @var Generator[] $generators
      */
     private array $generators;
-    private int $iterations;
-    private int $maxSize;
+
+    private Growth $growth;
+
     private ShrinkerFactory $shrinkerFactory;
+
+    private string $shrinkerFactoryMethod;
+
+    private RandomRange $rand;
+
     private array $antecedents = [];
+
     private int $ordinaryEvaluations = 0;
+
+    private array $terminationConditions = [];
+
+    /**
+     * @var Listener[] $listeners
+     */
+    private array $listeners = [];
+
+    private bool $shrinkingEnabled = true;
 
     /**
      * @var array<string, string> $aliases
@@ -40,58 +57,59 @@ class ForAll
         'and' => 'when',
         'then' => '__invoke',
     ];
-    private array $terminationConditions = [];
-    /**
-     * @var Listener[] $listeners
-     */
-    private array $listeners = [];
-    private string $shrinkerFactoryMethod;
 
-    private RandomRange $rand;
-    private bool $shrinkingEnabled = true;
-
-    public function __construct(array $generators, int $iterations, ShrinkerFactory $shrinkerFactory, string $shrinkerFactoryMethod, RandomRange $rand)
-    {
+    public function __construct(
+        array $generators,
+        Growth $growth,
+        ShrinkerFactory $shrinkerFactory,
+        string $shrinkerFactoryMethod,
+        RandomRange $rand
+    ) {
         $this->generators = $this->generatorsFrom($generators);
-        $this->iterations = $iterations;
         $this->shrinkerFactory = $shrinkerFactory;
         $this->shrinkerFactoryMethod = $shrinkerFactoryMethod;
         $this->rand = $rand;
-        $this->maxSize = self::DEFAULT_MAX_SIZE;
+
+        $this->growth = $growth;
     }
 
-    /**
-     * @param integer $maxSize
-     * @return self
-     */
-    public function withMaxSize($maxSize)
+    public function withMaxSize(int $maxSize): self
     {
-        $this->maxSize = $maxSize;
+        $this->growth = new $this->growth($maxSize, $this->growth->count());
+
         return $this;
     }
 
-    /**
-     * @return self
-     */
-    public function hook(Listener $listener)
+    public function getMaxSize(): int
+    {
+        return $this->growth->getMaximumSize();
+    }
+
+    public function withIterations(int $iterations): self
+    {
+        $this->growth = new $this->growth($this->growth->getMaximumSize(), $iterations);
+
+        return $this;
+    }
+
+    public function getIterations(): int
+    {
+        return $this->growth->count();
+    }
+
+    public function hook(Listener $listener): self
     {
         $this->listeners[] = $listener;
         return $this;
     }
 
-    /**
-     * @return self
-     */
-    public function stopOn(TerminationCondition $terminationCondition)
+    public function stopOn(TerminationCondition $terminationCondition): self
     {
         $this->terminationConditions[] = $terminationCondition;
         return $this;
     }
 
-    /**
-     * @return self
-     */
-    public function disableShrinking()
+    public function disableShrinking(): self
     {
         $this->shrinkingEnabled = false;
         return $this;
@@ -102,9 +120,8 @@ class ForAll
      * when($constraint1, $constraint2, ..., $constraintN)
      * when(callable $takesNArguments)
      * when(Antecedent $antecedent)
-     * @return self
      */
-    public function when(/* see docblock */)
+    public function when(/* see docblock */): self
     {
         $arguments = func_get_args();
         if ($arguments[0] instanceof Antecedent) {
@@ -125,15 +142,14 @@ class ForAll
      */
     public function __invoke($assertion)
     {
-        $sizes = Size::withTriangleGrowth($this->maxSize)
-            ->limit($this->iterations);
+        $sizes = $this->growth;
         $redTestException = null;
         $values = [];
         try {
             $this->notifyListeners('startPropertyVerification');
             for (
                 $iteration = 0;
-                $iteration < $this->iterations
+                $iteration < $this->getIterations()
                     && !$this->terminationConditionsAreSatisfied();
                 $iteration++
             ) {
@@ -141,10 +157,7 @@ class ForAll
                 $values = [];
                 try {
                     foreach ($this->generators as $name => $generator) {
-                        $value = $generator($sizes->at($iteration), $this->rand);
-                        // if (!($value instanceof ValueCollection)) {
-                        //     throw new RuntimeException("The value returned by a generator should be an instance of Value, but it is " . var_export($value, true));
-                        // }
+                        $value = $generator($sizes[$iteration], $this->rand);
                         $generatedValues[] = $value;
                         $values[] = $value->unbox();
                     }
@@ -195,7 +208,7 @@ class ForAll
             $this->notifyListeners(
                 'endPropertyVerification',
                 $this->ordinaryEvaluations,
-                $this->iterations,
+                $this->getIterations(),
                 $redTestException
             );
         }
