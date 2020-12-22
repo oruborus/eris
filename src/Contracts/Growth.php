@@ -13,6 +13,10 @@ abstract class Growth implements ArrayAccess, Countable
 
     abstract public function getMaximumValue(): int;
 
+    public function __construct(int $maximum, int $limit)
+    {
+    }
+
     /**
      * @var list<int> $values
      */

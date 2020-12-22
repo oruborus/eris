@@ -21,13 +21,23 @@ class GrowthTest extends TestCase
     {
         parent::setUp();
 
-        $this->dut = $this->getMockForAbstractClass(Growth::class);
+        $this->dut = $this->getMockForAbstractClass(Growth::class, [0, 0]);
 
         $reflectionClass = new \ReflectionClass($this->dut);
         $property = $reflectionClass->getProperty('values');
         $property->setAccessible(true);
         $property->setValue($this->dut, [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]);
         $property->setAccessible(false);
+    }
+
+    /**
+     * @test
+     *
+     * @covers Eris\Contracts\Growth::__construct
+     */
+    public function canBeConstructed(): void
+    {
+        $this->assertInstanceOf(Growth::class, $this->dut);
     }
 
     /**
