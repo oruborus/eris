@@ -9,11 +9,13 @@ use Eris\Contracts\Listener;
 use Eris\Listener\MinimumEvaluations;
 use Eris\Quantifier\ForAll;
 use Eris\Contracts\TerminationCondition;
+use Eris\Generator\ConstantGenerator;
 use Eris\Growth\TriangularGrowth;
 use Eris\Quantifier\TimeBasedTerminationCondition;
 use Eris\Random\MtRandSource;
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
+use Eris\Shrinker\Multiple;
 use Eris\Shrinker\ShrinkerFactory;
 use Eris\Value\Value;
 use PHPUnit\Util\Test;
@@ -176,16 +178,15 @@ trait TestTrait
 
     protected function limitTo(int|DateInterval $limit): self
     {
-        if ($limit instanceof DateInterval) {
-            $interval = $limit;
-            $terminationCondition = new TimeBasedTerminationCondition('time', $interval);
-            $this->listeners[] = $terminationCondition;
-            $this->terminationConditions[] = $terminationCondition;
-        } else /*if (is_integer($limit))*/ {
+        if (is_int($limit)) {
             $this->iterations = $limit;
-        } /* else {
-            throw new InvalidArgumentException("The limit " . var_export($limit, true) . " is not valid. Please pass an integer or DateInterval.");
-        }*/
+            return $this;
+        }
+
+        $terminationCondition = new TimeBasedTerminationCondition('time', $limit);
+        $this->listeners[] = $terminationCondition;
+        $this->terminationConditions[] = $terminationCondition;
+        
         return $this;
     }
 
@@ -221,13 +222,17 @@ trait TestTrait
     }
 
     /**
-     * forAll($generator1, $generator2, ...)
-     * @return ForAll
+     * @param list<mixed> $generators
      */
-    public function forAll(): ForAll
+    public function forAll(...$generators): ForAll
     {
+        $boxNonGeneratorValues = fn ($generator): Generator => 
+            $generator instanceof Generator ? $generator : new ConstantGenerator($generator);
+
+        $generators = array_map($boxNonGeneratorValues, $generators);
+
         $this->randRange->seed($this->seed);
-        $generators = func_get_args();
+
         $quantifier = new ForAll(
             $generators,
             new TriangularGrowth(ForAll::DEFAULT_MAX_SIZE, $this->iterations),
@@ -237,13 +242,17 @@ trait TestTrait
             $this->shrinkerFactoryMethod,
             $this->randRange
         );
+
         foreach ($this->listeners as $listener) {
             $quantifier->hook($listener);
         }
+
         foreach ($this->terminationConditions as $terminationCondition) {
             $quantifier->stopOn($terminationCondition);
         }
+
         $this->quantifiers[] = $quantifier;
+
         return $quantifier;
     }
 

@@ -28,7 +28,6 @@ class ForAllTest extends TestCase
      * @covers Eris\Quantifier\ForAll::getMaxSize
      *
      * @uses Eris\Quantifier\ForAll::__construct
-     * @uses Eris\Quantifier\ForAll::generatorsFrom
      *
      * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\TriangularGrowth
@@ -53,7 +52,6 @@ class ForAllTest extends TestCase
      * @covers Eris\Quantifier\ForAll::getIterations
      *
      * @uses Eris\Quantifier\ForAll::__construct
-     * @uses Eris\Quantifier\ForAll::generatorsFrom
      *
      * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\TriangularGrowth
@@ -78,7 +76,6 @@ class ForAllTest extends TestCase
      * @covers Eris\Quantifier\ForAll::__construct
      *
      * @uses Eris\Quantifier\ForAll::antecedentsAreSatisfied
-     * @uses Eris\Quantifier\ForAll::generatorsFrom
      * @uses Eris\Quantifier\ForAll::getIterations
      * @uses Eris\Quantifier\ForAll::hook
      * @uses Eris\Quantifier\ForAll::notifyListeners
