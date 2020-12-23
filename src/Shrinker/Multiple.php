@@ -3,29 +3,34 @@
 namespace Eris\Shrinker;
 
 use Eris\Contracts\Generator;
-use Eris\Generator\TupleGenerator;
-use Eris\Quantifier\Evaluation;
 use Eris\Contracts\Shrinker;
 use Eris\Contracts\TimeLimit;
+use Eris\Generator\TupleGenerator;
+use Eris\Quantifier\Evaluation;
+use Eris\TimeLimit\NoTimeLimit;
 use Eris\Value\Value;
-use Throwable;
 use Eris\Value\ValueCollection;
+use Throwable;
 
 class Multiple implements Shrinker
 {
     private TupleGenerator $generator;
+
     /**
      * @var callable $assertion
      */
     private $assertion;
+
     /**
      * @var callable[] $goodShrinkConditions
      */
     private array $goodShrinkConditions = [];
+
     /**
      * @var callable[] $onAttempt
      */
     private array $onAttempt = [];
+
     private TimeLimit $timeLimit;
 
     /**

@@ -3,6 +3,7 @@
 namespace Eris\Shrinker;
 
 use Eris\Contracts\Generator;
+use Eris\TimeLimit\FixedTimeLimit;
 
 class ShrinkerFactory
 {

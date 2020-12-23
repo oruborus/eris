@@ -1,6 +1,6 @@
 <?php
 
-namespace Eris\Shrinker;
+namespace Eris\TimeLimit;
 
 use Eris\Contracts\TimeLimit;
 

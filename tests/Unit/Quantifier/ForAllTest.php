@@ -90,8 +90,8 @@ class ForAllTest extends TestCase
      * @uses Eris\Growth\TriangularGrowth
      * @uses Eris\Random\RandomRange
      * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\NoTimeLimit
      * @uses Eris\Shrinker\ShrinkerFactory
+     * @uses Eris\TimeLimit\NoTimeLimit
      * @uses Eris\Value\Value
      * @uses Eris\Value\ValueCollection
      *
