@@ -4,22 +4,16 @@ declare(strict_types=1);
 
 namespace Eris\Contracts;
 
-interface TimeLimit
+use Stringable;
+
+interface TimeLimit extends Stringable
 {
     /**
      * Call to start measuring the time interval.
-     *
-     * @return void
      */
-    public function start();
+    public function start(): void;
 
-    /**
-     * @return bool
-     */
-    public function hasBeenReached();
+    public function hasBeenReached(): bool;
 
-    /**
-     * @return string
-     */
-    public function __toString();
+    public function __toString(): string;
 }
