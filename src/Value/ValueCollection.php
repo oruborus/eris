@@ -11,6 +11,7 @@ use IteratorAggregate;
 
 use function array_map;
 use function array_search;
+use function array_values;
 use function count;
 use function debug_backtrace;
 use function end;
@@ -135,6 +136,23 @@ class ValueCollection implements ArrayAccess, Countable, IteratorAggregate
         }
 
         return $product;
+    }
+
+    /**
+     * @return Value<TValue>|false
+     */
+    public function shift()
+    {
+        $value = reset($this->values);
+
+        if (!is_null($key = key($this->values))) {
+            unset($this[$key]);
+            $this->values = array_values($this->values);
+
+            return $value;
+        }
+
+        return false;
     }
 
     /**

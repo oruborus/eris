@@ -537,4 +537,49 @@ class ValueCollectionTest extends TestCase
 
         $this->assertSame($expected, $dut->input());
     }
+
+    /**
+     * @test
+     *
+     * @covers Eris\Value\ValueCollection::shift
+     *
+     * @uses Eris\Value\ValueCollection::__construct
+     * @uses Eris\Value\ValueCollection::last
+     *
+     * @uses Eris\Value\Value
+     */
+    public function returnsFalseForEmptyCollection(): void
+    {
+        $dut = new ValueCollection();
+
+        $this->assertFalse($dut->shift());
+    }
+
+    /**
+     * @test
+     *
+     * @covers Eris\Value\ValueCollection::shift
+     *
+     * @uses Eris\Value\ValueCollection::__construct
+     * @uses Eris\Value\ValueCollection::last
+     * @uses Eris\Value\ValueCollection::offsetUnset
+     *
+     * @uses Eris\Value\Value
+     */
+    public function returnsFirstElementAndRemovesItFromCollection(): void
+    {
+        $dut = new ValueCollection([
+            new Value(1),
+            new Value(2),
+            new Value(3),
+        ]);
+
+        $expected = new ValueCollection([
+            new Value(2),
+            new Value(3),
+        ]);
+
+        $this->assertEquals(new Value(1), $dut->shift());
+        $this->assertEquals($expected, $dut);
+    }
 }
