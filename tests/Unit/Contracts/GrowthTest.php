@@ -46,6 +46,8 @@ class GrowthTest extends TestCase
      * @covers Eris\Contracts\Growth::count
      * @covers Eris\Contracts\Growth::offsetSet
      * @covers Eris\Contracts\Growth::offsetUnset
+     *
+     * @uses Eris\Contracts\Growth::__construct
      */
     public function offsetsCannotBeSetOrUnset(): void
     {
@@ -67,6 +69,7 @@ class GrowthTest extends TestCase
      * @covers Eris\Contracts\Growth::offsetExists
      * @covers Eris\Contracts\Growth::offsetGet
      *
+     * @uses Eris\Contracts\Growth::__construct
      * @uses Eris\Contracts\Growth::count
      */
     public function returnNullWhenUndefinedOffsetIsRequested(): void
@@ -87,6 +90,7 @@ class GrowthTest extends TestCase
      * @covers Eris\Contracts\Growth::offsetExists
      * @covers Eris\Contracts\Growth::offsetGet
      *
+     * @uses Eris\Contracts\Growth::__construct
      * @uses Eris\Contracts\Growth::count
      */
     public function triggerWarningWhenUndefinedOffsetIsRequested(): void
@@ -103,6 +107,7 @@ class GrowthTest extends TestCase
      * @covers Eris\Contracts\Growth::offsetExists
      * @covers Eris\Contracts\Growth::offsetGet
      *
+     * @uses Eris\Contracts\Growth::__construct
      * @uses Eris\Contracts\Growth::count
      */
     public function cyclesThroughAvailableSizesWhenTheyAreFinished(): void
