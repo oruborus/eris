@@ -194,7 +194,6 @@ class ValueCollection implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * @deprecated
      * @param Value<TValue> $value
      * @return self<TValue>
      */
@@ -206,7 +205,6 @@ class ValueCollection implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * @deprecated
      * @param Value<TValue> $value
      * @return self<TValue>
      */

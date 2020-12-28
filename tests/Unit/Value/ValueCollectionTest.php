@@ -460,8 +460,6 @@ class ValueCollectionTest extends TestCase
      * @uses Eris\Value\ValueCollection::offsetSet
      *
      * @uses Eris\Value\Value
-     *
-     * @psalm-suppress DeprecatedMethod
      */
     public function elementsCanBeAdded(): void
     {
@@ -485,8 +483,6 @@ class ValueCollectionTest extends TestCase
      * @uses Eris\Value\ValueCollection::offsetUnset
      *
      * @uses Eris\Value\Value
-     *
-     * @psalm-suppress DeprecatedMethod
      */
     public function elementsCanBeRemoved(): void
     {
