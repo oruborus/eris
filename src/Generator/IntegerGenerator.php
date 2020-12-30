@@ -25,7 +25,7 @@ function int(): IntegerGenerator
  */
 function pos(): IntegerGenerator
 {
-    $mustBeStrictlyPositive = function (int $n): float {
+    $mustBeStrictlyPositive = function (int $n): int {
         return abs($n) + 1;
     };
     return new IntegerGenerator($mustBeStrictlyPositive);
