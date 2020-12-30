@@ -14,12 +14,13 @@ interface Shrinker
 {
     /**
      * Use its assertion to rethrow the minimal assertion failure derived
-     * from shrinking $elements.
-     * $elements contains an array of Value objects corresponding
-     * to the elements that lead to the original failure of the assertion.
+     * from shrinking $currentElement.
+     * $currentElement contains an array of Value objects corresponding
+     * to the currentElement that lead to the original failure of the assertion.
+     *
      * @throws Throwable
      */
-    public function from(Value $elements, Throwable $exception): void;
+    public function from(Value $currentElement, Throwable $exception): void;
 
     /**
      * Configuration: allows specifying a time limit that should stop
@@ -35,13 +36,15 @@ interface Shrinker
      *
      * `$condition` takes a number of arguments equal to the cardinality
      * of `$elements`, and accepts the unboxed values. Returns a boolean.
-     * @param callable $condition
+     *
+     * @param callable(Value):bool $condition
      */
     public function addGoodShrinkCondition($condition): self;
 
     /**
      * Adds callables that will be passed all the attempt to shrink $elements.
      * Data structure is, in fact, the same as `$elements`.
+     *
      * @param callable $listener
      */
     public function onAttempt($listener): self;

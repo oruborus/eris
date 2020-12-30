@@ -1,20 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Shrinker;
 
 use Eris\Contracts\Generator;
 use Eris\Contracts\Shrinker;
 use Eris\Contracts\TimeLimit;
-use Eris\Generator\TupleGenerator;
-use Eris\Quantifier\Evaluation;
 use Eris\TimeLimit\NoTimeLimit;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
+use PHPUnit\Framework\AssertionFailedError;
+use RuntimeException;
 use Throwable;
+
+use function array_map;
 
 class Multiple implements Shrinker
 {
-    private TupleGenerator $generator;
+    /**
+     * @var list<Generator> $generators
+     */
+    private array $generators;
 
     /**
      * @var callable $assertion
@@ -22,7 +29,7 @@ class Multiple implements Shrinker
     private $assertion;
 
     /**
-     * @var callable[] $goodShrinkConditions
+     * @var list<callable(Value):bool> $goodShrinkConditions
      */
     private array $goodShrinkConditions = [];
 
@@ -34,12 +41,12 @@ class Multiple implements Shrinker
     private TimeLimit $timeLimit;
 
     /**
-     * @param Generator[] $generators
+     * @param list<Generator> $generators
      * @param callable $assertion
      */
     public function __construct(array $generators, $assertion)
     {
-        $this->generator = new TupleGenerator($generators);
+        $this->generators = $generators;
         $this->assertion = $assertion;
         $this->timeLimit = new NoTimeLimit();
     }
@@ -50,8 +57,13 @@ class Multiple implements Shrinker
         return $this;
     }
 
+    public function getTimeLimit(): TimeLimit
+    {
+        return $this->timeLimit;
+    }
+
     /**
-     * @param callable $condition
+     * @param callable(Value):bool $condition
      */
     public function addGoodShrinkCondition($condition): self
     {
@@ -71,64 +83,41 @@ class Multiple implements Shrinker
     /**
      * Precondition: $values should fail $this->assertion
      */
-    public function from(Value $elements, Throwable $exception): void
+    public function from(Value $currentElement, Throwable $exception): void
     {
-        $branches = new ValueCollection();
-
-        $shrink = function (Value $elements) use (&$elementsAfterShrink, &$branches): ValueCollection {
-            $branches = new ValueCollection();
-            $elementsAfterShrink = $this->generator->shrink($elements);
-            foreach ($elementsAfterShrink as $each) {
-                $branches[] = $each;
-            }
-            return $branches;
-        };
-
-        $onGoodShrink = function (Value $elementsAfterShrink, Throwable $exceptionAfterShrink) use (&$elements, &$exception, &$branches, $shrink): void {
-            $elements = $elementsAfterShrink;
-            $exception = $exceptionAfterShrink;
-            $branches = $shrink($elements);
-        };
-
         $this->timeLimit->start();
-        $shrink($elements);
-        while (true) {
 
-            if (count($branches) === 0) {
-                break;
-            }
+        $branches = $this->shrink($currentElement);
 
-            $elementsAfterShrink = $branches->first();
-            $branches->remove($elementsAfterShrink);
-
+        while ($firstBranch = $branches->shift()) {
             if ($this->timeLimit->hasBeenReached()) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     "Eris has reached the time limit for shrinking ($this->timeLimit), here it is presenting the simplest failure case." . PHP_EOL
                         . "If you can afford to spend more time to find a simpler failing input, increase it with the annotation \'@eris-shrink {seconds}\'.",
                     -1,
                     $exception
                 );
             }
-            // TODO: maybe not necessary
-            // when Generator start returning emtpy options instead of the
-            // element itself upon no shrinking
-            // For now leave in for BC
-            if ($elementsAfterShrink == $elements) {
+
+            if ($firstBranch == $currentElement) {
                 continue;
             }
 
-            if (!$this->checkGoodShrinkConditions($elementsAfterShrink)) {
+            if (!$this->checkGoodShrinkConditions($firstBranch)) {
                 continue;
             }
 
             foreach ($this->onAttempt as $onAttempt) {
-                $onAttempt($elementsAfterShrink);
+                $onAttempt($firstBranch);
             }
 
-            Evaluation::of($this->assertion)
-                ->with($elementsAfterShrink)
-                ->onFailure($onGoodShrink)
-                ->execute();
+            try {
+                call_user_func_array($this->assertion, $firstBranch->value());
+            } catch (AssertionFailedError $e) {
+                $currentElement = $firstBranch;
+                $exception = $e;
+                $branches = $this->shrink($currentElement);
+            }
         }
 
         throw $exception;
@@ -142,5 +131,32 @@ class Multiple implements Shrinker
             }
         }
         return true;
+    }
+
+    private function shrink(Value $value): ValueCollection
+    {
+        /**
+         * @psalm-suppress MixedArgument
+         * @var list<array{0:Generator, 1:Value}> $generatorInputPair
+         */
+        $generatorInputPair = array_map(null, $this->generators, $value->input());
+
+        $result = new ValueCollection();
+        foreach ($generatorInputPair as [$generator, $input]) {
+            $shrunkValues = $generator->shrink($input);
+            $shrunkValues[] = $input;
+
+            $options = new ValueCollection();
+            foreach ($shrunkValues as $value) {
+                $options[] = new Value([$value->value()], [$value]);
+            }
+
+            /**
+             * @psalm-suppress MixedArgumentTypeCoercion
+             */
+            $result = count($result) ? $result->cartesianProduct($options, '\array_merge') : $options;
+        }
+
+        return $result->remove($value);
     }
 }

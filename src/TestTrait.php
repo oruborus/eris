@@ -176,7 +176,10 @@ trait TestTrait
         );
     }
 
-    protected function limitTo(int|DateInterval $limit): self
+    /**
+     * @param int|DateInterval $limit
+     */
+    protected function limitTo($limit): self
     {
         if (is_int($limit)) {
             $this->iterations = $limit;
@@ -186,7 +189,7 @@ trait TestTrait
         $terminationCondition = new TimeBasedTerminationCondition('time', $limit);
         $this->listeners[] = $terminationCondition;
         $this->terminationConditions[] = $terminationCondition;
-        
+
         return $this;
     }
 
@@ -226,8 +229,8 @@ trait TestTrait
      */
     public function forAll(...$generators): ForAll
     {
-        $boxNonGeneratorValues = fn ($generator): Generator => 
-            $generator instanceof Generator ? $generator : new ConstantGenerator($generator);
+        $boxNonGeneratorValues = fn ($generator): Generator =>
+        $generator instanceof Generator ? $generator : new ConstantGenerator($generator);
 
         $generators = array_map($boxNonGeneratorValues, $generators);
 
@@ -236,10 +239,12 @@ trait TestTrait
         $quantifier = new ForAll(
             $generators,
             new TriangularGrowth(ForAll::DEFAULT_MAX_SIZE, $this->iterations),
-            new ShrinkerFactory([
-                'timeLimit' => $this->shrinkingTimeLimit,
-            ]),
-            $this->shrinkerFactoryMethod,
+            [
+                new ShrinkerFactory([
+                    'timeLimit' => $this->shrinkingTimeLimit,
+                ]),
+                $this->shrinkerFactoryMethod
+            ],
             $this->randRange
         );
 
