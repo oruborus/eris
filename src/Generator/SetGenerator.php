@@ -1,20 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
-
-/**
- * @param Generator $singleElementGenerator
- * @return SetGenerator
- */
-function set($singleElementGenerator)
-{
-    return new SetGenerator($singleElementGenerator);
-}
 
 class SetGenerator implements Generator
 {

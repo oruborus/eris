@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use BadFunctionCallException;
@@ -11,19 +13,6 @@ use ReverseRegex\Lexer;
 use ReverseRegex\Random\SimpleRandom;
 use ReverseRegex\Parser;
 use ReverseRegex\Generator\Scope;
-
-/**
- * Note * and + modifiers cause an unbounded number of character to be generated
- * (up to plus infinity) and as such they are not supported.
- * Please use {1,N} and {0,N} instead of + and *.
- *
- * @param string $expression
- * @return Generator\RegexGenerator
- */
-function regex($expression)
-{
-    return new RegexGenerator($expression);
-}
 
 class RegexGenerator implements Generator
 {

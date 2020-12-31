@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
@@ -7,11 +9,6 @@ use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 use InvalidArgumentException;
-
-function names(): NamesGenerator
-{
-    return NamesGenerator::defaultDataSet();
-}
 
 class NamesGenerator implements Generator
 {

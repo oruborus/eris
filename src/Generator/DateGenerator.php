@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
@@ -7,38 +9,6 @@ use Eris\Random\RandomRange;
 use DateTime;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
-
-/**
- * @param null|string|DateTime $lowerLimit
- * @param null|string|DateTime $upperLimit
- */
-function date($lowerLimit = null, $upperLimit = null): DateGenerator
-{
-    $box =
-        /**
-         * @param null|string|DateTime $date
-         */
-        function ($date): ?DateTime {
-            if ($date === null) {
-                return $date;
-            }
-            if ($date instanceof DateTime) {
-                return $date;
-            }
-            return new DateTime($date);
-        };
-    $withDefault = function (?DateTime $value, DateTime $default): DateTime {
-        if ($value !== null) {
-            return $value;
-        }
-        return $default;
-    };
-    return new DateGenerator(
-        $withDefault($box($lowerLimit), new DateTime("@0")),
-        // uses a maximum which is conservative
-        $withDefault($box($upperLimit), new DateTime("@" . (pow(2, 31) - 1)))
-    );
-}
 
 class DateGenerator implements Generator
 {

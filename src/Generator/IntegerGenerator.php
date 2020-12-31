@@ -1,61 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
-
-/**
- * Generates a positive or negative integer (with absolute value bounded by
- * the generation size).
- *
- * @return IntegerGenerator
- */
-function int(): IntegerGenerator
-{
-    return new IntegerGenerator();
-}
-
-/**
- * Generates a positive integer (bounded by the generation size).
- *
- * @return IntegerGenerator
- */
-function pos(): IntegerGenerator
-{
-    $mustBeStrictlyPositive = function (int $n): int {
-        return abs($n) + 1;
-    };
-    return new IntegerGenerator($mustBeStrictlyPositive);
-}
-
-function nat(): IntegerGenerator
-{
-    $mustBeNatural = function (int $n): int {
-        return abs($n);
-    };
-    return new IntegerGenerator($mustBeNatural);
-}
-
-/**
- * Generates a negative integer (bounded by the generation size).
- *
- * @return IntegerGenerator
- */
-function neg(): IntegerGenerator
-{
-    $mustBeStrictlyNegative = function (int $n): int {
-        return (-1) * (abs($n) + 1);
-    };
-    return new IntegerGenerator($mustBeStrictlyNegative);
-}
-
-function byte(): ChooseGenerator
-{
-    return new ChooseGenerator(0, 255);
-}
 
 class IntegerGenerator implements Generator
 {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 // TODO: dependency on ForAll is bad,
@@ -9,15 +11,6 @@ use Eris\Random\RandomRange;
 use Eris\Contracts\Generator;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
-
-/**
- * @param array $input
- * @return SubsetGenerator
- */
-function subset($input)
-{
-    return new SubsetGenerator($input);
-}
 
 class SubsetGenerator implements Generator
 {

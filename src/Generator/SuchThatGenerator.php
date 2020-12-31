@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
@@ -9,23 +11,6 @@ use Eris\Value\ValueCollection;
 use LogicException;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
-use Traversable;
-
-/**
- * @param callable|Constraint $filter
- */
-function filter($filter, Generator $generator, int $maximumAttempts = 100): SuchThatGenerator
-{
-    return suchThat($filter, $generator, $maximumAttempts);
-}
-
-/**
- * @param callable|Constraint $filter
- */
-function suchThat($filter, Generator $generator, int $maximumAttempts = 100): SuchThatGenerator
-{
-    return new SuchThatGenerator($filter, $generator, $maximumAttempts);
-}
 
 class SuchThatGenerator implements Generator
 {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
@@ -8,24 +10,6 @@ use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
 use function Eris\Generator\ensureAreAllGenerators;
-
-/**
- * One Generator for each member of the Tuple:
- * tuple(Generator, Generator, Generator...)
- * Or an array of generators:
- * tuple(array $generators)
- * @return Generator\TupleGenerator
- */
-function tuple()
-{
-    $arguments = func_get_args();
-    if (is_array($arguments[0])) {
-        $generators = $arguments[0];
-    } else {
-        $generators = $arguments;
-    }
-    return new TupleGenerator($generators);
-}
 
 class TupleGenerator implements Generator
 {

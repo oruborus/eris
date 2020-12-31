@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
@@ -10,21 +12,6 @@ use Eris\Value\ValueCollection;
 
 if (!defined('ERIS_PHP_INT_MIN')) {
     define('ERIS_PHP_INT_MIN', ~PHP_INT_MAX);
-}
-
-/**
- * Generates a number in the range from the lower bound to the upper bound,
- * inclusive. The result shrinks towards smaller absolute values.
- * The order of the parameters does not care since they are re-ordered by the
- * generator itself.
- *
- * @param $x int One of the 2 boundaries of the range
- * @param $y int The other boundary of the range
- * @return Generator\ChooseGenerator
- */
-function choose(int $lowerLimit, int $upperLimit)
-{
-    return new ChooseGenerator($lowerLimit, $upperLimit);
 }
 
 class ChooseGenerator implements Generator

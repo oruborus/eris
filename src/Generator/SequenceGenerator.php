@@ -1,23 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
-
-/**
- * @psalm-suppress TypeDoesNotContainType
- * TODO: Generator::box($singleElementGenerator);
- */
-function seq(Generator $singleElementGenerator): SequenceGenerator
-{
-    if (!($singleElementGenerator instanceof Generator)) {
-        $singleElementGenerator = new ConstantGenerator($singleElementGenerator);
-    }
-    return new SequenceGenerator($singleElementGenerator);
-}
 
 class SequenceGenerator implements Generator
 {

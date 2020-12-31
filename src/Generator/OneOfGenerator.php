@@ -1,19 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
-
-/**
- * @return OneOfGenerator
- */
-function oneOf(/*$a, $b, ...*/)
-{
-    return new OneOfGenerator(func_get_args());
-}
 
 class OneOfGenerator implements Generator
 {

@@ -1,6 +1,5 @@
 <?php
 
-use Eris\Generator;
 use PHPUnit\Framework\TestCase;
 
 use function Eris\Generator\constant;

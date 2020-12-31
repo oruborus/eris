@@ -1,20 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
-
-/**
- * TODO: support calls like ($function . $generator)
- * @param callable $function
- */
-function map($function, Generator $generator): MapGenerator
-{
-    return new MapGenerator($function, $generator);
-}
 
 class MapGenerator implements Generator
 {

@@ -1,16 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
-
-function vector(int $size, Generator $elementsGenerator): VectorGenerator
-{
-    return new VectorGenerator($size, $elementsGenerator);
-}
 
 class VectorGenerator implements Generator
 {

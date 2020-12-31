@@ -1,19 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
-
-/**
- * @return AssociativeArrayGenerator
- */
-function associative(array $generators)
-{
-    return new AssociativeArrayGenerator($generators);
-}
 
 class AssociativeArrayGenerator implements Generator
 {
