@@ -18,12 +18,12 @@ You can force the sign of a number with:
 * ``Generator\neg()`` which produces an integer < 0.
 * ``Generator\byte()`` which produces an integer >= 0 and <= 255.
 
-.. literalinclude:: ../../examples/IntegerTest.php
+.. literalinclude:: ../../tests/Examples/IntegerTest.php
    :language: php
 
 For more precise and custom ranges, the ``Generator\choose()`` accepts a lower and upper bound for the interval to sample integers from.
 
-.. literalinclude:: ../../examples/ChooseTest.php
+.. literalinclude:: ../../tests/Examples/ChooseTest.php
    :language: php
 
 .. _float:
@@ -33,7 +33,7 @@ Floats
 
 ``Generator\float()`` will produce a float value, which can be positive or negative. In this example, ``testAPropertyHoldingOnlyForPositiveNumbers`` fails very quickly.
 
-.. literalinclude:: ../../examples/FloatTest.php
+.. literalinclude:: ../../tests/Examples/FloatTest.php
    :language: php
 
 .. _bool:
@@ -43,7 +43,7 @@ Booleans
 
 ``Generator\bool()`` produces a boolean, chosen between ``true`` and ``false``. It is mostly useful in conjunction with other Generators.
 
-.. literalinclude:: ../../examples/BooleanTest.php
+.. literalinclude:: ../../tests/Examples/BooleanTest.php
    :language: php
 
 .. _string:
@@ -53,7 +53,7 @@ Strings
 
 ``Generator\string()`` produces a string of arbitrary length. Only printable characters can be included in the string, which is UTF-8. Currently only ASCII characters between ``0x33`` and ``0x126`` are used.
 
-.. literalinclude:: ../../examples/StringTest.php
+.. literalinclude:: ../../tests/Examples/StringTest.php
    :language: php
 
 .. seealso::
@@ -67,7 +67,7 @@ Characters
 
 ``Generator\char()`` generates a character from the chosen charset, by default with a ``utf-8`` encoding. The only supported charset at the time of this writing is ``basic-latin``.
 
-.. literalinclude:: ../../examples/CharacterTest.php
+.. literalinclude:: ../../tests/Examples/CharacterTest.php
    :language: php
 
 ``Generator\charPrintableAscii()`` can also be used to limit the range of the character to the set of printable characters, from ``0x32`` to ``0x76``.
@@ -81,7 +81,7 @@ Constants
 
 Often, as shown in ``testUseConstantGeneratorImplicitly``, constant are automatically boxed in this Generator if used where a ``Generator`` instance would be required:
 
-.. literalinclude:: ../../examples/ConstantTest.php
+.. literalinclude:: ../../tests/Examples/ConstantTest.php
    :language: php
 
 .. _elements:
@@ -91,7 +91,7 @@ Elements
 
 ``Generator\elements()`` produces a value randomly extracted from the specified array. Values can be specified as arguments or with a single, numeric array.
 
-.. literalinclude:: ../../examples/ElementsTest.php
+.. literalinclude:: ../../tests/Examples/ElementsTest.php
    :language: php
 
 ``testVectorOfElementsGenerators`` shows how to compose the Elements Generator into a :ref:`vector()<vector>` to build a vector of selected, sometimes repeated, elements.

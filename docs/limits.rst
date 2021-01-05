@@ -13,7 +13,7 @@ For tests which take very long to run, it is possible to limit the number of ele
 * ``limitTo()``-method with an integer requesting a fixed number of iterations;
 * ``limitTo()``-method with a `DateInterval`_ object from the standard PHP library.
  
-.. literalinclude:: ../examples/LimitToTest.php
+.. literalinclude:: ../tests/Examples/LimitToTest.php
    :language: php
  
 In the first example, the test is stopped after 5 generations.
@@ -31,7 +31,7 @@ Size of generated data
 
 Many Generators accept a ``size`` parameter that should be used as an upper bound when creating new random elements. For example, this bound corresponds to a maximum positive integer, or to the maximum number of elements inside an array.
 
-.. literalinclude:: ../examples/SizeTest.php
+.. literalinclude:: ../tests/Examples/SizeTest.php
    :language: php
 
 By default size is equal to ``1000``, which means no number greater than ``1000`` in absolute value will be generated. This test sets the maximum size to ``1,000,0000``, and naturally fails when a number greater than ``100,000`` is picked and passed to the assertion. The failure message shows the shrunk input, exactly ``100,000``:

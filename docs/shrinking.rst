@@ -14,7 +14,7 @@ Shrinking repeats this process until the test does not fail anymore, or the valu
 Simplest example
 ----------------
 
-.. literalinclude:: ../examples/ShrinkingTest.php
+.. literalinclude:: ../tests/Examples/ShrinkingTest.php
    :language: php
 
 ``testShrinkingAString`` is the simplest shrinking example. Each iteration generates random strings and test them to check that they do not contain the letter ``B``. This is an example sequence of generated values (which by default will change at every run):
@@ -96,7 +96,7 @@ Shrinking time limit
 
 You can set a time limit for shrinking if you prefer to be presented with more complex examples with respect to spending test suite running time:
 
-.. literalinclude:: ../examples/ShrinkingTest.php
+.. literalinclude:: ../tests/Examples/ShrinkingTest.php
    :language: php
 
 The shrinking for this test will not run for more than 2 seconds (although the test as a whole may take more):
@@ -148,7 +148,7 @@ In some cases the ``then()`` method is non-deterministic as it spawns other proc
 
 Therefore, it is possible to configure Eris to disable the shrinking process. As a result, the first assertion failure will stop the test and let the exception bubble up:
 
-.. literalinclude:: ../examples/DisableShrinkingTest.php
+.. literalinclude:: ../tests/Examples/DisableShrinkingTest.php
    :language: php
 
 This test will show a failure message containing ``Total calls: 1``.

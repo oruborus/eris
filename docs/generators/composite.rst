@@ -10,7 +10,7 @@ Frequency
 
 ``Generator\frequency`` randomly chooses a Generator to use from the specified list, weighting the probability of each Generator with the provided value.
 
-.. literalinclude:: ../../examples/FrequencyTest.php
+.. literalinclude:: ../../tests/Examples/FrequencyTest.php
    :language: php
 
 ``testFalsyValues`` chooses the ``false`` value half of the times, ``0`` one quarter of the time, and ``''`` one quarte of the time.
@@ -30,7 +30,7 @@ One Of
 
 ``Generator\oneOf`` is a special case of ``Generator\frequency`` which selects each of the specified Generators with the same probability.
 
-.. literalinclude:: ../../examples/OneOfTest.php
+.. literalinclude:: ../../tests/Examples/OneOfTest.php
    :language: php
 
 .. seealso::
@@ -44,7 +44,7 @@ Map
 
 Map allows a Generator's output to be modified by applying the callable to the generated value.
 
-.. literalinclude:: ../../examples/MapTest.php
+.. literalinclude:: ../../tests/Examples/MapTest.php
    :language: php
 
 ``testApplyingAFunctionToGeneratedValues`` generates a vector of even numbers. Notice that any mapping can still be composed by other Generators: in this case, the even number Generator can be composed by ``Generator\vector()``, 
@@ -100,7 +100,7 @@ Such That
 
 Such That allows a Generator's output to be filtered, excluding values that to do not satisfy a condition.
 
-.. literalinclude:: ../../examples/SuchThatTest.php
+.. literalinclude:: ../../tests/Examples/SuchThatTest.php
    :language: php
 
 ``testSuchThatBuildsANewGeneratorFilteringTheInnerOne`` generates a vector of numbers greater than 42. Notice that any filterting can still be composed by other Generators: in this case, the greater-than-42 number Generator can be composed by ``Generator\vector()``, 
@@ -154,7 +154,7 @@ Bind allows a Generator's output to be used as an input to create another Genera
 
 For example, here's how to create a vector along with a random element chosen by it.
 
-.. literalinclude:: ../../examples/BindTest.php
+.. literalinclude:: ../../tests/Examples/BindTest.php
    :language: php
 
 .. _callables: http://php.net/manual/en/language.types.callable.php

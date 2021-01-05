@@ -7,7 +7,7 @@ Eris allows you to seed the pseudorandom number generator in order to attempt to
 
 Consider this test:
 
-.. literalinclude:: ../examples/AlwaysFailTest.php
+.. literalinclude:: ../tests/Examples/AlwaysFailTest.php
    :language: php
 
 This test will fail, no matter which value is generated. No shrinking will be performed as the selected Generator considers the elements of equal complexity.

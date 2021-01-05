@@ -20,7 +20,7 @@ Collect Frequencies
 
 The ``collectFrequencies()`` Listener allows to gather all generated values in order to display their statistical distribution.
 
-.. literalinclude:: ../examples/CollectTest.php
+.. literalinclude:: ../tests/Examples/CollectTest.php
    :language: php
 
 ``testGeneratedDataCollectionOnScalars`` collects integers:
@@ -69,7 +69,7 @@ Log
 
 The ``log()`` Listener allows to write a log file while particularly long tests are executing, showing the partial progress of the test.
 
-.. literalinclude:: ../examples/LogFileTest.php
+.. literalinclude:: ../tests/Examples/LogFileTest.php
    :language: php
 
 A file will be written during the test run with the following contents:
@@ -101,7 +101,7 @@ The ``@eris-ratio {ratio}`` annotation or  the``minimumEvaluations($ratio)`` API
 
 Management of this Listener is provided through this method instead of explicitly adding a Listener object, as there is a default Listener instantiated with a threshold of 0.5 that has to be replaced in case a new minimum is chosen.
 
-.. literalinclude:: ../examples/MinimumEvaluationsTest.php
+.. literalinclude:: ../tests/Examples/MinimumEvaluationsTest.php
    :language: php
 
 Both tests generate inputs in the range from 0 to 100, and since the condition of them being greater than 90 is rare, most of them will be discarded. By default Eris will check that 50% of the inputs are actually evaluated; therefore ``testFailsBecauseOfTheLowEvaluationRatio`` will fail with this message:

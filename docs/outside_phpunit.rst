@@ -8,7 +8,7 @@ Eris can be reused as a library for (reproducibly) generating random data, outsi
 Usage
 -----
 
-.. literalinclude:: ../examples/generating_integers.php
+.. literalinclude:: ../tests/Examples/generating_integers.php
    :language: php
 
 This script instantiates a ``Eris\Facade``, which offers the same interface as ``Eris\TestTrait``. ``forAll()`` is the main entry point and should be called over this object rather than ``$this``.

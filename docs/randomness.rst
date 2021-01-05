@@ -16,7 +16,7 @@ Being implemented inside a PHP object, ``purePhpMtRand()`` allows to isolate its
 Configuration
 -------------
 
-.. literalinclude:: ../examples/RandConfigurationTest.php
+.. literalinclude:: ../tests/Examples/RandConfigurationTest.php
    :language: php
 
 ``testUsingTheDefaultRandFunction`` specifies the ``rand`` variant, but is equivalent to not calling ``withRand()`` at all. ``srand`` is the corresponding seed function.
