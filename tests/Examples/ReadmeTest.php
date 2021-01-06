@@ -7,6 +7,8 @@ namespace Test\Examples;
 use Eris\TestTrait;
 use PHPUnit\Framework\TestCase;
 
+use function Eris\Generator\choose;
+
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  */
@@ -14,7 +16,10 @@ class ReadmeTest extends TestCase
 {
     use TestTrait;
 
-    public function testNaturalNumbersMagnitude()
+    /**
+     * @test
+     */
+    public function naturalNumbersMagnitude(): void
     {
         $this
             ->forAll(

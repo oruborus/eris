@@ -78,7 +78,6 @@ class ForAllTest extends EndToEndTestCase
             'NamesTest'             => [NamesTest::class],
             'OneOfTest'             => [OneOfTest::class],
             'RandConfigurationTest' => [RandConfigurationTest::class],
-            'ReadmeTest'            => [ReadmeTest::class],
             'RegexTest'             => [RegexTest::class],
             'SequenceTest'          => [SequenceTest::class],
             'SetTest'               => [SetTest::class],
@@ -87,6 +86,17 @@ class ForAllTest extends EndToEndTestCase
             'TupleTest'             => [TupleTest::class],
             'VectorTest'            => [VectorTest::class],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function ReadmeTests(): void
+    {
+        $result = $this->runTestClass(ReadmeTest::class);
+        $result->assertHadFailures(1)
+            ->assertExceptionOnTest(ExpectationFailedException::class, 'naturalNumbersMagnitude')
+            ->assertExceptionMessageOnTestMatches('/42 is apparently not less than 42./', 'naturalNumbersMagnitude');
     }
 
     /**
