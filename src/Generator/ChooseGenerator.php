@@ -10,10 +10,6 @@ use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
-if (!defined('ERIS_PHP_INT_MIN')) {
-    define('ERIS_PHP_INT_MIN', ~PHP_INT_MAX);
-}
-
 class ChooseGenerator implements Generator
 {
     private int $lowerLimit;
@@ -69,7 +65,7 @@ class ChooseGenerator implements Generator
             throw new InvalidArgumentException(
                 'lowerLimit (' . var_export($lowerLimit, true) . ') and ' .
                     'upperLimit (' . var_export($upperLimit, true) . ') should ' .
-                    'be Integers between ' . ERIS_PHP_INT_MIN . ' and ' . PHP_INT_MAX
+                    'be Integers between ' . ~PHP_INT_MAX . ' and ' . PHP_INT_MAX
             );
         }
     }
