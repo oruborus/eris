@@ -82,6 +82,29 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
+     * 
+     * @covers Eris\Value\ValueCollection::getValues
+     * @covers Eris\Value\ValueCollection::getIterator
+     *
+     * @uses Eris\Value\ValueCollection::__construct
+     *
+     * @uses Eris\Value\Value
+     */
+    public function containedValuesCanBeRetrieved(): void
+    {
+        $valueCount = rand(1, 25);
+        $values = [];
+        for ($i = 0; $i < $valueCount; $i++) {
+            $values[] = new Value($i);
+        }
+
+        $dut = new ValueCollection($values);
+
+        $this->assertSame(iterator_to_array($dut->getIterator()), $dut->getValues());
+    }
+
+    /**
+     * @test
      *
      * @covers Eris\Value\ValueCollection::offsetSet
      * @covers Eris\Value\ValueCollection::offsetGet

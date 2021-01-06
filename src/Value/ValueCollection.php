@@ -44,6 +44,13 @@ class ValueCollection implements ArrayAccess, Countable, IteratorAggregate
     {
         return count($this->values);
     }
+    /**
+     * @return Value<TValue>[]
+     */
+    public function getValues(): array
+    {
+        return $this->values;
+    }
 
     /**
      * @return ArrayIterator<array-key, Value<TValue>>
