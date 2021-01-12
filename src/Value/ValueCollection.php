@@ -14,12 +14,10 @@ use function array_search;
 use function array_values;
 use function count;
 use function debug_backtrace;
-use function end;
 use function is_null;
-use function key;
-use function reset;
 use function trigger_error;
 use function var_export;
+use RuntimeException;
 
 /**
  * @template TValue
@@ -150,54 +148,40 @@ class ValueCollection implements ArrayAccess, Countable, IteratorAggregate
      */
     public function shift()
     {
-        $value = reset($this->values);
-
-        if (!is_null($key = key($this->values))) {
-            unset($this[$key]);
-            $this->values = array_values($this->values);
-
-            return $value;
+        if (is_null($key = array_key_first($this->values))) {
+            return false;
         }
 
-        return false;
+        $value = $this->values[$key];
+
+        unset($this->values[$key]);
+        $this->values = array_values($this->values);
+
+        return $value;
     }
 
     /**
-     * @deprecated
-     * @return ?Value<TValue>
+     * @return Value<TValue>
+     * @throws RuntimeException
      */
-    public function first(): ?Value
+    public function first(): Value
     {
-        $value = reset($this->values);
+        $key = array_key_first($this->values) ??
+            throw new RuntimeException('Undefined first element of ValueCollection');
 
-        if (!is_null(key($this->values))) {
-            return $value;
-        }
-
-        [['file' => $file, 'line' => $line]] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
-
-        trigger_error("Undefined first element of ValueCollection in {$file} on line {$line}", E_USER_WARNING);
-
-        return null;
+        return $this->values[$key];
     }
 
     /**
-     * @deprecated
-     * @return ?Value<TValue>
+     * @return Value<TValue>
+     * @throws RuntimeException
      */
-    public function last(): ?Value
+    public function last(): Value
     {
-        $value = end($this->values);
+        $key = array_key_last($this->values) ??
+            throw new RuntimeException('Undefined last element of ValueCollection');
 
-        if (!is_null(key($this->values))) {
-            return $value;
-        }
-
-        [['file' => $file, 'line' => $line]] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
-
-        trigger_error("Undefined last element of ValueCollection in {$file} on line {$line}", E_USER_WARNING);
-
-        return null;
+        return $this->values[$key];
     }
 
     /**
@@ -226,23 +210,23 @@ class ValueCollection implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * @deprecated
-     * @return ?TValue
      *
-     * @psalm-suppress DeprecatedMethod
+     * @return TValue
+     * @throws RuntimeException
      */
     public function unbox()
     {
-        return $this->last()?->unbox();
+        return $this->last()->value();
     }
 
     /**
      * @deprecated
-     * @return mixed
      *
-     * @psalm-suppress DeprecatedMethod
+     * @return mixed
+     * @throws RuntimeException
      */
     public function input()
     {
-        return $this->last()?->input();
+        return $this->last()->input();
     }
 }

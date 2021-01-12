@@ -7,6 +7,7 @@ namespace Test\Unit\Value;
 use Eris\Value\ValueCollection;
 use Eris\Value\Value;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Stringable;
 
 use function array_map;
@@ -363,13 +364,11 @@ class ValueCollectionTest extends TestCase
      * @uses Eris\Value\ValueCollection::offsetSet
      *
      * @uses Eris\Value\Value
-     *
-     * @psalm-suppress DeprecatedMethod
      */
-    public function triggerWarningWhenFirstElementOfEmptyCollectionIsRequested(): void
+    public function throwsExceptionWhenFirstElementOfEmptyCollectionIsRequested(): void
     {
-        $this->expectWarning();
-        $this->expectWarningMessageMatches('/Undefined first element of ValueCollection in .+ on line \d+/');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Undefined first element of ValueCollection');
 
         $dut = new ValueCollection();
 
@@ -385,22 +384,13 @@ class ValueCollectionTest extends TestCase
      * @uses Eris\Value\ValueCollection::offsetSet
      *
      * @uses Eris\Value\Value
-     *
-     * @psalm-suppress DeprecatedMethod
      */
     public function canReturnTheFirstElement(): void
     {
-        /**
-         * @psalm-suppress InvalidArgument
-         */
-        set_error_handler(fn () => null);
-
         $expected = new Value(0);
         $valueCount = rand(1, 25);
 
         $dut = new ValueCollection();
-
-        $this->assertNull($dut->first());
 
         $dut[] = $expected;
 
@@ -409,8 +399,6 @@ class ValueCollectionTest extends TestCase
         }
 
         $this->assertSame($expected, $dut->first());
-
-        restore_error_handler();
     }
 
     /**
@@ -422,13 +410,11 @@ class ValueCollectionTest extends TestCase
      * @uses Eris\Value\ValueCollection::offsetSet
      *
      * @uses Eris\Value\Value
-     *
-     * @psalm-suppress DeprecatedMethod
      */
-    public function triggerWarningWhenLastElementOfEmptyCollectionIsRequested(): void
+    public function throwsExceptionWhenLastElementOfEmptyCollectionIsRequested(): void
     {
-        $this->expectWarning();
-        $this->expectWarningMessageMatches('/Undefined last element of ValueCollection in .+ on line \d+/');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Undefined last element of ValueCollection');
 
         $dut = new ValueCollection();
 
@@ -444,22 +430,13 @@ class ValueCollectionTest extends TestCase
      * @uses Eris\Value\ValueCollection::offsetSet
      *
      * @uses Eris\Value\Value
-     *
-     * @psalm-suppress DeprecatedMethod
      */
     public function canReturnTheLastElement(): void
     {
-        /**
-         * @psalm-suppress InvalidArgument
-         */
-        set_error_handler(fn () => null);
-
         $expected = new Value(0);
         $valueCount = rand(1, 25);
 
         $dut = new ValueCollection();
-
-        $this->assertNull($dut->last());
 
         for ($i = 1; $i <= $valueCount; $i++) {
             $dut[] = new Value($i);
@@ -468,8 +445,6 @@ class ValueCollectionTest extends TestCase
         $dut[] = $expected;
 
         $this->assertSame($expected, $dut->last());
-
-        restore_error_handler();
     }
 
     /**
@@ -581,7 +556,6 @@ class ValueCollectionTest extends TestCase
      *
      * @uses Eris\Value\ValueCollection::__construct
      * @uses Eris\Value\ValueCollection::last
-     * @uses Eris\Value\ValueCollection::offsetUnset
      *
      * @uses Eris\Value\Value
      */
