@@ -72,9 +72,6 @@ class ForAllTest extends EndToEndTestCase
             'GeneratorSamplesTest'  => [GeneratorSamplesTest::class],
             'IntegerTest'           => [IntegerTest::class],
             'LimitToTest'           => [LimitToTest::class],
-            /**
-             * @todo Investigate why this takes 30s to complete
-             */
             'NamesTest'             => [NamesTest::class],
             'OneOfTest'             => [OneOfTest::class],
             'RandConfigurationTest' => [RandConfigurationTest::class],
