@@ -9,6 +9,12 @@ use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
+use function chr;
+use function ord;
+
+/**
+ * @implements Generator<string>
+ */
 class CharacterGenerator implements Generator
 {
     private int $lowerLimit;
@@ -46,7 +52,7 @@ class CharacterGenerator implements Generator
      */
     public function shrink(Value $element): ValueCollection
     {
-        $shrinkedValue = chr($this->shrinkingProgression->next(ord($element->unbox())));
+        $shrinkedValue = chr($this->shrinkingProgression->next(ord($element->value())));
 
         return new ValueCollection([new Value($shrinkedValue)]);
     }

@@ -9,6 +9,12 @@ use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
+use function array_values;
+use function floor;
+
+/**
+ * @implements Generator<int>
+ */
 class IntegerGenerator implements Generator
 {
     /**
@@ -29,12 +35,9 @@ class IntegerGenerator implements Generator
      */
     public function __invoke(int $size, RandomRange $rand): Value
     {
-        $value = $rand->rand(0, $size);
-        $mapFn = $this->mapFn;
+        $value = $rand->rand(0, $size) * ($rand->rand(0, 1) ? -1 : 1);
 
-        $result = $rand->rand(0, 1) === 0
-            ? $mapFn($value)
-            : $mapFn($value * (-1));
+        $result = ($this->mapFn)($value);
 
         return new Value($result);
     }
@@ -45,27 +48,33 @@ class IntegerGenerator implements Generator
      */
     public function shrink(Value $element): ValueCollection
     {
-        $mapFn = $this->mapFn;
-        $element = $element->input();
+        /**
+         * @var int $input
+         */
+        $input = $element->input();
 
-        if ($element > 0) {
-            $options = [];
-            $nextHalf = $element;
-            while (($nextHalf = (int) floor($nextHalf / 2)) > 0) {
-                $options[] = new Value($mapFn($element - $nextHalf));
-            }
-            $options = array_unique($options, SORT_REGULAR);
-            if ($options) {
-                return new ValueCollection($options);
-            } else {
-                return new ValueCollection([new Value($mapFn($element - 1))]);
-            }
-        }
-        if ($element < 0) {
-            // TODO: shrink with options also negative values
-            return new ValueCollection([new Value($mapFn($element + 1))]);
+        if ($input === 0) {
+            return new ValueCollection([$element]);
         }
 
-        return new ValueCollection([new Value($element)]);
+        $sign = 1;
+
+        if ($input < 0) {
+            $sign = -1;
+            $input *= $sign;
+        }
+        $mapFn = fn (int $value): int => $sign * ($this->mapFn)($value);
+
+        $options = [];
+        $nextHalf = $input;
+
+        while ($nextHalf = (int) ($nextHalf / 2)) {
+            $value = $mapFn($input - $nextHalf);
+            $options[$value] = new Value($value);
+        }
+
+        $options = array_values($options) ?: [new Value($mapFn($input - 1))];
+
+        return new ValueCollection($options);
     }
 }

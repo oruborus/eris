@@ -4,45 +4,17 @@ declare(strict_types=1);
 
 namespace Eris\Generator;
 
-use Eris\Contracts\Generator;
-use Eris\Random\RandomRange;
-use Eris\Value\Value;
-use Eris\Value\ValueCollection;
+use function array_map;
 
-class OneOfGenerator implements Generator
+class OneOfGenerator extends FrequencyGenerator
 {
-    private FrequencyGenerator $generator;
-
     /**
-     * @param Generator[] $generators
+     * @param list<mixed> $generators
      */
     public function __construct($generators)
     {
-        $this->generator = new FrequencyGenerator($this->allWithSameFrequency($generators));
-    }
+        $generatorWithFrequency = array_map(static fn ($item): array => [1, $item], $generators);
 
-    public function __invoke(int $size, RandomRange $rand): Value
-    {
-        return $this->generator->__invoke($size, $rand);
-    }
-
-    public function shrink(Value $element): ValueCollection
-    {
-        return $this->generator->shrink($element);
-    }
-
-    /**
-     * @param Generator[] $generators
-     * @return (int|Generator)[][]
-     * @psalm-return array<array-key, array{0: int, 1: Generator}>
-     */
-    private function allWithSameFrequency(array $generators): array
-    {
-        return array_map(
-            function ($generator): array {
-                return [1, $generator];
-            },
-            $generators
-        );
+        parent::__construct($generatorWithFrequency);
     }
 }

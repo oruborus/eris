@@ -8,86 +8,90 @@ use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
-use LogicException;
 use PHPUnit\Framework\Constraint\Constraint;
-use PHPUnit\Framework\ExpectationFailedException;
 
+/**
+ * @template TValue
+ * @implements Generator<TValue>
+ */
 class SuchThatGenerator implements Generator
 {
     /**
-     * @var callable|Constraint $filter
+     * @var callable(TValue):bool
      */
     private $filter;
+
+    /**
+     * @var Generator<TValue> $generator
+     */
     private Generator $generator;
+
     private int $maximumAttempts;
 
     /**
-     * @param callable|Constraint $filter
+     * @param callable(TValue):bool|Constraint $filter
+     * @param Generator<TValue> $generator
      */
     public function __construct($filter, Generator $generator, int $maximumAttempts = 100)
     {
+        if ($filter instanceof Constraint) {
+            /**
+             * @var callable(TValue):bool
+             */
+            $filter =
+                /**
+                 * @psalm-suppress NullableReturnStatement
+                 * @psalm-suppress InvalidNullableReturnType
+                 *
+                 * @param Value<TValue> $value
+                 */
+                fn ($value): bool => $filter->evaluate($value, '', true);
+        }
+
         $this->filter = $filter;
+
         $this->generator = $generator;
+
         $this->maximumAttempts = $maximumAttempts;
     }
 
     public function __invoke(int $size, RandomRange $rand): Value
     {
-        $value = $this->generator->__invoke($size, $rand);
-        $attempts = 0;
-        while (!$this->predicate($value)) {
-            if ($attempts >= $this->maximumAttempts) {
-                throw new SkipValueException("Tried to satisfy predicate $attempts times, but could not generate a good value. You should try to improve your generator to make it more likely to output good values, or to use a less restrictive condition. Last generated value was: " . $value->__toString());
-            }
+        for ($attempts = 0; $attempts < $this->maximumAttempts; $attempts++) {
             $value = $this->generator->__invoke($size, $rand);
-            $attempts++;
+
+            if (($this->filter)($value->value())) {
+                return $value;
+            }
         }
-        return $value;
+
+        throw new SkipValueException(
+            "Tried to satisfy predicate {$attempts} times, but could not generate a good value. " .
+                "You should try to improve your generator to make it more likely to output good values, " .
+                "or to use a less restrictive condition."
+        );
     }
 
     public function shrink(Value $value): ValueCollection
     {
-        $shrunk = $this->generator->shrink($value);
-        $attempts = 0;
+        $shrunkValues = new ValueCollection([$value]);
 
-        $filtered = new ValueCollection();
-        while (!count($filtered = $this->filterForPredicate($shrunk))) {
-            if ($attempts >= $this->maximumAttempts) {
-                return new ValueCollection([$value]);
+        for ($attempts = 0; $attempts < $this->maximumAttempts; $attempts++) {
+            $shrunkValues = $this->generator->shrink($shrunkValues->last());
+
+
+            $filtered = new ValueCollection();
+            foreach ($shrunkValues as $shrunkValue) {
+                if (($this->filter)($shrunkValue->value())) {
+                    $filtered[] = $shrunkValue;
+                }
             }
-            $shrunk = $this->generator->shrink($shrunk->last());
-            $attempts++;
-        }
 
-        return $filtered;
-    }
-
-    private function filterForPredicate(ValueCollection $options): ValueCollection
-    {
-        $goodOnes = new ValueCollection();
-        foreach ($options as $option) {
-            if ($this->predicate($option)) {
-                $goodOnes[] = $option;
-            }
-        }
-        return $goodOnes;
-    }
-
-    private function predicate(Value $value): bool
-    {
-        if ($this->filter instanceof Constraint) {
-            try {
-                $this->filter->evaluate($value->unbox());
-                return true;
-            } catch (ExpectationFailedException $e) {
-                return false;
+            if (count($filtered)) {
+                return $filtered;
             }
         }
 
-        // if (is_callable($this->filter)) {
-        return (bool) call_user_func($this->filter, $value->unbox());
-        // }
-
-        throw new LogicException("Specified filter does not seem to be of the correct type. Please pass a callable or a PHPUnit\Framework\Constraint instead of " . var_export($this->filter, true));
+        return new ValueCollection([$value]);
     }
 }

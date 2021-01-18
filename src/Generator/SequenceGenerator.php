@@ -9,83 +9,87 @@ use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
+use function array_map;
+use function array_rand;
+use function array_splice;
+
+/**
+ * @template TInnerValue
+ * @implements Generator<list<TInnerValue>>
+ */
 class SequenceGenerator implements Generator
 {
-    private $singleElementGenerator;
+    /**
+     * @var Generator<TInnerValue> $generator
+     */
+    private Generator $generator;
 
-    public function __construct(Generator $singleElementGenerator)
+    /**
+     * @param Generator<TInnerValue> $generator
+     */
+    public function __construct(Generator $generator)
     {
-        $this->singleElementGenerator = $singleElementGenerator;
+        $this->generator = $generator;
     }
 
     /**
-     * @return Value<array>
+     * @return Value<list<TInnerValue>>
      */
     public function __invoke(int $size, RandomRange $rand): Value
     {
         $sequenceLength = $rand->rand(0, $size);
-        return $this->vector($sequenceLength)->__invoke($size, $rand);
+        $vectorGenerator = new VectorGenerator($sequenceLength, $this->generator);
+
+        /**
+         * @var Value<list<TInnerValue>>
+         */
+        return $vectorGenerator($size, $rand);
     }
 
     /**
-     * @param Value<array> $sequence
-     * @return ValueCollection<array>
+     * @param Value<list<TInnerValue>> $sequence
+     * @return ValueCollection<list<TInnerValue>>
      */
     public function shrink(Value $sequence): ValueCollection
     {
-        $options = new ValueCollection();
-        if (count($sequence->unbox()) > 0) {
-            $options[] = $this->shrinkInSize($sequence);
-            // TODO: try to shrink the elements also of longer sequences
-            if (count($sequence->unbox()) < 10) {
-                // a size which is computationally acceptable
-                $shrunkElements = $this->shrinkTheElements($sequence);
-                foreach ($shrunkElements as $shrunkValue) {
-                    $options[] = $shrunkValue;
-                }
-            }
+        $count = count($sequence->value());
+
+        if ($count === 0) {
+            /**
+             * @var ValueCollection<list<TInnerValue>>
+             */
+            return new ValueCollection();
         }
 
-        return $options;
-    }
-
-    /**
-     * @param Value<array> $sequence
-     * @return Value<array>
-     */
-    private function shrinkInSize(Value $sequence): Value
-    {
-        if (count($sequence->unbox()) === 0) {
-            return $sequence;
-        }
-
+        /**
+         * @var list<Value<TInnerValue>> $input
+         */
         $input = $sequence->input();
-        $indexOfElementToRemove = array_rand($input);
-        unset($input[$indexOfElementToRemove]);
-        $input = array_values($input);
 
-        return new Value(
+        array_splice($input, array_rand($input), 1);
+
+        $shrunkSequence = new Value(
             array_map(
                 /**
-                 * @return mixed
+                 * @param Value<TInnerValue> $element
+                 * @return TInnerValue
                  */
-                fn (Value $element) => $element->unbox(),
+                fn (Value $element) => $element->value(),
                 $input
             ),
             $input
         );
-    }
 
-    /**
-     * @return ValueCollection<array>
-     */
-    private function shrinkTheElements(Value $sequence): ValueCollection
-    {
-        return $this->vector(count($sequence->unbox()))->shrink($sequence);
-    }
+        // TODO: try to shrink the elements also of longer sequences
+        if ($count > 9) { // a size which is computationally acceptable
+            return new ValueCollection([$shrunkSequence]);
+        }
 
-    private function vector(int $size): VectorGenerator
-    {
-        return new VectorGenerator($size, $this->singleElementGenerator);
+        /**
+         * @var ValueCollection<list<TInnerValue>> $shrunkElements
+         */
+        $shrunkElements = (new VectorGenerator($count, $this->generator))->shrink($sequence);
+
+        return new ValueCollection([$shrunkSequence, ...$shrunkElements->getValues()]);
     }
 }

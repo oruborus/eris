@@ -9,6 +9,11 @@ use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
+use function count;
+
+/**
+ * @implements Generator<bool>
+ */
 class BooleanGenerator implements Generator
 {
     /**

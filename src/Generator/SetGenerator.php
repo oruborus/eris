@@ -9,31 +9,47 @@ use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
+use function array_rand;
+use function array_splice;
+use function count;
+use function in_array;
+use function rand;
+
+/**
+ * @template TInnerValue
+ * @implements Generator<list<TInnerValue>>
+ */
 class SetGenerator implements Generator
 {
-    private Generator $singleElementGenerator;
-
-    public function __construct(Generator $singleElementGenerator)
-    {
-        $this->singleElementGenerator = $singleElementGenerator;
-    }
+    /**
+     * @var Generator<TInnerValue> $generator
+     */
+    private Generator $generator;
 
     /**
-     * @return Value<array>
+     * @param Generator<TInnerValue> $generator
+     */
+    public function __construct(Generator $generator)
+    {
+        $this->generator = $generator;
+    }
+    /**
+     * @return Value<list<TInnerValue>>
      */
     public function __invoke(int $size, RandomRange $rand): Value
     {
         $setSize = rand(0, $size);
         $set = [];
         $input = [];
-        $trials = 0;
-        while (count($set) < $setSize && $trials < 2 * $setSize) {
-            $trials++;
-            $candidateNewElement = $this->singleElementGenerator->__invoke($size, $rand);
-            if (in_array($candidateNewElement->unbox(), $set, $strict = true)) {
+
+        for ($tries = 0; $tries < 2 * $setSize && count($set) < $setSize; $tries++) {
+            $candidateNewElement = $this->generator->__invoke($size, $rand);
+
+            if (in_array($candidateNewElement->value(), $set, $strict = true)) {
                 continue;
             }
-            $set[] = $candidateNewElement->unbox();
+
+            $set[]   = $candidateNewElement->value();
             $input[] = $candidateNewElement;
         }
 
@@ -41,32 +57,36 @@ class SetGenerator implements Generator
     }
 
     /**
-     * @param Value<array> $set
-     * @return ValueCollection<array>
+     * @param Value<list<TInnerValue>> $set
+     * @return ValueCollection<list<TInnerValue>>
      */
     public function shrink(Value $set): ValueCollection
     {
-        if (count($set->input()) === 0) {
+        /**
+         * @var list<Value<TInnerValue>> $input
+         */
+        $input = $set->input();
+
+        if (empty($input)) {
             return new ValueCollection([$set]);
         }
 
-        $input = $set->input();
-        // TODO: make deterministic
-        // TODO: shrink also the elements, not just the size of the set
-        $indexOfElementToRemove = array_rand($input);
-        unset($input[$indexOfElementToRemove]);
-        $input = array_values($input);
+        array_splice($input, array_rand($input), 1);
 
+        /**
+         * @var ValueCollection<list<TInnerValue>>
+         */
         return new ValueCollection([
             new Value(
                 array_map(
                     /**
-                     * @return mixed
+                     * @param Value<TInnerValue> $element
+                     * @return TInnerValue
                      */
-                    fn (Value $element) => $element->unbox(),
+                    fn (Value $element) => $element->value(),
                     $input
                 ),
-                array_values($input),
+                $input
             )
         ]);
     }

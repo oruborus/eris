@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Eris\Generator;
 
-use BadFunctionCallException;
 use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
@@ -14,15 +13,15 @@ use ReverseRegex\Random\SimpleRandom;
 use ReverseRegex\Parser;
 use ReverseRegex\Generator\Scope;
 
+/**
+ * @implements Generator<string>
+ */
 class RegexGenerator implements Generator
 {
     private string $expression;
 
     public function __construct(string $expression)
     {
-        if (!class_exists("ReverseRegex\Parser")) {
-            throw new BadFunctionCallException("Please install the suggested dependency icomefromthenet/reverse-regex to run this Generator.");
-        }
         $this->expression = $expression;
     }
 

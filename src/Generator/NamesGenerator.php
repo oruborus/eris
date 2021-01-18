@@ -8,14 +8,25 @@ use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
-use InvalidArgumentException;
 
+use function count;
+use function file;
+use function levenshtein;
+use function mb_strlen;
+
+use const PHP_INT_MAX;
+
+/**
+ * @implements Generator<string>
+ */
 class NamesGenerator implements Generator
 {
     /**
-     * @var string[] $list
+     * @var list<string> $list
      */
     private array $list;
+
+    private int $minLength = PHP_INT_MAX;
 
     /**
      * @link http://data.bfontaine.net/names/firstnames.txt
@@ -24,22 +35,20 @@ class NamesGenerator implements Generator
      */
     public static function defaultDataSet(): self
     {
-        return new self(
-            array_map(
-                function ($line) {
-                    return trim($line, " \n");
-                },
-                file(__DIR__ . "/first_names.txt")
-            )
-        );
+        return new self(file(__DIR__ . "/first_names.txt", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
     }
 
     /**
-     * @param string[] $list
+     * @param list<string> $list
      */
     public function __construct(array $list)
     {
         $this->list = $list;
+
+        foreach ($this->list as $candidate) {
+            $candidateLength = mb_strlen($candidate);
+            $this->minLength = $candidateLength < $this->minLength ? $candidateLength : $this->minLength;
+        }
     }
 
     /**
@@ -47,96 +56,44 @@ class NamesGenerator implements Generator
      */
     public function __invoke(int $size, RandomRange $rand): Value
     {
-        $candidateNames = $this->filterDataSet(
-            $this->lengthLessThanOrEqualTo($size)
-        );
-        if (!$candidateNames) {
+        if ($size < $this->minLength) {
             return new Value('');
         }
-        $index = $rand->rand(0, count($candidateNames) - 1);
 
-        return new Value($candidateNames[$index]);
+        $index = -1;
+
+        while (strlen($this->list[$index = $rand->rand(0, count($this->list) - 1)]) > $size);
+
+        return new Value($this->list[$index]);
     }
 
     /**
      * @param Value<string> $element
      * @return ValueCollection<string>
      */
-    public function shrink(Value $value): ValueCollection
+    public function shrink(Value $element): ValueCollection
     {
-        $candidateNames = $this->filterDataSet(
-            $this->lengthSlightlyLessThan(strlen($value->unbox()))
-        );
+        $value = $element->value();
+        $size  = mb_strlen($value) - 1;
 
-        if (!$candidateNames) {
-            return new ValueCollection([$value]);
-        }
-        $distances = $this->distancesBy($value->unbox(), $candidateNames);
+        $primeDistance = PHP_INT_MAX;
+        $primeCandidate = $value;
 
-        return new ValueCollection([new Value($this->minimumDistanceName($distances))]);
-    }
-
-    /**
-     * @param callable(string):bool $predicate
-     * @return string[]
-     */
-    private function filterDataSet($predicate): array
-    {
-        return array_values(array_filter(
-            $this->list,
-            $predicate
-        ));
-    }
-
-    /**
-     * @return callable(string):bool
-     */
-    private function lengthLessThanOrEqualTo(int $size)
-    {
-        return fn (string $name): bool => strlen($name) <= $size;
-    }
-
-    /**
-     * @return callable(string):bool
-     */
-    private function lengthSlightlyLessThan(int $size): \Closure
-    {
-        $lowerLength = $size - 1;
-        return fn (string $name): bool => strlen($name) === $lowerLength;
-    }
-
-    /**
-     * @param string[] $candidateNames
-     * @return int[]
-     * @psalm-return array<array-key, int>
-     */
-    private function distancesBy(string $value, array $candidateNames): array
-    {
-        $distances = [];
-        foreach ($candidateNames as $name) {
-            $distances[$name] = levenshtein($value, $name);
-        }
-        return $distances;
-    }
-
-    /**
-     * @return (int|string)
-     *
-     * @psalm-return array-key
-     * @param int[] $distances
-     */
-    private function minimumDistanceName(array $distances)
-    {
-        if (empty($distances)) {
-            throw new InvalidArgumentException('At least one distance must be provided');
-        }
-        $minimumDistance = min($distances);
-        $candidatesWithEqualDistance = array_filter(
-            $distances,
-            function ($distance) use ($minimumDistance) {
-                return $distance == $minimumDistance;
+        foreach ($this->list as $candidate) {
+            if (strlen($candidate) !== $size) {
+                continue;
             }
-        );
-        return array_keys($candidatesWithEqualDistance)[0];
+
+            $distance = levenshtein($value, $candidate);
+
+            if ($distance >= $primeDistance) {
+                continue;
+            }
+
+            $primeCandidate = $candidate;
+            $primeDistance  = $distance;
+        }
+
+        return new ValueCollection([new Value($primeCandidate)]);
     }
 }

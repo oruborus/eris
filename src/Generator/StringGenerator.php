@@ -9,6 +9,12 @@ use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
+use function chr;
+use function mb_substr;
+
+/**
+ * @implements Generator<string>
+ */
 class StringGenerator implements Generator
 {
     /**
@@ -31,9 +37,11 @@ class StringGenerator implements Generator
      */
     public function shrink(Value $element): ValueCollection
     {
-        if ($element->unbox() === '') {
+        $value = $element->value();
+
+        if (empty($value)) {
             return new ValueCollection([$element]);
         }
-        return new ValueCollection([new Value(substr($element->unbox(), 0, -1))]);
+        return new ValueCollection([new Value(mb_substr($element->value(), 0, -1))]);
     }
 }

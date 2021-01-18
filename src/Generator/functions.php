@@ -8,6 +8,9 @@ use DateTime;
 use Eris\Contracts\Generator;
 
 use function abs;
+use function array_combine;
+use function array_keys;
+use function array_map;
 use function count;
 use function is_array;
 use function is_string;
@@ -17,8 +20,12 @@ use function is_string;
  */
 function ensureAreAllGenerators(array $generators): array
 {
-    return array_map('Eris\Generator\ensureIsGenerator', $generators);
+    return array_combine(
+        array_keys($generators),
+        array_map('Eris\Generator\ensureIsGenerator', $generators)
+    );
 }
+
 /**
  * @param mixed $generator
  */

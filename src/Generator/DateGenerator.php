@@ -4,23 +4,27 @@ declare(strict_types=1);
 
 namespace Eris\Generator;
 
+use DateTime;
 use Eris\Contracts\Generator;
 use Eris\Random\RandomRange;
-use DateTime;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
+use function floor;
+
+/**
+ * @implements Generator<DateTime>
+ */
 class DateGenerator implements Generator
 {
-    private DateTime $lowerLimit;
-    private DateTime $upperLimit;
-    private int $intervalInSeconds;
+    private int $lowerLimit;
+
+    private int $interval;
 
     public function __construct(DateTime $lowerLimit, DateTime $upperLimit)
     {
-        $this->lowerLimit = $lowerLimit;
-        $this->upperLimit = $upperLimit;
-        $this->intervalInSeconds = $upperLimit->getTimestamp() - $lowerLimit->getTimestamp();
+        $this->lowerLimit = $lowerLimit->getTimestamp();
+        $this->interval   = $upperLimit->getTimestamp() - $this->lowerLimit;
     }
 
     /**
@@ -28,9 +32,9 @@ class DateGenerator implements Generator
      */
     public function __invoke(int $_size, RandomRange $rand): Value
     {
-        $generatedOffset = $rand->rand(0, $this->intervalInSeconds);
+        $timestamp = $this->lowerLimit + $rand->rand(0, $this->interval);
 
-        return new Value($this->fromOffset($generatedOffset));
+        return new Value(new DateTime("@{$timestamp}"));
     }
 
     /**
@@ -39,17 +43,8 @@ class DateGenerator implements Generator
      */
     public function shrink(Value $element): ValueCollection
     {
-        $timeOffset = $element->unbox()->getTimestamp() - $this->lowerLimit->getTimestamp();
-        $halvedOffset = (int) floor($timeOffset / 2);
+        $timestamp = (int) floor(($this->lowerLimit + $element->value()->getTimestamp()) / 2);
 
-        return new ValueCollection([new Value($this->fromOffset($halvedOffset))]);
-    }
-
-    private function fromOffset(int $offset): DateTime
-    {
-        $chosenTimestamp = $this->lowerLimit->getTimestamp() + $offset;
-        $element = new DateTime();
-        $element->setTimestamp($chosenTimestamp);
-        return $element;
+        return new ValueCollection([new Value(new DateTime("@{$timestamp}"))]);
     }
 }

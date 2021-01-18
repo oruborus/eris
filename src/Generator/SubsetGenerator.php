@@ -12,51 +12,70 @@ use Eris\Contracts\Generator;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
+use function array_rand;
+use function array_values;
+use function array_splice;
+use function count;
+use function floor;
+
+/**
+ * @implements Generator<list<mixed>>
+ */
 class SubsetGenerator implements Generator
 {
-    private $universe;
+    /**
+     * @var list<mixed> $universe
+     */
+    private array $universe;
 
     public function __construct(array $universe)
     {
-        $this->universe = $universe;
+        $this->universe = array_values($universe);
     }
 
     /**
-     * @return Value<array>
+     * @return Value<list<mixed>>
      */
     public function __invoke(int $size, RandomRange $rand): Value
     {
+        $universeSize = count($this->universe);
         $relativeSize = $size / ForAll::DEFAULT_MAX_SIZE;
-        $maximumSubsetIndex = (int) floor(pow(2, count($this->universe)) * $relativeSize);
+
+        $maximumSubsetIndex = (int) floor(2 ** $universeSize * $relativeSize);
         $subsetIndex = $rand->rand(0, $maximumSubsetIndex);
-        $binaryDescription = str_pad(decbin($subsetIndex), count($this->universe), "0", STR_PAD_LEFT);
-        $subset = [];
-        for ($i = 0; $i < strlen($binaryDescription); $i++) {
-            $elementPresent = $binaryDescription[$i];
-            if ($elementPresent == "1") {
-                $subset[] = $this->universe[$i];
+
+        $subSet = [];
+        for ($i = 0; $i < $universeSize; $i++) {
+            if ($subsetIndex & (1 << $i)) {
+                /**
+                 * @var mixed
+                 */
+                $subSet[] = $this->universe[$i];
             }
         }
 
-        return new Value($subset);
+        return new Value($subSet);
     }
 
     /**
-     * @param Value<array> $set
-     * @return ValueCollection<array>
+     * @param Value<list<mixed>> $set
+     * @return ValueCollection<list<mixed>>
      */
     public function shrink(Value $set): ValueCollection
     {
+        /**
+         * @var list<mixed> $input
+         */
+        $input = $set->input();
+
         // TODO: see SetGenerator::shrink()
-        if (count($set->unbox()) === 0) {
+        if (empty($input)) {
             return new ValueCollection([$set]);
         }
 
-        $input = $set->input();
         // TODO: make deterministic by returning an array of Values
-        $indexOfElementToRemove = array_rand($input);
-        unset($input[$indexOfElementToRemove]);
+        array_splice($input, array_rand($input), 1);
 
-        return new ValueCollection([new Value(array_values($input))]);
+        return new ValueCollection([new Value($input)]);
     }
 }

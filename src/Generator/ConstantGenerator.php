@@ -11,6 +11,7 @@ use Eris\Value\ValueCollection;
 
 /**
  * @template TValue
+ * @implements Generator<TValue>
  */
 class ConstantGenerator implements Generator
 {
@@ -47,7 +48,7 @@ class ConstantGenerator implements Generator
 
     /**
      * @param Value<TValue> $element
-     * @return ValueCOllection<TValue>
+     * @return ValueCollection<TValue>
      */
     public function shrink(Value $element): ValueCollection
     {

@@ -9,16 +9,24 @@ use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
+use function array_values;
+
+/**
+ * @implements Generator<mixed>
+ */
 class ElementsGenerator implements Generator
 {
     private array $domain;
 
     public static function fromArray(array $domain): self
     {
-        return new self($domain);
+        return new self(...array_values($domain));
     }
 
-    private function __construct(array $domain)
+    /**
+     * @param mixed $domain
+     */
+    public function __construct(...$domain)
     {
         $this->domain = $domain;
     }

@@ -9,65 +9,77 @@ use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
+use function Eris\cartesianProduct;
+
+/**
+ * @implements Generator<array>
+ */
 class AssociativeArrayGenerator implements Generator
 {
     /**
      * @var Generator[] $generators
      */
     private array $generators;
-    private TupleGenerator $tupleGenerator;
 
     /**
      * @param Generator[] $generators
      */
     public function __construct(array $generators)
     {
-        $this->generators = $generators;
-        $this->tupleGenerator = new TupleGenerator(array_values($generators));
+        $this->generators = ensureAreAllGenerators($generators);
     }
 
     /**
-     * @return Value<array>
+     * @psalm-suppress MixedAssignment
      */
     public function __invoke(int $size, RandomRange $rand): Value
     {
-        $tuple = $this->tupleGenerator->__invoke($size, $rand);
-        return $this->mapToAssociativeArray($tuple);
+        $value = [];
+        $input = [];
+
+        foreach ($this->generators as $key => $generator) {
+            $generated = $generator($size, $rand);
+            $value[$key] = $generated->value();
+            $input[$key] = $generated;
+        }
+
+        return new Value($value, $input);
     }
 
     /**
-     * @param Value<array> $element
-     * @return ValueCollection<array>
+     * @psalm-suppress MixedAssignment
      */
     public function shrink(Value $element): ValueCollection
     {
-        $input = $element->input();
+        $elementValue = $element->value();
 
-        if (!$input instanceof Value) {
-            $input = new Value(array_values($input));
+        /**
+         * @var Value<array>[] $elementInput
+         */
+        $elementInput = $element->input();
+
+        $shrunkValues = [];
+        foreach ($elementInput as $key => $value) {
+            $shrunkValues[$key] = $this->generators[$key]->shrink($value)->add($value)->getValues();
         }
 
-        $shrunkInput = $this->tupleGenerator->shrink($input);
-        return $this->mapToAssociativeArray($shrunkInput);
-    }
-
-    /**
-     * @template TTuple of Value<array>|ValueCollection<array>
-     * @param TTuple $tuple
-     * @return TTuple
-     */
-    private function mapToAssociativeArray($tuple)
-    {
-        return $tuple->map(
-            function (array $value): array {
-                $associativeArray = [];
-                $keys = array_keys($this->generators);
-                for ($i = 0; $i < count($value); $i++) {
-                    $key = $keys[$i];
-                    $associativeArray[$key] = $value[$i];
-                }
-                return $associativeArray;
+        /**
+         * @var ValueCollection<array> $result
+         */
+        $result = new ValueCollection();
+        foreach (cartesianProduct($shrunkValues) as $input) {
+            $value = [];
+            foreach ($input as $key => $member) {
+                $value[$key] = $member->value();
             }
-        );
+
+            if ($value == $elementValue) {
+                continue;
+            }
+
+            $result[] = new Value($value, $input);
+        }
+
+        return count($result) ? $result : new ValueCollection([$element]);
     }
 }
