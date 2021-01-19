@@ -38,7 +38,7 @@ class ForAllTest extends TestCase
     {
         $sizes = new TriangularGrowth(ForAll::DEFAULT_MAX_SIZE, 100);
 
-        $dut = new ForAll([], $sizes, [new ShrinkerFactory([]), 'multiple'], new RandomRange(new RandSource()));
+        $dut = new ForAll([], $sizes, [new ShrinkerFactory(), 'multiple'], new RandomRange(new RandSource()));
 
         $this->assertLessThanOrEqual(ForAll::DEFAULT_MAX_SIZE, $dut->getMaxSize());
         $this->assertInstanceOf(ForAll::class, $dut->withMaxSize(50));
@@ -62,7 +62,7 @@ class ForAllTest extends TestCase
     {
         $sizes = new TriangularGrowth(ForAll::DEFAULT_MAX_SIZE, 100);
 
-        $dut = new ForAll([], $sizes, [new ShrinkerFactory([]), 'multiple'], new RandomRange(new RandSource()));
+        $dut = new ForAll([], $sizes, [new ShrinkerFactory(), 'multiple'], new RandomRange(new RandSource()));
 
         $this->assertSame(100, $dut->getIterations());
         $this->assertInstanceOf(ForAll::class, $dut->withIterations(50));
@@ -116,7 +116,7 @@ class ForAllTest extends TestCase
 
     public function provideMethodNamesAndConstructorArguments(): array
     {
-        $generator = new class () implements Generator
+        $generator = new class() implements Generator
         {
             public function __invoke(int $size, RandomRange $rand): value
             {
@@ -136,19 +136,19 @@ class ForAllTest extends TestCase
             'startPropertyVerification' => [
                 'startPropertyVerification',
                 1,
-                [[], $sizes, [new ShrinkerFactory([]), 'multiple'], new RandomRange(new RandSource())],
+                [[], $sizes, [new ShrinkerFactory(), 'multiple'], new RandomRange(new RandSource())],
                 fn (): bool => false
             ],
             'newGeneration' => [
                 'newGeneration',
                 100,
-                [[], $sizes, [new ShrinkerFactory([]), 'multiple'], new RandomRange(new RandSource())],
+                [[], $sizes, [new ShrinkerFactory(), 'multiple'], new RandomRange(new RandSource())],
                 fn (): bool => false
             ],
             'failure' => [
                 'failure',
                 1,
-                [[$generator], $sizes, [new ShrinkerFactory(['timeLimit' => null]), 'multiple'], new RandomRange(new RandSource())],
+                [[$generator], $sizes, [new ShrinkerFactory(null), 'multiple'], new RandomRange(new RandSource())],
                 function () {
                     throw new AssertionFailedError();
                 }
@@ -156,7 +156,7 @@ class ForAllTest extends TestCase
             'shrinking' => [
                 'shrinking',
                 1,
-                [[$generator], $sizes, [new ShrinkerFactory(['timeLimit' => null]), 'multiple'], new RandomRange(new RandSource())],
+                [[$generator], $sizes, [new ShrinkerFactory(null), 'multiple'], new RandomRange(new RandSource())],
                 function () {
                     throw new AssertionFailedError();
                 }
@@ -164,7 +164,7 @@ class ForAllTest extends TestCase
             'endPropertyVerification' => [
                 'endPropertyVerification',
                 1,
-                [[], $sizes, [new ShrinkerFactory([]), 'multiple'], new RandomRange(new RandSource())],
+                [[], $sizes, [new ShrinkerFactory(), 'multiple'], new RandomRange(new RandSource())],
                 fn (): bool => false
             ],
         ];

@@ -236,12 +236,7 @@ trait TestTrait
         $quantifier = new ForAll(
             $generators,
             new TriangularGrowth(ForAll::DEFAULT_MAX_SIZE, $this->iterations),
-            [
-                new ShrinkerFactory([
-                    'timeLimit' => $this->shrinkingTimeLimit,
-                ]),
-                $this->shrinkerFactoryMethod
-            ],
+            [new ShrinkerFactory($this->shrinkingTimeLimit), $this->shrinkerFactoryMethod],
             $this->randRange
         );
 

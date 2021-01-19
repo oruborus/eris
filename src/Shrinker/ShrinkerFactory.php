@@ -1,38 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Shrinker;
 
 use Eris\Contracts\Generator;
+use Eris\Contracts\Shrinker;
 use Eris\TimeLimit\FixedTimeLimit;
+
+use function is_null;
 
 class ShrinkerFactory
 {
-    private $options;
+    private ?int $timeLimit = null;
 
-    /**
-     * @param array $options
-     *  'timeLimit' => null|integer  in seconds. The maximum time that should
-     *                               be allocated to a Shrinker before giving up
-     */
-    public function __construct(array $options)
+    public function __construct(?int $timeLimit = null)
     {
-        $this->options = $options;
+        $this->timeLimit = $timeLimit;
     }
 
     /**
-     * @param list<Generator> $generators
+     * @param list<Generator<mixed>> $generators
      * @param callable $assertion
      */
-    public function multiple(array $generators, $assertion): Multiple
+    public function multiple(array $generators, $assertion): Shrinker
     {
         return $this->configureShrinker(new Multiple($generators, $assertion));
     }
 
-    private function configureShrinker(Multiple $shrinker): Multiple
+    private function configureShrinker(Shrinker $shrinker): Shrinker
     {
-        if ($this->options['timeLimit'] !== null) {
-            $shrinker->setTimeLimit(FixedTimeLimit::realTime((int) $this->options['timeLimit']));
+        if (!is_null($this->timeLimit)) {
+            $shrinker->settimeLimit(
+                FixedTimeLimit::realTime($this->timeLimit)
+            );
         }
+
         return $shrinker;
     }
 }
