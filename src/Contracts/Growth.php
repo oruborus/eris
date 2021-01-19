@@ -7,6 +7,9 @@ namespace Eris\Contracts;
 use ArrayAccess;
 use Countable;
 
+/**
+ * @psalm-consistent-constructor
+ */
 abstract class Growth implements ArrayAccess, Countable
 {
     abstract public function getMaximumSize(): int;
