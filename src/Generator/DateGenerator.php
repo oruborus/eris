@@ -43,7 +43,7 @@ class DateGenerator implements Generator
      */
     public function shrink(Value $element): ValueCollection
     {
-        $timestamp = (int) floor(($this->lowerLimit + $element->value()->getTimestamp()) / 2);
+        $timestamp = floor(($this->lowerLimit + $element->value()->getTimestamp()) / 2);
 
         return new ValueCollection([new Value(new DateTime("@{$timestamp}"))]);
     }
