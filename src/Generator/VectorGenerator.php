@@ -9,12 +9,12 @@ use Eris\Contracts\Generator;
 use function array_fill;
 
 /**
- * @template TInnerValue
+ * @inheritdoc
  */
 class VectorGenerator extends TupleGenerator
 {
     /**
-     * @param Generator<TInnerValue> $generator
+     * @inheritdoc
      */
     public function __construct(int $size, Generator $generator)
     {

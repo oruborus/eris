@@ -14,14 +14,17 @@ final class Evaluation
      * @var callable $assertion
      */
     private $assertion;
+
     /**
      * @var callable $onFailure
      */
     private $onFailure;
+
     /**
      * @var callable $onSuccess
      */
     private $onSuccess;
+
     private Value $values;
 
     /**
@@ -75,14 +78,12 @@ final class Evaluation
     public function execute()
     {
         try {
-            call_user_func_array(
-                $this->assertion,
-                $this->values->unbox()
-            );
+            ($this->assertion)($this->values->value());
         } catch (AssertionFailedError $e) {
-            call_user_func($this->onFailure, $this->values, $e);
+            ($this->onFailure)($this->values, $e);
             return;
         }
-        call_user_func($this->onSuccess, $this->values);
+
+        ($this->onSuccess)($this->values);
     }
 }

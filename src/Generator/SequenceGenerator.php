@@ -86,6 +86,8 @@ class SequenceGenerator implements Generator
         }
 
         /**
+         * @psalm-suppress InvalidArgument
+         *
          * @var ValueCollection<list<TInnerValue>> $shrunkElements
          */
         $shrunkElements = (new VectorGenerator($count, $this->generator))->shrink($sequence);

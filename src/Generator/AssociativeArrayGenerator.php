@@ -12,7 +12,8 @@ use Eris\Value\ValueCollection;
 use function Eris\cartesianProduct;
 
 /**
- * @implements Generator<array>
+ * @template TInnerValue
+ * @implements Generator<array<TInnerValue>>
  */
 class AssociativeArrayGenerator implements Generator
 {
@@ -31,6 +32,8 @@ class AssociativeArrayGenerator implements Generator
 
     /**
      * @psalm-suppress MixedAssignment
+     *
+     * @return Value<array<TInnerValue>>
      */
     public function __invoke(int $size, RandomRange $rand): Value
     {
@@ -48,6 +51,9 @@ class AssociativeArrayGenerator implements Generator
 
     /**
      * @psalm-suppress MixedAssignment
+     *
+     * @param Value<array<TInnerValue>> $element
+     * @return ValueCollection<array<TInnerValue>>
      */
     public function shrink(Value $element): ValueCollection
     {

@@ -6,8 +6,10 @@ use Eris\Contracts\Listener;
 use InvalidArgumentException;
 use Exception;
 
+use const JSON_THROW_ON_ERROR;
+
 /**
- * @param ?callable $collectFunction
+ * @param ?callable(mixed...):array-key $collectFunction
  */
 function collectFrequencies($collectFunction = null): CollectFrequencies
 {
@@ -17,35 +19,39 @@ function collectFrequencies($collectFunction = null): CollectFrequencies
 class CollectFrequencies extends EmptyListener implements Listener
 {
     /**
-     * @var callable $collectFunction
+     * @var callable(mixed...):array-key $collectFunction
      */
     private $collectFunction;
+
+    /**
+     * @var array<int> $collectedValues
+     */
     private array $collectedValues = [];
 
     /**
-     * @param ?callable $collectFunction
+     * @param ?callable(mixed...):array-key $collectFunction
      */
     public function __construct($collectFunction = null)
     {
         if ($collectFunction === null) {
             $collectFunction =
                 /**
-                 * @return false|int|string
+                 * @param mixed[] ...$values
+                 * @return array-key
                  */
-                function (/*...*/) {
-                    /** @var mixed[] $values */
-                    $values = func_get_args();
+                function (...$values) {
                     if (count($values) === 1) {
-                        $value = $values[0];
-                    } else {
-                        $value = $values;
+                        /**
+                         * @var mixed $values
+                         */
+                        $values = $values[0];
                     }
 
-                    if (is_string($value) || is_integer($value)) {
-                        return $value;
-                    } else {
-                        return json_encode($value);
+                    if (is_string($values) || is_integer($values)) {
+                        return $values;
                     }
+
+                    return json_encode($values, JSON_THROW_ON_ERROR);
                 };
         }
         $this->collectFunction = $collectFunction;
@@ -63,16 +69,10 @@ class CollectFrequencies extends EmptyListener implements Listener
 
     public function newGeneration(array $generation, $iteration)
     {
-        $key = call_user_func_array($this->collectFunction, $generation);
+        $key = ($this->collectFunction)(...$generation);
         // TODO: check key is a correct key, identity may lead this to be a non-string and non-integer value
         // have a default for arrays and other scalars
-        if (!is_string($key) && !is_integer($key)) {
-            throw new InvalidArgumentException("The key " . var_export($key, true) . " cannot be used for collection, please specify a custom mapping function to collectFrequencies()");
-        }
-        if (array_key_exists($key, $this->collectedValues)) {
-            $this->collectedValues[$key]++;
-        } else {
-            $this->collectedValues[$key] = 1;
-        }
+
+        $this->collectedValues[$key] = $this->collectedValues[$key] ?? 0 + 1;
     }
 }

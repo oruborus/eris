@@ -30,7 +30,7 @@ class Sample
     public function repeat(int $times): self
     {
         for ($i = 0; $i < $times; $i++) {
-            $this->collected[] = $this->generator->__invoke($this->size, $this->rand)->unbox();
+            $this->collected[] = $this->generator->__invoke($this->size, $this->rand)->value();
         }
         return $this;
     }
@@ -39,12 +39,12 @@ class Sample
     {
         $nextValue ??= $this->generator->__invoke($this->size, $this->rand);
 
-        $this->collected[] = $nextValue->unbox();
+        $this->collected[] = $nextValue->value();
         while ($value = $this->generator->shrink($nextValue)) {
-            if ($value->unbox() === $nextValue->unbox()) {
+            if ($value->last()->value() === $nextValue->value()) {
                 break;
             }
-            $this->collected[] = $value->unbox();
+            $this->collected[] = $value->last()->value();
 
             $nextValue = $value->last();
         }

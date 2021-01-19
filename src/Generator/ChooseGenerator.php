@@ -45,14 +45,11 @@ class ChooseGenerator implements Generator
      */
     public function shrink(Value $element): ValueCollection
     {
-        if ($element->input() > $this->shrinkTarget) {
-            return new ValueCollection([new Value($element->input() - 1)]);
-        }
+        /**
+         * @var int $input
+         */
+        $input = $element->input();
 
-        if ($element->input() < $this->shrinkTarget) {
-            return new ValueCollection([new Value($element->input() + 1)]);
-        }
-
-        return new ValueCollection([$element]);
+        return new ValueCollection([new Value($input + ($this->shrinkTarget <=> $input))]);
     }
 }

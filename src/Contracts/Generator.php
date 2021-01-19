@@ -10,7 +10,6 @@ use Eris\Value\ValueCollection;
 
 /**
  * @template TValue
- * @psalm-template TValue
  * Generic interface for a type <TValue>.
  */
 interface Generator

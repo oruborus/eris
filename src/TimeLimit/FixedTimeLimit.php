@@ -24,7 +24,7 @@ class FixedTimeLimit implements TimeLimit
 
     /**
      * @param int $maximumIntervalLength  in seconds
-     * @param callable $clock
+     * @param callable():int $clock
      */
     public function __construct(int $maximumIntervalLength, $clock)
     {
@@ -34,12 +34,12 @@ class FixedTimeLimit implements TimeLimit
 
     public function start(): void
     {
-        $this->startOfTheInterval = (int) call_user_func($this->clock);
+        $this->startOfTheInterval = ($this->clock)();
     }
 
     public function hasBeenReached(): bool
     {
-        $actualIntervalLength = (int) call_user_func($this->clock) - $this->startOfTheInterval;
+        $actualIntervalLength = ($this->clock)() - $this->startOfTheInterval;
         return $actualIntervalLength >= $this->maximumIntervalLength;
     }
 
@@ -49,7 +49,7 @@ class FixedTimeLimit implements TimeLimit
             return 'TimeLimit has not been started.';
         }
 
-        $actualIntervalLength = (int) call_user_func($this->clock) - $this->startOfTheInterval;
+        $actualIntervalLength = ($this->clock)() - $this->startOfTheInterval;
         return "{$actualIntervalLength}s elapsed of {$this->maximumIntervalLength}s";
     }
 }

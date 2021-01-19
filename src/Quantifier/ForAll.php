@@ -224,7 +224,7 @@ class ForAll
                         throw $exception;
                     }
 
-                    $shrinker = call_user_func_array($this->shrinkerFactoryFunction, [$this->generators, $assertion]);
+                    $shrinker = ($this->shrinkerFactoryFunction)($this->generators, $assertion);
 
                     // MAYBE: put into ShrinkerFactory?
                     $shrinker
@@ -232,9 +232,7 @@ class ForAll
                             /**
                              * @param Value<array> $generation
                              */
-                            function (Value $generation): bool {
-                                return $this->antecedentsAreSatisfied($generation->value());
-                            }
+                            fn (Value $generation): bool => $this->antecedentsAreSatisfied($generation->value())
                         )
                         ->onAttempt(
                             /**

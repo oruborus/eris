@@ -76,6 +76,9 @@ class SubsetGenerator implements Generator
         // TODO: make deterministic by returning an array of Values
         array_splice($input, array_rand($input), 1);
 
+        /**
+         * @var ValueCollection<list<mixed>>
+         */
         return new ValueCollection([new Value($input)]);
     }
 }

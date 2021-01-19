@@ -26,6 +26,8 @@ class RegexGenerator implements Generator
     }
 
     /**
+     * @psalm-suppress MixedMethodCall
+     *
      * @return Value<string>
      */
     public function __invoke(int $_size, RandomRange $rand): Value
@@ -37,6 +39,9 @@ class RegexGenerator implements Generator
         $parser = new Parser($lexer, new Scope(), new Scope());
         $parser->parse()->getResult()->generate($result, $gen);
 
+        /**
+         * @var Value<string>
+         */
         return new Value($result);
     }
 

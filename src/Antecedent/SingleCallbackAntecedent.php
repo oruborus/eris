@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Antecedent;
 
 use Eris\Contracts\Antecedent;
@@ -7,12 +9,12 @@ use Eris\Contracts\Antecedent;
 class SingleCallbackAntecedent implements Antecedent
 {
     /**
-     * @var callable $callback
+     * @var callable(mixed...):bool $callback
      */
     private $callback;
 
     /**
-     * @param callable $callback
+     * @param callable(mixed...):bool $callback
      */
     public static function from($callback): self
     {
@@ -20,15 +22,15 @@ class SingleCallbackAntecedent implements Antecedent
     }
 
     /**
-     * @param callable $callback
+     * @param callable(mixed...):bool $callback
      */
     private function __construct($callback)
     {
         $this->callback = $callback;
     }
 
-    public function evaluate(array $values)
+    public function evaluate(array $values): bool
     {
-        return call_user_func_array($this->callback, $values);
+        return ($this->callback)(...$values);
     }
 }

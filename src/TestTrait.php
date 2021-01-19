@@ -229,10 +229,7 @@ trait TestTrait
      */
     public function forAll(...$generators): ForAll
     {
-        $boxNonGeneratorValues = fn ($generator): Generator =>
-        $generator instanceof Generator ? $generator : new ConstantGenerator($generator);
-
-        $generators = array_map($boxNonGeneratorValues, $generators);
+        $generators = array_map('Eris\Generator\ensureIsGenerator', $generators);
 
         $this->randRange->seed($this->seed);
 

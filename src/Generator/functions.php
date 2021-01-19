@@ -6,6 +6,7 @@ namespace Eris\Generator;
 
 use DateTime;
 use Eris\Contracts\Generator;
+use PHPUnit\Framework\Constraint\Constraint;
 
 use function abs;
 use function array_combine;
@@ -111,6 +112,9 @@ function date($lowerLimit = null, $upperLimit = null): DateGenerator
     return new DateGenerator($lowerLimit, $upperLimit);
 }
 
+/**
+ * @param mixed $arguments
+ */
 function elements(...$arguments): ElementsGenerator
 {
     if (count($arguments) === 1) {
@@ -121,7 +125,7 @@ function elements(...$arguments): ElementsGenerator
 }
 
 /**
- * @param callable|Constraint $filter
+ * @param callable(mixed):bool|Constraint $filter
  */
 function filter($filter, Generator $generator, int $maximumAttempts = 100): SuchThatGenerator
 {
@@ -133,6 +137,9 @@ function float(): FloatGenerator
     return new FloatGenerator();
 }
 
+/**
+ * @param mixed $arguments
+ */
 function frequency(...$arguments): FrequencyGenerator
 {
     return new FrequencyGenerator($arguments);
@@ -174,6 +181,9 @@ function neg(): IntegerGenerator
     return new IntegerGenerator(fn (int $i) => (-1) * (abs($i) + 1));
 }
 
+/**
+ * @param mixed $arguments
+ */
 function oneOf(...$arguments): OneOfGenerator
 {
     return new OneOfGenerator($arguments);
@@ -227,7 +237,7 @@ function subset(array $input): SubsetGenerator
 }
 
 /**
- * @param callable|Constraint $filter
+ * @param callable(mixed):bool|Constraint $filter
  */
 function suchThat($filter, Generator $generator, int $maximumAttempts = 100): SuchThatGenerator
 {

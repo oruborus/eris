@@ -20,7 +20,7 @@ class ShrinkerFactory
     }
 
     /**
-     * @param Generator[] $generators
+     * @param list<Generator> $generators
      * @param callable $assertion
      */
     public function multiple(array $generators, $assertion): Multiple
