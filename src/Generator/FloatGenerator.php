@@ -37,10 +37,6 @@ class FloatGenerator implements Generator
             return new ValueCollection([new Value(min($value + 1.0, 0.0))]);
         }
 
-        if ($value > 0.0) {
-            return new ValueCollection([new Value(max($value - 1.0, 0.0))]);
-        }
-
-        return new ValueCollection([new Value(0.0)]);
+        return new ValueCollection([new Value(max($value - 1.0, 0.0))]);
     }
 }
