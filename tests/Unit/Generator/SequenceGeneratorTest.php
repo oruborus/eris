@@ -85,10 +85,10 @@ class SequenceGeneratorTest extends GeneratorTestCase
         $elements = $dut($this->size, $this->rand);
         $elementsAfterShrink = $dut->shrink($elements);
 
-        // if ($elementsAfterShrink->count() == 0) {
-        //     // the generated value couldn't be shrunk
-        //     return;
-        // }
+        if ($elementsAfterShrink->count() == 0) {
+            // the generated value couldn't be shrunk
+            return;
+        }
 
         $this->assertLessThanOrEqual(count($elements->value()), count($elementsAfterShrink->last()->value()));
         $this->assertLessThanOrEqual(array_sum($elements->value()), array_sum($elementsAfterShrink->last()->value()));
