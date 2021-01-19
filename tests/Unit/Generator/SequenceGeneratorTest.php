@@ -82,14 +82,12 @@ class SequenceGeneratorTest extends GeneratorTestCase
             new ChooseGenerator(10, 100)
         );
 
-        $elements = $dut($this->size, $this->rand);
-        $elementsAfterShrink = $dut->shrink($elements);
+        do {
+            $elements = $dut($this->size, $this->rand);
+            $elementsAfterShrink = $dut->shrink($elements);
+        } while ($elementsAfterShrink->count() == 0);
 
-        if ($elementsAfterShrink->count() == 0) {
-            // the generated value couldn't be shrunk
-            return;
-        }
-
+        $this->assertCount(count($elements->input()) - 1, $elementsAfterShrink->first()->value());
         $this->assertLessThanOrEqual(count($elements->value()), count($elementsAfterShrink->last()->value()));
         $this->assertLessThanOrEqual(array_sum($elements->value()), array_sum($elementsAfterShrink->last()->value()));
     }
