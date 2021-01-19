@@ -53,12 +53,12 @@ class CharacterGeneratorTest extends GeneratorTestCase
     {
         $dut = CharacterGenerator::printableAscii();
 
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 250; $i++) {
             $value = $dut($this->size, $this->rand)->value();
 
             $this->assertEquals(1, strlen($value));
             $this->assertGreaterThanOrEqual(32, ord($value));
-            $this->assertLessThanOrEqual(127, ord($value));
+            $this->assertLessThanOrEqual(126, ord($value));
         }
     }
 
