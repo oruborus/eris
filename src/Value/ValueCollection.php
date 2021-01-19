@@ -21,6 +21,7 @@ use RuntimeException;
 
 /**
  * @template TValue
+ * @implements ArrayAccess<array-key, Value<TValue>>
  * @implements IteratorAggregate<array-key, Value<TValue>>
  */
 class ValueCollection implements ArrayAccess, Countable, IteratorAggregate
