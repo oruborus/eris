@@ -1,0 +1,14 @@
+parameters:
+	level: max
+	paths:
+		- src
+		#- tests
+
+includes:
+    # set services that are needed by PHPStan rules
+    - vendor/symplify/phpstan-rules/config/services/services.neon
+
+services:
+    -
+        class: Symplify\PHPStanRules\Rules\PreventDuplicateClassMethodRule
+        tags: [phpstan.rules.rule]

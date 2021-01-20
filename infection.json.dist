@@ -4,6 +4,7 @@
             "src\/"
         ]
     },
+    "timeout": 20,
     "logs": {
         "text": "infection.log"
     },
