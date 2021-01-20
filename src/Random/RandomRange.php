@@ -4,14 +4,6 @@ namespace Eris\Random;
 
 use Eris\Contracts\Source;
 
-/**
- * @return RandomRange
- */
-function purePhpMtRand()
-{
-    return new RandomRange(new MersenneTwister());
-}
-
 // TODO: Extract Interface
 class RandomRange
 {
