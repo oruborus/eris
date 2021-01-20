@@ -23,6 +23,7 @@ use RuntimeException;
 use function array_merge;
 use function call_user_func;
 use function call_user_func_array;
+use function get_class;
 use function getenv;
 use function var_export;
 
@@ -31,14 +32,14 @@ class ForAll
     const DEFAULT_MAX_SIZE = 200;
 
     /**
-     * @var list<Generator> $generators
+     * @var list<Generator<mixed>> $generators
      */
     private array $generators;
 
     private Growth $growth;
 
     /**
-     * @var callable(list<Generator>, callable):Shrinker $shrinkerFactoryFunction
+     * @var callable(list<Generator<mixed>>, callable(mixed...):void):Shrinker $shrinkerFactoryFunction
      */
     private $shrinkerFactoryFunction;
 
@@ -64,8 +65,8 @@ class ForAll
     private bool $shrinkingEnabled = true;
 
     /**
-     * @param list<Generator> $generators
-     * @param callable(list<Generator>, callable):Shrinker $shrinkerFactoryFunction
+     * @param list<Generator<mixed>> $generators
+     * @param callable(list<Generator<mixed>>, callable(mixed...):void):Shrinker $shrinkerFactoryFunction
      */
     public function __construct(
         array $generators,
@@ -85,7 +86,8 @@ class ForAll
      */
     public function withMaxSize(int $maxSize): self
     {
-        $this->growth = new $this->growth($maxSize, $this->growth->count());
+        $growthClass = get_class($this->growth);
+        $this->growth = new $growthClass($maxSize, $this->growth->count());
         return $this;
     }
 
@@ -100,7 +102,8 @@ class ForAll
      */
     public function withIterations(int $iterations): self
     {
-        $this->growth = new $this->growth($this->growth->getMaximumSize(), $iterations);
+        $growthClass = get_class($this->growth);
+        $this->growth = new $growthClass($this->growth->getMaximumSize(), $iterations);
 
         return $this;
     }
@@ -110,13 +113,13 @@ class ForAll
         return $this->growth->count();
     }
 
-    public function hook(Listener $listener): self
+    public function hook(Listener $listener): static
     {
         $this->listeners[] = $listener;
         return $this;
     }
 
-    public function stopOn(TerminationCondition $terminationCondition): self
+    public function stopOn(TerminationCondition $terminationCondition): static
     {
         $this->terminationConditions[] = $terminationCondition;
         return $this;
@@ -129,10 +132,9 @@ class ForAll
     }
 
     /**
-     * @param Antecedent|Constraint|callable $firstArgument
-     * @param list<Constraint> $arguments
+     * @param Antecedent|Constraint|callable(mixed...):bool $firstArgument
      */
-    public function and($firstArgument, ...$arguments): self
+    public function and($firstArgument, Constraint ...$arguments): self
     {
         return $this->when($firstArgument, ...$arguments);
     }
@@ -143,13 +145,12 @@ class ForAll
      * when(callable $takesNArguments)
      * when(Antecedent $antecedent)
      *
-     * @param Antecedent|Constraint|callable $firstArgument
-     * @param list<Constraint> $arguments
+     * @param Antecedent|Constraint|callable(mixed...):bool $firstArgument
      */
-    public function when($firstArgument, ...$arguments): self
+    public function when($firstArgument, Constraint ...$arguments): static
     {
         if ($firstArgument instanceof Constraint) {
-            $this->antecedents[] = IndependentConstraintsAntecedent::fromAll(array_merge([$firstArgument], $arguments));
+            $this->antecedents[] = IndependentConstraintsAntecedent::fromAll([$firstArgument] + $arguments);
             return $this;
         }
 
@@ -159,19 +160,20 @@ class ForAll
         }
 
         $this->antecedents[] = SingleCallbackAntecedent::from($firstArgument);
+
         return $this;
     }
 
     /**
-     * @param callable $assertion
+     * @param callable(mixed...):void $assertion
      */
-    public function then(...$assertion): void
+    public function then($assertion): void
     {
-        $this->__invoke(...$assertion);
+        $this->__invoke($assertion);
     }
 
     /**
-     * @param callable $assertion
+     * @param callable(mixed...):void $assertion
      */
     public function __invoke($assertion): void
     {
@@ -226,7 +228,11 @@ class ForAll
 
                     $shrinker = ($this->shrinkerFactoryFunction)($this->generators, $assertion);
 
-                    // MAYBE: put into ShrinkerFactory?
+                    /**
+                     * TODO: MAYBE: put into ShrinkerFactory?
+                     *
+                     * @psalm-suppress MixedArgumentTypeCoercion
+                     */
                     $shrinker
                         ->addGoodShrinkCondition(
                             /**
@@ -271,14 +277,17 @@ class ForAll
     private function notifyListeners(string $event, ...$arguments): void
     {
         foreach ($this->listeners as $listener) {
-            call_user_func_array([$listener, $event], $arguments);
+            $listener->{$event}(...$arguments);
         }
     }
 
+    /**
+     * @param array<mixed> $values
+     */
     private function antecedentsAreSatisfied(array $values): bool
     {
         foreach ($this->antecedents as $antecedentToVerify) {
-            if (!call_user_func([$antecedentToVerify, 'evaluate'], $values)) {
+            if (!$antecedentToVerify->evaluate($values)) {
                 return false;
             }
         }

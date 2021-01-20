@@ -37,7 +37,7 @@ interface Shrinker
      * `$condition` takes a number of arguments equal to the cardinality
      * of `$elements`, and accepts the unboxed values. Returns a boolean.
      *
-     * @param callable(Value):bool $condition
+     * @param callable(Value<mixed>):bool $condition
      */
     public function addGoodShrinkCondition($condition): self;
 

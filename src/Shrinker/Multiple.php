@@ -24,7 +24,7 @@ class Multiple implements Shrinker
     private array $generators;
 
     /**
-     * @var callable $assertion
+     * @var callable(mixed...):void $assertion
      */
     private $assertion;
 
@@ -112,7 +112,7 @@ class Multiple implements Shrinker
             }
 
             try {
-                call_user_func_array($this->assertion, $firstBranch->value());
+                ($this->assertion)(...$firstBranch->value());
             } catch (AssertionFailedError $e) {
                 $currentElement = $firstBranch;
                 $exception = $e;
