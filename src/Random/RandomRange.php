@@ -41,6 +41,6 @@ class RandomRange
             [$lower, $upper] = [$upper, $lower];
         }
 
-        return $lower + (int) ($this->source->extractNumber() * ($upper - $lower) / $this->source->max());
+        return $lower + (int) ($this->source->extractNumber() * ($upper - $lower + 1) / $this->source->max());
     }
 }
