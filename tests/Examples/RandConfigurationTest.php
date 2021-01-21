@@ -8,7 +8,6 @@ use Eris\TestTrait;
 use PHPUnit\Framework\TestCase;
 
 use function Eris\Generator\int;
-use function Eris\Random\purePhpMtRand;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -67,23 +66,6 @@ class RandConfigurationTest extends TestCase
     public function usingTheDefaultMtRandFunctionFromAnnotation(): void
     {
         $this
-            ->forAll(
-                int()
-            )
-            ->then($this->isInteger());
-    }
-
-    /**
-     * @test
-     */
-    public function usingThePurePhpMtRandFunction(): void
-    {
-        if (defined('HHVM_VERSION')) {
-            $this->markTestSkipped('MersenneTwister class does not support HHVM');
-        }
-
-        $this
-            ->withRand(purePhpMtRand())
             ->forAll(
                 int()
             )
