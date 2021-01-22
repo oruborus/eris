@@ -11,7 +11,7 @@ use Eris\Quantifier\ForAll;
 use Eris\Contracts\TerminationCondition;
 use Eris\Generator\ConstantGenerator;
 use Eris\Growth\TriangularGrowth;
-use Eris\Quantifier\TimeBasedTerminationCondition;
+use Eris\Listener\TimeBasedTerminationCondition;
 use Eris\Random\MtRandSource;
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;

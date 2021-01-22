@@ -1,6 +1,8 @@
 <?php
 
-namespace Eris\Quantifier;
+declare(strict_types=1);
+
+namespace Eris\Listener;
 
 use Eris\Contracts\Listener;
 use Eris\Contracts\TerminationCondition;
@@ -11,14 +13,16 @@ use DateInterval;
 class TimeBasedTerminationCondition extends EmptyListener implements TerminationCondition, Listener
 {
     private ?DateTime $limitTime = null;
+
     /**
-     * @var callable $time
+     * @var callable():int $time
      */
     private $time;
+
     private DateInterval $maximumInterval;
 
     /**
-     * @param callable $time
+     * @param callable():int $time
      */
     public function __construct($time, DateInterval $maximumInterval)
     {
@@ -28,9 +32,7 @@ class TimeBasedTerminationCondition extends EmptyListener implements Termination
 
     public function startPropertyVerification(): void
     {
-        $this->limitTime = $this
-            ->currentDateTime()
-            ->add($this->maximumInterval);
+        $this->limitTime = $this->currentDateTime()->add($this->maximumInterval);
     }
 
     public function shouldTerminate(): bool
@@ -40,6 +42,6 @@ class TimeBasedTerminationCondition extends EmptyListener implements Termination
 
     private function currentDateTime(): DateTime
     {
-        return new DateTime("@" . (string) call_user_func($this->time));
+        return new DateTime('@' . (string) ($this->time)());
     }
 }

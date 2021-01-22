@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Listener;
 
 use Eris\Contracts\Listener;
@@ -13,8 +15,6 @@ class MinimumEvaluations extends EmptyListener implements Listener
 
     /**
      * @param float $threshold  from 0.0 to 1.0
-     *
-     * @return self
      */
     public static function ratio(float $threshold): self
     {
@@ -26,14 +26,21 @@ class MinimumEvaluations extends EmptyListener implements Listener
         $this->threshold = $threshold;
     }
 
-    public function endPropertyVerification($ordinaryEvaluations, $iterations, Exception $exception = null)
-    {
-        if ($exception) {
+    public function endPropertyVerification(
+        int $ordinaryEvaluations,
+        int $iterations,
+        ?Exception $exception = null
+    ): void {
+        if ($exception instanceof Exception) {
             return;
         }
+
         $evaluationRatio = $ordinaryEvaluations / $iterations;
-        if ($evaluationRatio < $this->threshold) {
-            throw new OutOfBoundsException("Evaluation ratio {$evaluationRatio} is under the threshold {$this->threshold}");
+
+        if ($evaluationRatio >= $this->threshold) {
+            return;
         }
+
+        throw new OutOfBoundsException("Evaluation ratio {$evaluationRatio} is under the threshold {$this->threshold}");
     }
 }

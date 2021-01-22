@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Listener;
 
 use Eris\Contracts\Listener;
-use InvalidArgumentException;
 use Exception;
 
 use const JSON_THROW_ON_ERROR;
@@ -57,8 +58,11 @@ class CollectFrequencies extends EmptyListener implements Listener
         $this->collectFunction = $collectFunction;
     }
 
-    public function endPropertyVerification($ordinaryEvaluations, $iterations, Exception $exception = null)
-    {
+    public function endPropertyVerification(
+        int $ordinaryEvaluations,
+        int $iterations,
+        ?Exception $exception = null
+    ): void {
         arsort($this->collectedValues, SORT_NUMERIC);
         echo PHP_EOL;
         foreach ($this->collectedValues as $key => $value) {
@@ -67,7 +71,7 @@ class CollectFrequencies extends EmptyListener implements Listener
         }
     }
 
-    public function newGeneration(array $generation, $iteration)
+    public function newGeneration(array $generation, int $iteration): void
     {
         $key = ($this->collectFunction)(...$generation);
         // TODO: check key is a correct key, identity may lead this to be a non-string and non-integer value

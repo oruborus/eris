@@ -8,37 +8,34 @@ use Exception;
 
 interface Listener
 {
-    /**
-     * @return void
-     */
-    public function startPropertyVerification();
+    public function startPropertyVerification(): void;
 
     /**
-     * @param integer $ordinaryEvaluations  the number of inputs effectively evaluated, not filtered out.
-     *                                      Does not count evaluations used in shrinking
-     * @param integer $iterations  the total number of inputs that have been generated
-     * @param null|Exception $exception  tells if the test has failed and specifies the exact exception
-     * @return void
+     * @param int $ordinaryEvaluations  the number of inputs effectively evaluated, not filtered out.
+     *                                  Does not count evaluations used in shrinking
+     * @param int $iterations  the total number of inputs that have been generated
+     * @param null|Exception $exception  tells if the test has failed and specifies the exact exception.
      */
-    public function endPropertyVerification($ordinaryEvaluations, $iterations, Exception $exception = null);
-
-    /**
-     * @param array $generation  of mixed values
-     * @param integer $iteration  index of current iteration
-     * @return void
-     */
-    public function newGeneration(array $generation, $iteration);
+    public function endPropertyVerification(
+        int $ordinaryEvaluations,
+        int $iterations,
+        ?Exception $exception = null
+    ): void;
 
     /**
      * @param array $generation  of mixed values
+     * @param int $iteration  index of current iteration
+     */
+    public function newGeneration(array $generation, int $iteration): void;
+
+    /**
+     * @param array<mixed> $generation  of mixed values
      * @param Exception $exception  assertion failure
-     * @return void
      */
-    public function failure(array $generation, Exception $exception);
+    public function failure(array $generation, Exception $exception): void;
 
     /**
-     * @param array $generation  of mixed values
-     * @return void
+     * @param array<mixed> $generation  of mixed values
      */
-    public function shrinking(array $generation);
+    public function shrinking(array $generation): void;
 }
