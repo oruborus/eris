@@ -1,47 +1,68 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Listener;
 
 use Eris\Contracts\Listener;
 use Eris\Listener\EmptyListener;
 use Exception;
+use InvalidArgumentException;
+use Throwable;
 
-function log(string $file): Log
-{
-    return new Log($file, 'time', getmypid());
-}
+use function date;
+use function fopen;
+use function fclose;
+use function fwrite;
+use function json_encode;
+
+use function sprintf;
+use const PHP_EOL;
 
 class Log extends EmptyListener implements Listener
 {
-    private string $file;
     /**
      * @var resource $fp
      */
     private $fp;
+
     /**
-     * @var callable $time
+     * @var callable():int $time
      */
     private $time;
+
     private int $pid;
 
     /**
-     * @param callable $time
+     * @param callable():int $time
      */
     public function __construct(string $file, $time, int $pid)
     {
-        $this->file = $file;
-        if (($this->fp = fopen($file, 'w')) === false) {
-            throw new Exception("File could not be opened", 1);
+        try {
+            $handle = fopen($file, 'w');
+        } catch (Throwable $th) {
+            $handle = false;
         }
 
+        if (!$handle) {
+            throw new InvalidArgumentException("File could not be opened", 1);
+        }
+
+        $this->fp   = $handle;
         $this->time = $time;
-        $this->pid = $pid;
+        $this->pid  = $pid;
+    }
+
+    public function __destruct()
+    {
+        fclose($this->fp);
+        unset($this->fp);
     }
 
     public function newGeneration(array $generation, $iteration)
     {
         $this->log(sprintf(
-            "iteration %d: %s",
+            'iteration %d: %s',
             $iteration,
             // TODO: duplication with collect
             json_encode(
@@ -50,18 +71,10 @@ class Log extends EmptyListener implements Listener
         ));
     }
 
-    /**
-     * @psalm-suppress InvalidPropertyAssignmentValue
-     */
-    public function endPropertyVerification($ordinaryEvaluations, $iterations, Exception $exception = null)
-    {
-        fclose($this->fp);
-    }
-
     public function failure(array $generation, Exception $exception)
     {
         $this->log(sprintf(
-            "failure: %s. %s",
+            'failure: %s. %s',
             // TODO: duplication with collect
             json_encode($generation),
             $exception->getMessage()
@@ -71,7 +84,7 @@ class Log extends EmptyListener implements Listener
     public function shrinking(array $generation)
     {
         $this->log(sprintf(
-            "shrinking: %s",
+            'shrinking: %s',
             // TODO: duplication with collect
             json_encode($generation)
         ));
@@ -82,8 +95,8 @@ class Log extends EmptyListener implements Listener
         fwrite(
             $this->fp,
             sprintf(
-                "[%s][%s] %s" . PHP_EOL,
-                date('c', (int) call_user_func($this->time)),
+                '[%s][%s] %s' . PHP_EOL,
+                date('c', ($this->time)()),
                 $this->pid,
                 $text
             )

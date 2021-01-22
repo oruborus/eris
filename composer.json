@@ -39,7 +39,8 @@
         },
         "files": [
             "src/functions.php",
-            "src/Generator/functions.php"
+            "src/Generator/functions.php",
+            "src/Listener/functions.php"
         ]
     },
     "scripts": {
