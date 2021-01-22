@@ -6,6 +6,9 @@ namespace Eris\Antecedent;
 
 use Eris\Contracts\Antecedent;
 
+use function is_string;
+use function ord;
+
 function printableCharacter(): PrintableCharacter
 {
     return new PrintableCharacter();
@@ -20,19 +23,23 @@ class PrintableCharacter implements Antecedent
 {
     /**
      * Assumes utf-8.
-     *
-     * @param string[] $values
      */
     public function evaluate(array $values): bool
     {
         foreach ($values as $char) {
+            if (!is_string($char)) {
+                return false;
+            }
+
             if (ord($char) < 32) {
                 return false;
             }
-            if (ord($char) === 127) { // TODO: > 127?
+
+            if (ord($char) > 126) {
                 return false;
             }
         }
+
         return true;
     }
 }

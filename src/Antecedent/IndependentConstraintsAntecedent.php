@@ -29,7 +29,7 @@ class IndependentConstraintsAntecedent implements Antecedent
         $this->constraints = $constraints;
     }
 
-    public function evaluate(array $values)
+    public function evaluate(array $values): bool
     {
         for ($i = 0; $i < count($this->constraints); $i++) {
             // TODO: use Evaluation object?

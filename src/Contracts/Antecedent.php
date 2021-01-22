@@ -7,8 +7,7 @@ namespace Eris\Contracts;
 interface Antecedent
 {
     /**
-     * @param array $values  all the values in a single shot
-     * @return boolean
+     * @param array<mixed> $values  all the values in a single shot
      */
-    public function evaluate(array $values);
+    public function evaluate(array $values): bool;
 }
