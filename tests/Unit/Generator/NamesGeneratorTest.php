@@ -7,7 +7,7 @@ namespace Test\Unit\Generator;
 use Eris\Generator\NamesGenerator;
 use Eris\Value\Value;
 
-use function mb_strlen;
+use function strlen;
 
 /**
  * @uses Eris\Random\RandSource
@@ -35,7 +35,7 @@ class NamesGeneratorTest extends GeneratorTestCase
 
             $this->assertLessThanOrEqual(
                 $maxLength,
-                mb_strlen($value),
+                strlen($value),
                 "Names generator is not respecting the generation size. Asked a name with max size {$maxLength} and returned {$value}"
             );
         }

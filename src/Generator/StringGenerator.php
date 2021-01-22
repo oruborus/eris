@@ -10,7 +10,7 @@ use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
 use function chr;
-use function mb_substr;
+use function substr;
 
 /**
  * @implements Generator<string>
@@ -42,6 +42,6 @@ class StringGenerator implements Generator
         if (empty($value)) {
             return new ValueCollection([$element]);
         }
-        return new ValueCollection([new Value(mb_substr($element->value(), 0, -1))]);
+        return new ValueCollection([new Value(substr($element->value(), 0, -1))]);
     }
 }

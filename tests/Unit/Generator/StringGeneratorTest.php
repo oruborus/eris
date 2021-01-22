@@ -7,7 +7,7 @@ namespace Test\Unit\Generator;
 use Eris\Generator\StringGenerator;
 use Eris\Value\Value;
 
-use function mb_strlen;
+use function strlen;
 
 /**
  * @uses Eris\Random\RandSource
@@ -33,7 +33,7 @@ class StringGeneratorTest extends GeneratorTestCase
 
         for ($i = 0; $i < 1000; $i++) {
             $value = $dut($this->size, $this->rand)->value();
-            $length = mb_strlen($value);
+            $length = strlen($value);
 
             $lengths[$length] = $lengths[$length] ?? 0 + 1;
 
@@ -63,7 +63,7 @@ class StringGeneratorTest extends GeneratorTestCase
 
         $value = $dut($generationSize, $this->rand)->value();
 
-        $this->assertLessThanOrEqual($generationSize, mb_strlen($value));
+        $this->assertLessThanOrEqual($generationSize, strlen($value));
     }
 
     /**

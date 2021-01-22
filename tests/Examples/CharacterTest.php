@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 use function Eris\Generator\char;
 use function Eris\Antecedent\printableCharacter;
 use function Eris\Antecedent\printableCharacters;
-use function mb_strlen;
+use function strlen;
 use function ord;
 
 /**
@@ -30,7 +30,7 @@ class CharacterTest extends TestCase
                 char(['basic-latin'])
             )
             ->then(function (string $char): void {
-                $this->assertSame(1, mb_strlen($char), "'{$char}' is too long");
+                $this->assertSame(1, strlen($char), "'{$char}' is too long");
             });
     }
 

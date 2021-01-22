@@ -12,7 +12,7 @@ use Eris\Value\ValueCollection;
 use function count;
 use function file;
 use function levenshtein;
-use function mb_strlen;
+use function strlen;
 
 use const PHP_INT_MAX;
 
@@ -46,7 +46,7 @@ class NamesGenerator implements Generator
         $this->list = $list;
 
         foreach ($this->list as $candidate) {
-            $candidateLength = mb_strlen($candidate);
+            $candidateLength = strlen($candidate);
             $this->minLength = $candidateLength < $this->minLength ? $candidateLength : $this->minLength;
         }
     }
@@ -74,7 +74,7 @@ class NamesGenerator implements Generator
     public function shrink(Value $element): ValueCollection
     {
         $value = $element->value();
-        $size  = mb_strlen($value) - 1;
+        $size  = strlen($value) - 1;
 
         $primeDistance = PHP_INT_MAX;
         $primeCandidate = $value;
