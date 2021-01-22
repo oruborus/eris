@@ -18,12 +18,12 @@ use function Eris\cartesianProduct;
 class AssociativeArrayGenerator implements Generator
 {
     /**
-     * @var Generator[] $generators
+     * @var Generator<TInnerValue>[] $generators
      */
     private array $generators;
 
     /**
-     * @param Generator[] $generators
+     * @param array<mixed> $generators
      */
     public function __construct(array $generators)
     {
@@ -70,7 +70,7 @@ class AssociativeArrayGenerator implements Generator
         }
 
         /**
-         * @var ValueCollection<array> $result
+         * @var ValueCollection<array<TInnerValue>> $result
          */
         $result = new ValueCollection();
         foreach (cartesianProduct($shrunkValues) as $input) {

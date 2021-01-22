@@ -38,6 +38,9 @@ function ensureIsGenerator($generator): Generator
     return new ConstantGenerator($generator);
 }
 
+/**
+ * @param array<mixed> $generators
+ */
 function associative(array $generators): AssociativeArrayGenerator
 {
     return new AssociativeArrayGenerator($generators);
@@ -138,7 +141,7 @@ function float(): FloatGenerator
 }
 
 /**
- * @param mixed $arguments
+ * @param array{0: int, 1: mixed} ...$arguments
  */
 function frequency(...$arguments): FrequencyGenerator
 {
@@ -156,7 +159,10 @@ function int(): IntegerGenerator
 /**
  * @todo support calls like ($function . $generator)
  *
- * @param callable $function
+ * @template TValue
+ * @param callable(TValue):TValue $function
+ * @param Generator<TValue> $generator
+ * @return MapGenerator<TValue>
  */
 function map($function, Generator $generator): MapGenerator
 {
@@ -250,15 +256,16 @@ function suchThat($filter, Generator $generator, int $maximumAttempts = 100): Su
  * Or an array of generators:
  *   tuple(array $generators)
  *
- * @param Generator[]|array{0:Generator[]} $arguments
+ * @param Generator<mixed>|list<Generator<mixed>> $firstArgument
+ * @param list<Generator<mixed>> $arguments
  */
-function tuple(...$arguments): TupleGenerator
+function tuple($firstArgument, ...$arguments): TupleGenerator
 {
-    if (is_array($arguments[0])) {
-        return new TupleGenerator($arguments[0]);
+    if ($firstArgument instanceof Generator) {
+        return new TupleGenerator([$firstArgument, ...$arguments]);
     }
 
-    return new TupleGenerator($arguments);
+    return new TupleGenerator($firstArgument);
 }
 
 function vector(int $size, Generator $elementsGenerator): VectorGenerator

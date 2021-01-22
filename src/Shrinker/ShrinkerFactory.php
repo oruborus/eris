@@ -21,7 +21,7 @@ class ShrinkerFactory
 
     /**
      * @param list<Generator<mixed>> $generators
-     * @param callable $assertion
+     * @param callable(mixed...):void $assertion
      */
     public function multiple(array $generators, $assertion): Shrinker
     {

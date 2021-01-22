@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Eris\Generator;
 
+use Eris\Contracts\Generator;
+
+use function array_values;
+
 /**
  * @template TInnerValue
  */

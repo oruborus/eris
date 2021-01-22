@@ -42,7 +42,7 @@ class Multiple implements Shrinker
 
     /**
      * @param list<Generator> $generators
-     * @param callable $assertion
+     * @param callable(mixed...):void $assertion
      */
     public function __construct(array $generators, $assertion)
     {
@@ -112,6 +112,9 @@ class Multiple implements Shrinker
             }
 
             try {
+                /**
+                 * @psalm-suppress MixedArgument
+                 */
                 ($this->assertion)(...$firstBranch->value());
             } catch (AssertionFailedError $e) {
                 $currentElement = $firstBranch;
