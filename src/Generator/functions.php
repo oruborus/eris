@@ -81,7 +81,7 @@ function charPrintableAscii(): CharacterGenerator
 }
 
 /**
- * Generates a number in the range from the lower bound to the upper bound, inclusive. 
+ * Generates a number in the range from the lower bound to the upper bound, inclusive.
  * The result shrinks towards smaller absolute values.
  * The order of the parameters does not matter since they are re-ordered by the generator itself.
  */
@@ -245,7 +245,7 @@ function suchThat($filter, Generator $generator, int $maximumAttempts = 100): Su
 }
 
 /**
- * One Generator for each member of the Tuple: 
+ * One Generator for each member of the Tuple:
  *   tuple(Generator, Generator, Generator...)
  * Or an array of generators:
  *   tuple(array $generators)

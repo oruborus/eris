@@ -116,8 +116,7 @@ class ForAllTest extends TestCase
 
     public function provideMethodNamesAndConstructorArguments(): array
     {
-        $generator = new class() implements Generator
-        {
+        $generator = new class() implements Generator {
             public function __invoke(int $size, RandomRange $rand): value
             {
                 return new Value(1);

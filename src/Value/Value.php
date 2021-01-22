@@ -82,7 +82,7 @@ class Value implements Stringable
     public function merge($another, $mergeFn)
     {
         /**
-         * @psalm-suppress MixedArgument 
+         * @psalm-suppress MixedArgument
          */
         return new self(
             $mergeFn($this->value, $another->value()),

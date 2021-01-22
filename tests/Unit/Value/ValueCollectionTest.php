@@ -59,7 +59,7 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * 
+     *
      * @covers Eris\Value\ValueCollection::getIterator
      *
      * @uses Eris\Value\ValueCollection::__construct
@@ -83,7 +83,7 @@ class ValueCollectionTest extends TestCase
 
     /**
      * @test
-     * 
+     *
      * @covers Eris\Value\ValueCollection::getValues
      * @covers Eris\Value\ValueCollection::getIterator
      *
@@ -179,7 +179,7 @@ class ValueCollectionTest extends TestCase
      * @covers Eris\Value\ValueCollection::offsetUnset
      *
      * @uses Eris\Value\ValueCollection::__construct
-     * 
+     *
      * @uses Eris\Value\Value
      */
     public function elementsCanBeRemovedByOffset(): void

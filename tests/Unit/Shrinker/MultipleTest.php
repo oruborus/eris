@@ -117,8 +117,7 @@ class MultipleTest extends TestCase
                 "increase it with the annotation \'@eris-shrink {seconds}\'."
         );
 
-        $timeLimit = new class extends NoTimeLimit
-        {
+        $timeLimit = new class() extends NoTimeLimit {
             public function hasBeenReached(): bool
             {
                 return true;

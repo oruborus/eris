@@ -43,7 +43,7 @@ class EndToEndTestCase extends TestCase
     {
         parent::setUp();
 
-        /** 
+        /**
          * @var ClassLoader
          */
         $this->loader = require __DIR__ . '/../../vendor/autoload.php';

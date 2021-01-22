@@ -13,7 +13,7 @@ use Eris\Value\Value;
  */
 class Sample
 {
-    const DEFAULT_SIZE = 10;
+    public const DEFAULT_SIZE = 10;
 
     /**
      * @var Generator<TValue> $generator

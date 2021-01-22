@@ -129,7 +129,7 @@ class WhenTest extends TestCase
     }
 
     /**
-     * This test will fail as all values don't fulfill the assertion. 
+     * This test will fail as all values don't fulfill the assertion.
      * The current implementation shows no problem as PHPUnit prefers to show the exception (ExpectationFailedException)
      * from the test method rather than the one from teardown (OutOfBoundsException due to low evaluation ratio)
      * when both fail.

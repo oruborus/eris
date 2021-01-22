@@ -9,6 +9,7 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 
+use RuntimeException;
 use function array_map;
 use function array_search;
 use function array_values;
@@ -17,7 +18,6 @@ use function debug_backtrace;
 use function is_null;
 use function trigger_error;
 use function var_export;
-use RuntimeException;
 
 /**
  * @template TValue

@@ -55,7 +55,7 @@ class BindGenerator implements Generator
     {
         /**
          * @var array{
-         *   0:Value<TOuterValue>, 
+         *   0:Value<TOuterValue>,
          *   1:Value<TInnerValue>
          * } $input
          */

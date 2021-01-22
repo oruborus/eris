@@ -34,7 +34,7 @@ class MinimumEvaluationsTest extends TestCase
             });
     }
 
-    /** 
+    /**
      * @test
      */
     public function passesBecauseOfTheArtificiallyLowMinimumEvaluationRatio(): void

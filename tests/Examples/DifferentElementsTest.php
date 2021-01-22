@@ -33,15 +33,15 @@ class DifferentElementsTest extends TestCase
             Type::C(),
         ];
 
-        $remove = fn (array $haystack, $needle): array => array_values(
-            array_filter($haystack, fn ($candidate): bool => $candidate !== $needle)
+        $remove = static fn (array $haystack, Type $needle): array => array_values(
+            array_filter($haystack, static fn (Type $candidate): bool => $candidate !== $needle)
         );
 
         $this
             ->forAll(
                 bind(
                     elements($allTypes),
-                    fn ($first): TupleGenerator => tuple(
+                    static fn (Type $first): TupleGenerator => tuple(
                         constant($first),
                         elements($remove($allTypes, $first))
                     )
@@ -58,13 +58,15 @@ class DifferentElementsTest extends TestCase
  */
 class Type
 {
-    const TYPE_A = 1;
-    const TYPE_B = 2;
-    const TYPE_C = 3;
+    private const TYPE_A = 1;
+
+    private const TYPE_B = 2;
+
+    private const TYPE_C = 3;
 
     private int $type;
 
-    private function __construct($type)
+    private function __construct(int $type)
     {
         $this->type = $type;
     }

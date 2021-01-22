@@ -20,8 +20,6 @@ use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Constraint\Constraint;
 use RuntimeException;
 
-use function array_merge;
-use function call_user_func;
 use function call_user_func_array;
 use function get_class;
 use function getenv;
@@ -29,7 +27,7 @@ use function var_export;
 
 class ForAll
 {
-    const DEFAULT_MAX_SIZE = 200;
+    public const DEFAULT_MAX_SIZE = 200;
 
     /**
      * @var list<Generator<mixed>> $generators

@@ -47,7 +47,7 @@ trait TestTrait
      * @beforeClass
      *
      * @return void
-     * 
+     *
      * @psalm-suppress UnresolvableInclude
      */
     public static function erisSetupBeforeClass(): void
@@ -76,7 +76,7 @@ trait TestTrait
             }
         );
 
-        /** 
+        /**
          * @var array<string, array<string, array>> $tags
          */
         $tags = Test::parseTestMethodAnnotations(static::class, $this->getName(false));
