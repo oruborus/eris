@@ -18,13 +18,12 @@ use function count;
 /**
  * @uses Eris\cartesianProduct
  * @uses Eris\Generator\AssociativeArrayGenerator
+ * @uses Eris\Generator\boxAll
  * @uses Eris\Generator\ChooseGenerator
  * @uses Eris\Generator\ConstantGenerator
  * @uses Eris\Generator\IntegerGenerator
  * @uses Eris\Generator\TupleGenerator
  * @uses Eris\Generator\VectorGenerator
- * @uses Eris\Generator\ensureAreAllGenerators
- * @uses Eris\Generator\ensureIsGenerator
  * @uses Eris\Random\RandSource
  * @uses Eris\Random\RandomRange
  * @uses Eris\Value\Value

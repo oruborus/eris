@@ -9,6 +9,7 @@ use Eris\Generator\OneOfGenerator;
 use InvalidArgumentException;
 
 /**
+ * @uses Eris\Generator\box
  * @uses Eris\Random\RandSource
  * @uses Eris\Random\RandomRange
  * @uses Eris\Value\Value
@@ -24,7 +25,6 @@ class OneOfGeneratorTest extends GeneratorTestCase
      * @covers Eris\Generator\OneOfGenerator::__construct
      * @covers Eris\Generator\OneOfGenerator::__invoke
      *
-     * @uses Eris\Generator\ensureIsGenerator
      * @uses Eris\Generator\ChooseGenerator
      * @uses Eris\Generator\FrequencyGenerator
      */
@@ -46,7 +46,6 @@ class OneOfGeneratorTest extends GeneratorTestCase
      * @covers Eris\Generator\OneOfGenerator::__construct
      * @covers Eris\Generator\OneOfGenerator::__invoke
      *
-     * @uses Eris\Generator\ensureIsGenerator
      * @uses Eris\Generator\ConstantGenerator
      * @uses Eris\Generator\FrequencyGenerator
      */
@@ -65,7 +64,6 @@ class OneOfGeneratorTest extends GeneratorTestCase
      * @covers Eris\Generator\OneOfGenerator::__construct
      * @covers Eris\Generator\OneOfGenerator::__invoke
      *
-     * @uses Eris\Generator\ensureIsGenerator
      * @uses Eris\Generator\ConstantGenerator
      * @uses Eris\Generator\FrequencyGenerator
      */

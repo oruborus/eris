@@ -13,10 +13,9 @@ use function strlen;
 
 /**
  * @uses Eris\cartesianProduct
+ * @uses Eris\Generator\boxAll
  * @uses Eris\Generator\ChooseGenerator
  * @uses Eris\Generator\ElementsGenerator
- * @uses Eris\Generator\ensureAreAllGenerators
- * @uses Eris\Generator\ensureIsGenerator
  * @uses Eris\Random\RandSource
  * @uses Eris\Random\RandomRange
  * @uses Eris\Value\Value

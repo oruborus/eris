@@ -13,9 +13,8 @@ use function rand;
 
 /**
  * @uses Eris\Generator\AssociativeArrayGenerator
+ * @uses Eris\Generator\boxAll
  * @uses Eris\Generator\TupleGenerator
- * @uses Eris\Generator\ensureAreAllGenerators
- * @uses Eris\Generator\ensureIsGenerator
  * @uses Eris\Random\RandSource
  * @uses Eris\Random\RandomRange
  * @uses Eris\Value\Value

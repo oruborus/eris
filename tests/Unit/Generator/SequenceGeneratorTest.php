@@ -13,10 +13,9 @@ use function count;
 /**
  * @uses Eris\cartesianProduct
  * @uses Eris\Generator\AssociativeArrayGenerator
+ * @uses Eris\Generator\boxAll
  * @uses Eris\Generator\TupleGenerator
  * @uses Eris\Generator\VectorGenerator
- * @uses Eris\Generator\ensureIsGenerator
- * @uses Eris\Generator\ensureAreAllGenerators
  * @uses Eris\Random\RandSource
  * @uses Eris\Random\RandomRange
  * @uses Eris\Value\Value

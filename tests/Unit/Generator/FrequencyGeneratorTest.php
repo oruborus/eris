@@ -11,8 +11,8 @@ use InvalidArgumentException;
 use function abs;
 
 /**
+ * @uses Eris\Generator\box
  * @uses Eris\Generator\ConstantGenerator
- * @uses Eris\Generator\ensureIsGenerator
  * @uses Eris\Random\RandSource
  * @uses Eris\Random\RandomRange
  * @uses Eris\Value\Value

@@ -46,7 +46,7 @@ class FrequencyGenerator implements Generator
 
             $this->frequencySum = array_sum($this->stackedFrequencies) + $frequency;
             $this->stackedFrequencies[] = $this->frequencySum;
-            $this->generators[] = ensureIsGenerator($generator);
+            $this->generators[] = box($generator);
         }
 
         if (empty($this->stackedFrequencies)) {

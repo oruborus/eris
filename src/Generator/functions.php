@@ -9,34 +9,9 @@ use Eris\Contracts\Generator;
 use PHPUnit\Framework\Constraint\Constraint;
 
 use function abs;
-use function array_combine;
-use function array_keys;
-use function array_map;
 use function count;
 use function is_array;
 use function is_string;
-
-/**
- * @return Generator[]
- */
-function ensureAreAllGenerators(array $generators): array
-{
-    return array_combine(
-        array_keys($generators),
-        array_map('Eris\Generator\ensureIsGenerator', $generators)
-    );
-}
-
-/**
- * @param mixed $generator
- */
-function ensureIsGenerator($generator): Generator
-{
-    if ($generator instanceof Generator) {
-        return $generator;
-    }
-    return new ConstantGenerator($generator);
-}
 
 /**
  * @param array<mixed> $generators
@@ -58,6 +33,42 @@ function bool(): BooleanGenerator
 {
     return new BooleanGenerator();
 }
+
+/**
+ * @template TValue
+ * @param TValue|Generator<TValue> $constant
+ * @return ConstantGenerator<TValue>|Generator<TValue>
+ */
+function box($constant): Generator
+{
+    if ($constant instanceof Generator) {
+        return $constant;
+    }
+
+    return new ConstantGenerator($constant);
+}
+
+/**
+ * @template TValue
+ * @param array<TValue|Generator<TValue>> $list
+ * @return array<ConstantGenerator<TValue>|Generator<TValue>>
+ */
+function boxAll(array $list): array
+{
+    foreach ($list as &$constant) {
+        if ($constant instanceof Generator) {
+            continue;
+        }
+
+        $constant = new ConstantGenerator($constant);
+    }
+
+    /**
+     * @var array<ConstantGenerator<TValue>|Generator<TValue>>
+     */
+    return $list;
+}
+
 
 function byte(): ChooseGenerator
 {

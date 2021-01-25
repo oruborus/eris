@@ -27,7 +27,7 @@ class AssociativeArrayGenerator implements Generator
      */
     public function __construct(array $generators)
     {
-        $this->generators = ensureAreAllGenerators($generators);
+        $this->generators = boxAll($generators);
     }
 
     /**

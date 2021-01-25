@@ -83,9 +83,6 @@ class ForAllTest extends TestCase
      *
      * @uses Eris\Contracts\Growth
      * @uses Eris\Generator\TupleGenerator
-     * @uses Eris\Generator\ensureAreAllGenerators
-     * @uses Eris\Generator\ensureIsGenerator
-     * @uses Eris\Generator\TupleGenerator
      * @uses Eris\Growth\TriangularGrowth
      * @uses Eris\Random\RandomRange
      * @uses Eris\Shrinker\Multiple

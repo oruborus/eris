@@ -20,6 +20,8 @@ use Eris\Shrinker\ShrinkerFactory;
 use Eris\Value\Value;
 use PHPUnit\Util\Test;
 
+use function Eris\Generator\boxAll;
+
 trait TestTrait
 {
     abstract public function hasFailed(): bool;
@@ -229,7 +231,7 @@ trait TestTrait
      */
     public function forAll(...$generators): ForAll
     {
-        $generators = array_map('Eris\Generator\ensureIsGenerator', $generators);
+        $generators = boxAll($generators);
 
         $this->randRange->seed($this->seed);
 
