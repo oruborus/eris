@@ -69,7 +69,6 @@ function boxAll(array $list): array
     return $list;
 }
 
-
 function byte(): ChooseGenerator
 {
     return new ChooseGenerator(0, 255);
@@ -87,7 +86,7 @@ function char(array $characterSets = ['basic-latin'], $encoding = 'utf-8'): Char
 }
 
 /**
- * Generates character in the ASCII 32-127 range, excluding non-printable ones or modifiers such as CR, LF and Tab.
+ * Generates character in the ASCII 32-126 range, excluding non-printable ones or modifiers such as CR, LF and Tab.
  */
 function charPrintableAscii(): CharacterGenerator
 {
@@ -127,7 +126,7 @@ function date($lowerLimit = null, $upperLimit = null): DateGenerator
 }
 
 /**
- * @param mixed $arguments
+ * @param mixed ...$arguments
  */
 function elements(...$arguments): ElementsGenerator
 {
@@ -139,6 +138,8 @@ function elements(...$arguments): ElementsGenerator
 }
 
 /**
+ * @codeCoverageIgnore  Alias for Eris\Generator\suchThat
+ *
  * @param callable(mixed):bool|Constraint $filter
  */
 function filter($filter, Generator $generator, int $maximumAttempts = 100): SuchThatGenerator
@@ -187,7 +188,7 @@ function names(): NamesGenerator
 
 function nat(): IntegerGenerator
 {
-    return new IntegerGenerator(fn (int $i) => abs($i));
+    return new IntegerGenerator(static fn (int $i): int => abs($i));
 }
 
 /**
@@ -195,7 +196,7 @@ function nat(): IntegerGenerator
  */
 function neg(): IntegerGenerator
 {
-    return new IntegerGenerator(fn (int $i) => (-1) * (abs($i) + 1));
+    return new IntegerGenerator(static fn (int $i): int => (-1) * (abs($i) + 1));
 }
 
 /**
@@ -211,7 +212,7 @@ function oneOf(...$arguments): OneOfGenerator
  */
 function pos(): IntegerGenerator
 {
-    return new IntegerGenerator(fn (int $i) => abs($i) + 1);
+    return new IntegerGenerator(static fn (int $i): int => abs($i) + 1);
 }
 
 /**
@@ -225,17 +226,11 @@ function regex(string $expression): RegexGenerator
 }
 
 /**
- * @todo Generator::box($singleElementGenerator);
- *
  * @param mixed $singleElementGenerator
  */
 function seq($singleElementGenerator): SequenceGenerator
 {
-    if (($singleElementGenerator instanceof Generator)) {
-        return new SequenceGenerator($singleElementGenerator);
-    }
-
-    return new SequenceGenerator(new ConstantGenerator($singleElementGenerator));
+    return new SequenceGenerator(box($singleElementGenerator));
 }
 
 function set(Generator $singleElementGenerator): SetGenerator
@@ -254,7 +249,9 @@ function subset(array $input): SubsetGenerator
 }
 
 /**
- * @param callable(mixed):bool|Constraint $filter
+ * @template TValue
+ * @param callable(TValue):bool|Constraint $filter
+ * @param Generator<TValue> $generator
  */
 function suchThat($filter, Generator $generator, int $maximumAttempts = 100): SuchThatGenerator
 {
