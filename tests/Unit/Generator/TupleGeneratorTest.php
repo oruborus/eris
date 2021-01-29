@@ -85,6 +85,8 @@ class TupleGeneratorTest extends GeneratorTestCase
     /**
      * @test
      *
+     * @coversNothing
+     *
      * @uses Eris\Generator\TupleGenerator::__construct
      *
      * @uses Eris\cartesianProduct
@@ -127,6 +129,8 @@ class TupleGeneratorTest extends GeneratorTestCase
     /**
      * @test
      *
+     * @coversNothing
+     *
      * @uses Eris\Generator\TupleGenerator::__construct
      *
      * @uses Eris\cartesianProduct
@@ -145,6 +149,8 @@ class TupleGeneratorTest extends GeneratorTestCase
 
     /**
      * @test
+     *
+     * @coversNothing
      *
      * @uses Eris\Generator\TupleGenerator::__construct
      *
@@ -167,6 +173,8 @@ class TupleGeneratorTest extends GeneratorTestCase
     }
     /**
      * @test
+     *
+     * @coversNothing
      *
      * @uses Eris\Generator\TupleGenerator::__construct
      *
@@ -205,6 +213,8 @@ class TupleGeneratorTest extends GeneratorTestCase
     }
     /**
      * @test
+     *
+     * @coversNothing
      *
      * @uses Eris\Generator\TupleGenerator::__construct
      *

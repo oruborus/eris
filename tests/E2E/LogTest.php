@@ -8,6 +8,11 @@ use PHPUnit\Framework\ExpectationFailedException;
 use Test\Examples\LogFileTest;
 use Test\Support\EndToEndTestCase;
 
+/**
+ * @coversNothing
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 class LogTest extends EndToEndTestCase
 {
     /**

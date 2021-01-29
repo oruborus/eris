@@ -9,6 +9,8 @@ use Test\Examples\ErrorTest;
 use Test\Support\EndToEndTestCase;
 
 /**
+ * @coversNothing
+ *
  * @psalm-suppress PropertyNotSetInConstructor
  */
 class EnvironmentTest extends EndToEndTestCase

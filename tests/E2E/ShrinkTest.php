@@ -13,6 +13,8 @@ use Test\Examples\ShrinkingTimeLimitTest;
 use Test\Examples\StringTest;
 
 /**
+ * @coversNothing
+ *
  * @psalm-suppress PropertyNotSetInConstructor
  */
 class ShrinkTest extends EndToEndTestCase

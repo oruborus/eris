@@ -6,6 +6,11 @@ namespace Test\E2E;
 
 use Test\Support\EndToEndTestCase;
 
+/**
+ * @coversNothing
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 class FacadeTest extends EndToEndTestCase
 {
     /**

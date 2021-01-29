@@ -50,6 +50,8 @@ class VectorGeneratorTest extends GeneratorTestCase
     /**
      * @test
      *
+     * @coversNothing
+     *
      * @uses Eris\Generator\VectorGenerator::__construct
      *
      * @uses Eris\Generator\ChooseGenerator

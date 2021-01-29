@@ -8,6 +8,11 @@ use PHPUnit\Framework\ExpectationFailedException;
 use Test\Examples\SizeTest;
 use Test\Support\EndToEndTestCase;
 
+/**
+ * @coversNothing
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 class MaxSizeTest extends EndToEndTestCase
 {
     /**

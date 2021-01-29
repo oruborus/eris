@@ -8,6 +8,11 @@ use OutOfBoundsException;
 use Test\Examples\MinimumEvaluationsTest;
 use Test\Support\EndToEndTestCase;
 
+/**
+ * @coversNothing
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 class EvaluationsTest extends EndToEndTestCase
 {
     /**

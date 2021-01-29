@@ -8,6 +8,8 @@ use Test\Examples\LimitToTest;
 use Test\Support\EndToEndTestCase;
 
 /**
+ * @coversNothing
+ *
  * @psalm-suppress PropertyNotSetInConstructor
  */
 class LimitTest extends EndToEndTestCase

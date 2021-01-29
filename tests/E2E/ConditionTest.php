@@ -9,6 +9,11 @@ use PHPUnit\Framework\ExpectationFailedException;
 use Test\Examples\WhenTest;
 use Test\Support\EndToEndTestCase;
 
+/**
+ * @coversNothing
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 class ConditionTest extends EndToEndTestCase
 {
     /**

@@ -39,6 +39,8 @@ use Test\Examples\TupleTest;
 use Test\Examples\VectorTest;
 
 /**
+ * @coversNothing
+ *
  * @psalm-suppress PropertyNotSetInConstructor
  */
 class ForAllTest extends EndToEndTestCase
