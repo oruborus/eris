@@ -9,13 +9,11 @@ use Eris\Contracts\Listener;
 use Eris\Listener\MinimumEvaluations;
 use Eris\Quantifier\ForAll;
 use Eris\Contracts\TerminationCondition;
-use Eris\Generator\ConstantGenerator;
 use Eris\Growth\TriangularGrowth;
 use Eris\Listener\TimeBasedTerminationCondition;
 use Eris\Random\MtRandSource;
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
-use Eris\Shrinker\Multiple;
 use Eris\Shrinker\ShrinkerFactory;
 use Eris\Value\Value;
 use PHPUnit\Util\Test;
@@ -44,22 +42,6 @@ trait TestTrait
     private string $shrinkerFactoryMethod = 'multiple';
     protected int $seed;
     protected ?int $shrinkingTimeLimit;
-
-    /**
-     * @beforeClass
-     *
-     * @return void
-     *
-     * @psalm-suppress UnresolvableInclude
-     */
-    public static function erisSetupBeforeClass(): void
-    {
-        foreach (['Generator', 'Antecedent', 'Listener', 'Random'] as $namespace) {
-            foreach (glob(__DIR__ . '/' . $namespace . '/*.php') as $filename) {
-                require_once($filename);
-            }
-        }
-    }
 
     /**
      * @before

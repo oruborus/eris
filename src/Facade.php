@@ -1,18 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris;
 
-/**
- * @psalm-suppress PropertyNotSetInConstructor
- */
 class Facade
 {
-    use TestTrait;
-
-    public function __construct()
-    {
-        $this->erisSetupBeforeClass();
-        $this->erisSetup();
+    use TestTrait {
+        /**
+         * Seems to emit MissingConstructor for psalm
+         * @see https://github.com/vimeo/psalm/issues/173
+         */
+        erisSetup as __construct;
     }
 
     protected function getName(bool $withDataSet = true): string
