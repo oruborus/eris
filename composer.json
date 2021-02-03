@@ -39,6 +39,7 @@
         },
         "files": [
             "src/functions.php",
+            "src/Antecedent/functions.php",
             "src/Generator/functions.php",
             "src/Listener/functions.php"
         ]
