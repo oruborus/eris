@@ -148,7 +148,7 @@ class ForAll
     public function when($firstArgument, Constraint ...$arguments): static
     {
         if ($firstArgument instanceof Constraint) {
-            $this->antecedents[] = IndependentConstraintsAntecedent::fromAll([$firstArgument] + $arguments);
+            $this->antecedents[] = new IndependentConstraintsAntecedent([$firstArgument] + $arguments);
             return $this;
         }
 

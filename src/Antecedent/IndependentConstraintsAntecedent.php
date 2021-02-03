@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eris\Antecedent;
 
 use Eris\Contracts\Antecedent;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\Constraint\Constraint;
 
 class IndependentConstraintsAntecedent implements Antecedent
@@ -16,29 +17,19 @@ class IndependentConstraintsAntecedent implements Antecedent
     /**
      * @param Constraint[] $constraints
      */
-    public static function fromAll(array $constraints): self
-    {
-        return new self($constraints);
-    }
-
-    /**
-     * @param Constraint[] $constraints
-     */
-    private function __construct($constraints)
+    public function __construct($constraints)
     {
         $this->constraints = $constraints;
     }
 
     public function evaluate(array $values): bool
     {
-        for ($i = 0; $i < count($this->constraints); $i++) {
-            // TODO: use Evaluation object?
-            try {
-                $this->constraints[$i]->evaluate($values[$i]);
-            } catch (ExpectationFailedException $e) {
+        foreach ($this->constraints as $key => $constraint) {
+            if (!$constraint->evaluate($values[$key], '', true)) {
                 return false;
             }
         }
+
         return true;
     }
 }
