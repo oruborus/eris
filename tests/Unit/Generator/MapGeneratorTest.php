@@ -30,7 +30,7 @@ class MapGeneratorTest extends GeneratorTestCase
     {
         $dut = new MapGenerator(
             static fn (int $n): int => $n * 2,
-            ConstantGenerator::box(1)
+            new ConstantGenerator(1)
         );
 
         $actual = $dut->__invoke($this->size, $this->rand)->value();

@@ -21,16 +21,6 @@ class ConstantGenerator implements Generator
     private $value;
 
     /**
-     * @template TStaticValue
-     * @param TStaticValue $value
-     * @return self<TStaticValue>
-     */
-    public static function box($value): self
-    {
-        return new self($value);
-    }
-
-    /**
      * @param TValue $value
      */
     public function __construct($value)

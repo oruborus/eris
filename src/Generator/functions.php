@@ -108,7 +108,7 @@ function choose(int $lowerLimit, int $upperLimit): ChooseGenerator
  */
 function constant($value): ConstantGenerator
 {
-    return ConstantGenerator::box($value);
+    return new ConstantGenerator($value);
 }
 
 /**

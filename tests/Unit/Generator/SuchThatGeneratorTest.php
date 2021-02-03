@@ -34,7 +34,7 @@ class SuchThatGeneratorTest extends GeneratorTestCase
     {
         $dut = new SuchThatGenerator(
             static fn (int $n): bool => $n % 2 === 0,
-            ConstantGenerator::box(10)
+            new ConstantGenerator(10)
         );
 
         $actual = $dut->__invoke($this->size, $this->rand)->value();
@@ -54,7 +54,7 @@ class SuchThatGeneratorTest extends GeneratorTestCase
     {
         $dut = new SuchThatGenerator(
             $this->callback(static fn (int $n): bool => $n % 2 === 0),
-            ConstantGenerator::box(10)
+            new ConstantGenerator(10)
         );
 
         $actual = $dut->__invoke($this->size, $this->rand)->value();
@@ -101,7 +101,7 @@ class SuchThatGeneratorTest extends GeneratorTestCase
 
         $dut = new SuchThatGenerator(
             static fn (int $n): bool => $n % 2 === 0,
-            ConstantGenerator::box(11)
+            new ConstantGenerator(11)
         );
 
         $dut->__invoke($this->size, $this->rand);
