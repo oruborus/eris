@@ -9,7 +9,7 @@ use Eris\Contracts\Antecedent;
 use function is_string;
 use function ord;
 
-class PrintableCharacter implements Antecedent
+class PrintableCharacterAntecedent implements Antecedent
 {
     /**
      * Assumes utf-8.

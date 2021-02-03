@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Eris\Antecedent;
 
-function arePrintableCharacters(): PrintableCharacter
+function arePrintableCharacters(): PrintableCharacterAntecedent
 {
-    return new PrintableCharacter();
+    return new PrintableCharacterAntecedent();
 }
 
-function isPrintableCharacter(): PrintableCharacter
+function isPrintableCharacter(): PrintableCharacterAntecedent
 {
-    return new PrintableCharacter();
+    return new PrintableCharacterAntecedent();
 }

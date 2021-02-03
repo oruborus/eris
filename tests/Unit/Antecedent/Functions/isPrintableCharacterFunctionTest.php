@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Test\Unit\Antecedent;
 
-use Eris\Antecedent\PrintableCharacter;
+use Eris\Antecedent\PrintableCharacterAntecedent;
 use PHPUnit\Framework\TestCase;
 
 use function Eris\Antecedent\isPrintableCharacter;
@@ -12,7 +12,7 @@ use function Eris\Antecedent\isPrintableCharacter;
 /**
  * @covers Eris\Antecedent\isPrintableCharacter
  *
- * @uses Eris\Antecedent\PrintableCharacter
+ * @uses Eris\Antecedent\PrintableCharacterAntecedent
  *
  * @psalm-suppress PropertyNotSetInConstructor
  */
@@ -25,6 +25,6 @@ class IsPrintableCharacterFunctionTest extends TestCase
     {
         $dut = isPrintableCharacter();
 
-        $this->assertInstanceOf(PrintableCharacter::class, $dut);
+        $this->assertInstanceOf(PrintableCharacterAntecedent::class, $dut);
     }
 }
