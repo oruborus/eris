@@ -19,7 +19,7 @@ use function json_encode;
 use function sprintf;
 use const PHP_EOL;
 
-class Log extends EmptyListener implements Listener
+class LogListener extends EmptyListener implements Listener
 {
     /**
      * @var resource $fp

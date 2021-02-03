@@ -9,15 +9,7 @@ use Exception;
 
 use const JSON_THROW_ON_ERROR;
 
-/**
- * @param ?callable(mixed...):array-key $collectFunction
- */
-function collectFrequencies($collectFunction = null): CollectFrequencies
-{
-    return new CollectFrequencies($collectFunction);
-}
-
-class CollectFrequencies extends EmptyListener implements Listener
+class CollectFrequenciesListener extends EmptyListener implements Listener
 {
     /**
      * @var callable(mixed...):array-key $collectFunction

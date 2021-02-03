@@ -6,7 +6,15 @@ namespace Eris\Listener;
 
 use function getmypid;
 
-function log(string $file): Log
+/**
+ * @param ?callable(mixed...):array-key $collectFunction
+ */
+function collectFrequencies($collectFunction = null): CollectFrequenciesListener
 {
-    return new Log($file, 'time', getmypid());
+    return new CollectFrequenciesListener($collectFunction);
+}
+
+function log(string $file): LogListener
+{
+    return new LogListener($file, 'time', getmypid());
 }

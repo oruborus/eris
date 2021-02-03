@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Test\Unit\Listener;
 
-use Eris\Listener\Log;
+use Eris\Listener\LogListener;
 use InvalidArgumentException;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +22,7 @@ use const PHP_EOL;
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  */
-class LogTest extends TestCase
+class LogListenerTest extends TestCase
 {
     private string $originalTimezone;
 
@@ -58,8 +58,8 @@ class LogTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Listener\Log::__construct
-     * @covers Eris\Listener\Log::__destruct
+     * @covers Eris\Listener\LogListener::__construct
+     * @covers Eris\Listener\LogListener::__destruct
      */
     public function suppliedFileGetsCreatedAndRemainsAfterLogging(): void
     {
@@ -68,7 +68,7 @@ class LogTest extends TestCase
             unlink($filename);
         }
 
-        $dut = new Log($filename, $this->time, 1234);
+        $dut = new LogListener($filename, $this->time, 1234);
 
         unset($dut);
 
@@ -79,9 +79,9 @@ class LogTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Listener\Log::__construct
+     * @covers Eris\Listener\LogListener::__construct
      *
-     * @uses Eris\Listener\Log::__destruct
+     * @uses Eris\Listener\LogListener::__destruct
      */
     public function throwsExceptionIfFileCanNotBeOpened(): void
     {
@@ -95,7 +95,7 @@ class LogTest extends TestCase
         unlink($filename);
 
         try {
-            new Log($filename, $this->time, 1234);
+            new LogListener($filename, $this->time, 1234);
         } finally {
             fclose($fp);
         }
@@ -104,9 +104,9 @@ class LogTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Listener\Log::__construct
+     * @covers Eris\Listener\LogListener::__construct
      *
-     * @uses Eris\Listener\Log::__destruct
+     * @uses Eris\Listener\LogListener::__destruct
      */
     public function throwsExceptionIfSuppliedFileNameIsDirectory(): void
     {
@@ -114,23 +114,23 @@ class LogTest extends TestCase
 
         $filename = sys_get_temp_dir();
 
-        new Log($filename, $this->time, 1234);
+        new LogListener($filename, $this->time, 1234);
     }
 
     /**
      * @test
      *
-     * @covers Eris\Listener\Log::log
-     * @covers Eris\Listener\Log::newGeneration
+     * @covers Eris\Listener\LogListener::log
+     * @covers Eris\Listener\LogListener::newGeneration
      *
-     * @uses Eris\Listener\Log::__construct
-     * @uses Eris\Listener\Log::__destruct
+     * @uses Eris\Listener\LogListener::__construct
+     * @uses Eris\Listener\LogListener::__destruct
      *
      * @psalm-suppress InternalClass
      */
     public function writesALineForEachIterationShowingItsIndex(): void
     {
-        $dut = new Log($this->filename, $this->time, 1234);
+        $dut = new LogListener($this->filename, $this->time, 1234);
 
         $dut->newGeneration([23], 42);
 
@@ -143,17 +143,17 @@ class LogTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Listener\Log::failure
-     * @covers Eris\Listener\Log::log
+     * @covers Eris\Listener\LogListener::failure
+     * @covers Eris\Listener\LogListener::log
      *
-     * @uses Eris\Listener\Log::__construct
-     * @uses Eris\Listener\Log::__destruct
+     * @uses Eris\Listener\LogListener::__construct
+     * @uses Eris\Listener\LogListener::__destruct
      *
      * @psalm-suppress InternalClass
      */
     public function writesALineForTheFirstFailureOfATest(): void
     {
-        $dut = new Log($this->filename, $this->time, 1234);
+        $dut = new LogListener($this->filename, $this->time, 1234);
 
         $dut->failure([23], new AssertionFailedError("Failed asserting that..."));
 
@@ -166,19 +166,19 @@ class LogTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Listener\Log::shrinking
-     * @covers Eris\Listener\Log::log
+     * @covers Eris\Listener\LogListener::shrinking
+     * @covers Eris\Listener\LogListener::log
      *
-     * @uses Eris\Listener\Log::__construct
-     * @uses Eris\Listener\Log::__destruct
+     * @uses Eris\Listener\LogListener::__construct
+     * @uses Eris\Listener\LogListener::__destruct
      *
      * @psalm-suppress InternalClass
      */
     public function writesALineForEachShrinkingAttempt(): void
     {
-        $dut = new Log($this->filename, $this->time, 1234);
+        $dut = new LogListener($this->filename, $this->time, 1234);
 
-        $dut->shrinking([22], new AssertionFailedError("Failed asserting that..."));
+        $dut->shrinking([22]);
 
 
         $this->assertStringEqualsFile(
