@@ -7,9 +7,9 @@ namespace Test\Examples;
 use Eris\TestTrait;
 use PHPUnit\Framework\TestCase;
 
+use function Eris\Antecedent\arePrintableCharacters;
+use function Eris\Antecedent\isPrintableCharacter;
 use function Eris\Generator\char;
-use function Eris\Antecedent\printableCharacter;
-use function Eris\Antecedent\printableCharacters;
 use function strlen;
 use function ord;
 
@@ -43,7 +43,7 @@ class CharacterTest extends TestCase
             ->forAll(
                 char(['basic-latin'])
             )
-            ->when(printableCharacter())
+            ->when(isPrintableCharacter())
             ->then(function (string $char): void {
                 $this->assertGreaterThanOrEqual(32, ord($char));
             });
@@ -60,7 +60,7 @@ class CharacterTest extends TestCase
                 char(['basic-latin']),
                 char(['basic-latin'])
             )
-            ->when(printableCharacters())
+            ->when(arePrintableCharacters())
             ->then(function (string $first, string $second): void {
                 $this->assertGreaterThanOrEqual(32, ord($first));
                 $this->assertGreaterThanOrEqual(32, ord($second));
@@ -79,7 +79,7 @@ class CharacterTest extends TestCase
                 char(['basic-latin']),
                 char(['basic-latin'])
             )
-            ->when(printableCharacters())
+            ->when(arePrintableCharacters())
             ->then(function (string $first, string $second): void {
                 $this->assertGreaterThanOrEqual(32, ord($first));
                 $this->assertGreaterThanOrEqual(32, ord($second));

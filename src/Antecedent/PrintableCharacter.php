@@ -9,16 +9,6 @@ use Eris\Contracts\Antecedent;
 use function is_string;
 use function ord;
 
-function printableCharacter(): PrintableCharacter
-{
-    return new PrintableCharacter();
-}
-
-function printableCharacters(): PrintableCharacter
-{
-    return new PrintableCharacter();
-}
-
 class PrintableCharacter implements Antecedent
 {
     /**
