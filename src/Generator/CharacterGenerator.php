@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Eris\Generator;
 
 use Eris\Contracts\Generator;
+use Eris\Progression\ArithmeticProgression;
 use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
@@ -35,7 +36,7 @@ class CharacterGenerator implements Generator
     {
         $this->lowerLimit = $lowerLimit;
         $this->upperLimit = $upperLimit;
-        $this->shrinkingProgression = ArithmeticProgression::discrete($this->lowerLimit);
+        $this->shrinkingProgression = new ArithmeticProgression($this->lowerLimit);
     }
 
     /**

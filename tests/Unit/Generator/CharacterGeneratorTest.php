@@ -12,7 +12,7 @@ use function ord;
 use function strlen;
 
 /**
- * @uses Eris\Generator\ArithmeticProgression
+ * @uses Eris\Progression\ArithmeticProgression
  * @uses Eris\Random\RandSource
  * @uses Eris\Random\RandomRange
  * @uses Eris\Value\Value

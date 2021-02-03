@@ -11,8 +11,8 @@ use function Eris\Generator\charPrintableAscii;
 /**
  * @covers Eris\Generator\charPrintableAscii
  *
- * @uses Eris\Generator\ArithmeticProgression
  * @uses Eris\Generator\CharacterGenerator
+ * @uses Eris\Progression\ArithmeticProgression
  * @uses Eris\Random\RandomRange
  * @uses Eris\Random\RandSource
  * @uses Eris\Value\Value
