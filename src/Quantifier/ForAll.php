@@ -157,7 +157,7 @@ class ForAll
             return $this;
         }
 
-        $this->antecedents[] = SingleCallbackAntecedent::from($firstArgument);
+        $this->antecedents[] = new SingleCallbackAntecedent($firstArgument);
 
         return $this;
     }

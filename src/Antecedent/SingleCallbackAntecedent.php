@@ -16,15 +16,7 @@ class SingleCallbackAntecedent implements Antecedent
     /**
      * @param callable(mixed...):bool $callback
      */
-    public static function from($callback): self
-    {
-        return new self($callback);
-    }
-
-    /**
-     * @param callable(mixed...):bool $callback
-     */
-    private function __construct($callback)
+    public function __construct($callback)
     {
         $this->callback = $callback;
     }
