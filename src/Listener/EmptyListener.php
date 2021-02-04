@@ -7,6 +7,9 @@ namespace Eris\Listener;
 use Eris\Contracts\Listener;
 use Exception;
 
+/**
+ * @codeCoverageIgnore
+ */
 abstract class EmptyListener implements Listener
 {
     public function startPropertyVerification(): void

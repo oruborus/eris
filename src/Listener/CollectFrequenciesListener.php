@@ -7,9 +7,17 @@ namespace Eris\Listener;
 use Eris\Contracts\Listener;
 use Exception;
 
-use const JSON_THROW_ON_ERROR;
+use function arsort;
+use function json_encode;
+use function number_format;
+use function round;
+use function str_pad;
 
-class CollectFrequenciesListener extends EmptyListener implements Listener
+use const JSON_THROW_ON_ERROR;
+use const PHP_EOL;
+use const STR_PAD_LEFT;
+
+class CollectFrequenciesListener extends EmptyListener
 {
     /**
      * @var callable(mixed...):array-key $collectFunction
@@ -26,27 +34,14 @@ class CollectFrequenciesListener extends EmptyListener implements Listener
      */
     public function __construct($collectFunction = null)
     {
-        if ($collectFunction === null) {
+        if (is_null($collectFunction)) {
             $collectFunction =
                 /**
-                 * @param mixed[] ...$values
-                 * @return array-key
+                 * @param mixed ...$values
                  */
-                function (...$values) {
-                    if (count($values) === 1) {
-                        /**
-                         * @var mixed $values
-                         */
-                        $values = $values[0];
-                    }
-
-                    if (is_string($values) || is_integer($values)) {
-                        return $values;
-                    }
-
-                    return json_encode($values, JSON_THROW_ON_ERROR);
-                };
+                static fn (...$values): string => json_encode($values, JSON_THROW_ON_ERROR);
         }
+
         $this->collectFunction = $collectFunction;
     }
 
@@ -55,20 +50,27 @@ class CollectFrequenciesListener extends EmptyListener implements Listener
         int $iterations,
         ?Exception $exception = null
     ): void {
-        arsort($this->collectedValues, SORT_NUMERIC);
-        echo PHP_EOL;
-        foreach ($this->collectedValues as $key => $value) {
-            $frequency = round(($value / $ordinaryEvaluations) * 100, 2);
-            echo "{$frequency}%  $key" . PHP_EOL;
+        if (empty($this->collectedValues)) {
+            return;
         }
+
+        arsort($this->collectedValues, SORT_NUMERIC);
+
+        $result = PHP_EOL;
+        foreach ($this->collectedValues as $key => $value) {
+            $frequency = round($value / $ordinaryEvaluations * 100, 2);
+            $frequency = number_format($frequency, 2);
+            $frequency = str_pad($frequency, 6, ' ', STR_PAD_LEFT);
+            $result .= "{$frequency}%  $key" . PHP_EOL;
+        }
+
+        echo $result;
     }
 
     public function newGeneration(array $generation, int $iteration): void
     {
         $key = ($this->collectFunction)(...$generation);
-        // TODO: check key is a correct key, identity may lead this to be a non-string and non-integer value
-        // have a default for arrays and other scalars
 
-        $this->collectedValues[$key] = $this->collectedValues[$key] ?? 0 + 1;
+        $this->collectedValues[$key] = ($this->collectedValues[$key] ?? 0) + 1;
     }
 }
