@@ -11,7 +11,6 @@ use Eris\Quantifier\ForAll;
 use Eris\Contracts\TerminationCondition;
 use Eris\Growth\TriangularGrowth;
 use Eris\Listener\TimeBasedTerminationCondition;
-use Eris\Random\MtRandSource;
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
 use Eris\Shrinker\ShrinkerFactory;
@@ -188,15 +187,11 @@ trait TestTrait
     }
 
     /**
-     * @param string|RandomRange $randFunction mt_rand, rand or a RandomRange
+     * @param string|RandomRange $randFunction "rand" or a RandomRange
      * @return self
      */
     protected function withRand($randFunction)
     {
-        if ($randFunction === 'mt_rand') {
-            $this->randRange = new RandomRange(new MtRandSource());
-            return $this;
-        }
         if ($randFunction === 'rand') {
             $this->randRange = new RandomRange(new RandSource());
             return $this;

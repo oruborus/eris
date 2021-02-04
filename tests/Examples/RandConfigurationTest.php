@@ -46,33 +46,6 @@ class RandConfigurationTest extends TestCase
     }
 
     /**
-     * @test
-     */
-    public function usingTheDefaultMtRandFunction(): void
-    {
-        $this
-            ->withRand('mt_rand')
-            ->forAll(
-                int()
-            )
-            ->then($this->isInteger());
-    }
-
-    /**
-     * @test
-     *
-     * @eris-method mt_rand
-     */
-    public function usingTheDefaultMtRandFunctionFromAnnotation(): void
-    {
-        $this
-            ->forAll(
-                int()
-            )
-            ->then($this->isInteger());
-    }
-
-    /**
      * @return callable(mixed): void
      */
     private function isInteger()
