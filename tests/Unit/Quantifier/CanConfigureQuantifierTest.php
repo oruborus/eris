@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Test\Unit\Quantifier;
 
+use DateInterval;
+use Eris\Contracts\Growth;
 use Eris\Contracts\Listener;
 use Eris\Contracts\Quantifier;
+use Eris\Contracts\Source;
 use Eris\Contracts\TerminationCondition;
 use Eris\Quantifier\QuantifierBuilder;
 use Eris\Quantifier\CanConfigureQuantifier;
@@ -45,6 +48,44 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
+     * @covers Eris\Quantifier\CanConfigureQuantifier::limitTo
+     *
+     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     *
+     * @uses Eris\Listener\TimeBasedTerminationCondition
+     */
+    public function canStageLimitsForQuantifierCreation(): void
+    {
+        $quantifier = $this->getMockForAbstractClass(Quantifier::class);
+        $quantifier
+            ->expects($this->once())
+            ->method('stopOn')
+            ->willReturnSelf();
+        $quantifier
+            ->expects($this->once())
+            ->method('withMaximumIterations')
+            ->willReturnSelf();
+
+        $limit = new DateInterval('PT2S');
+
+        $dut = new class()
+        {
+            use CanConfigureQuantifier {
+                limitTo as public;
+            }
+
+            public function run(Quantifier $quantifier): void
+            {
+                $this->getQuantifierBuilder()->build($quantifier);
+            }
+        };
+
+        $dut->limitTo($limit)->limitTo(15)->run($quantifier);
+    }
+
+    /**
+     * @test
+     *
      * @covers Eris\Quantifier\CanConfigureQuantifier::listenTo
      *
      * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
@@ -72,6 +113,38 @@ class CanConfigureQuantifierTest extends TestCase
         };
 
         $dut->listenTo($listener)->listenTo($listener)->run($quantifier);
+    }
+
+    /**
+     * @test
+     *
+     * @covers Eris\Quantifier\CanConfigureQuantifier::withGrowth
+     *
+     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     */
+    public function canStageGrowthTypeConditionsForQuantifierCreation(): void
+    {
+        $quantifier = $this->getMockForAbstractClass(Quantifier::class);
+        $quantifier
+            ->expects($this->once())
+            ->method('withGrowth')
+            ->willReturnSelf();
+
+        $growth = $this->getMockForAbstractClass(Growth::class, [], '', false);
+
+        $dut = new class()
+        {
+            use CanConfigureQuantifier {
+                withGrowth as public;
+            }
+
+            public function run(Quantifier $quantifier): void
+            {
+                $this->getQuantifierBuilder()->build($quantifier);
+            }
+        };
+
+        $dut->withGrowth($growth::class)->run($quantifier);
     }
 
     /**
@@ -196,5 +269,69 @@ class CanConfigureQuantifierTest extends TestCase
         };
 
         $dut->withoutShrinking()->run($quantifier);
+    }
+
+
+    /**
+     * @test
+     *
+     * @covers Eris\Quantifier\CanConfigureQuantifier::withRand
+     *
+     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     */
+    public function canStageRandTypeConditionsForQuantifierCreation(): void
+    {
+        $quantifier = $this->getMockForAbstractClass(Quantifier::class);
+        $quantifier
+            ->expects($this->once())
+            ->method('withRand')
+            ->willReturnSelf();
+
+        $source = $this->getMockForAbstractClass(Source::class, [], '', false);
+
+        $dut = new class()
+        {
+            use CanConfigureQuantifier {
+                withRand as public;
+            }
+
+            public function run(Quantifier $quantifier): void
+            {
+                $this->getQuantifierBuilder()->build($quantifier);
+            }
+        };
+
+        $dut->withRand($source::class)->run($quantifier);
+    }
+
+    /**
+     * @test
+     *
+     * @covers Eris\Quantifier\CanConfigureQuantifier::withShrinkingTimeLimit
+     *
+     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     */
+    public function canStageShrinkingTimeLimitForQuantifierCreation(): void
+    {
+        $quantifier = $this->getMockForAbstractClass(Quantifier::class);
+        $quantifier
+            ->expects($this->once())
+            ->method('withShrinkingTimeLimit')
+            ->with(15)
+            ->willReturnSelf();
+
+        $dut = new class()
+        {
+            use CanConfigureQuantifier {
+                withShrinkingTimeLimit as public;
+            }
+
+            public function run(Quantifier $quantifier): void
+            {
+                $this->getQuantifierBuilder()->build($quantifier);
+            }
+        };
+
+        $dut->withShrinkingTimeLimit(15)->run($quantifier);
     }
 }

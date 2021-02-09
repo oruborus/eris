@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Test\Unit\Quantifier;
 
+use DateInterval;
+use Eris\Contracts\Growth;
 use Eris\Contracts\Listener;
 use Eris\Contracts\Quantifier;
+use Eris\Contracts\Source;
 use Eris\Contracts\TerminationCondition;
 use Eris\Quantifier\QuantifierBuilder;
 use PHPUnit\Framework\TestCase;
@@ -15,6 +18,30 @@ use PHPUnit\Framework\TestCase;
  */
 class QuantifierBuilderTest extends TestCase
 {
+    /**
+     * @test
+     *
+     * @covers Eris\Quantifier\QuantifierBuilder::build
+     * @covers Eris\Quantifier\QuantifierBuilder::limitTo
+     *
+     * @uses Eris\Quantifier\QuantifierBuilder::stopOn
+     * @uses Eris\Quantifier\QuantifierBuilder::withMaximumIterations
+     *
+     * @uses Eris\Listener\TimeBasedTerminationCondition
+     */
+    public function canAddLimitToQuantifier(): void
+    {
+        $quantifier = $this->getMockForAbstractClass(Quantifier::class);
+        $limit      = new DateInterval('PT2S');
+
+        $quantifier->expects($this->once())->method('stopOn')->willReturnSelf();
+        $quantifier->expects($this->once())->method('withMaximumIterations')->willReturnSelf();
+
+        $dut = new QuantifierBuilder();
+
+        $dut->limitTo(150)->limitTo($limit)->build($quantifier);
+    }
+
     /**
      * @test
      *
@@ -49,6 +76,28 @@ class QuantifierBuilderTest extends TestCase
         $dut = new QuantifierBuilder();
 
         $dut->stopOn($terminationCondition)->stopOn($terminationCondition)->build($quantifier);
+    }
+
+    /**
+     * @test
+     *
+     * @covers Eris\Quantifier\QuantifierBuilder::build
+     * @covers Eris\Quantifier\QuantifierBuilder::withGrowth
+     */
+    public function canSetTheGrowthTypeOfQuantifier(): void
+    {
+        $quantifier = $this->getMockForAbstractClass(Quantifier::class);
+        $growth     = $this->getMockForAbstractClass(Growth::class, [], '', false);
+
+        $quantifier
+            ->expects($this->once())
+            ->method('withGrowth')
+            ->with($growth::class)
+            ->willReturnSelf();
+
+        $dut = new QuantifierBuilder();
+
+        $dut->withGrowth($growth::class)->build($quantifier);
     }
 
     /**
@@ -111,5 +160,49 @@ class QuantifierBuilderTest extends TestCase
         $dut = new QuantifierBuilder();
 
         $dut->withoutShrinking()->build($quantifier);
+    }
+
+    /**
+     * @test
+     *
+     * @covers Eris\Quantifier\QuantifierBuilder::build
+     * @covers Eris\Quantifier\QuantifierBuilder::withRand
+     */
+    public function canSetTheRandSourceTypeOfQuantifier(): void
+    {
+        $quantifier = $this->getMockForAbstractClass(Quantifier::class);
+        $source     = $this->getMockForAbstractClass(Source::class, [], '', false);
+
+        $quantifier
+            ->expects($this->once())
+            ->method('withRand')
+            ->with($source::class)
+            ->willReturnSelf();
+
+        $dut = new QuantifierBuilder();
+
+        $dut->withRand($source::class)->build($quantifier);
+    }
+
+
+    /**
+     * @test
+     *
+     * @covers Eris\Quantifier\QuantifierBuilder::build
+     * @covers Eris\Quantifier\QuantifierBuilder::withShrinkingTimeLimit
+     */
+    public function canSetTheShrinkingTimeLimitOfQuantifierGenerators(): void
+    {
+        $quantifier = $this->getMockForAbstractClass(Quantifier::class);
+
+        $quantifier
+            ->expects($this->once())
+            ->method('withShrinkingTimeLimit')
+            ->with(15)
+            ->willReturnSelf();
+
+        $dut = new QuantifierBuilder();
+
+        $dut->withShrinkingTimeLimit(15)->build($quantifier);
     }
 }
