@@ -21,10 +21,10 @@ interface Quantifier extends QuantifierConfiguration
     /**
      * @param callable(mixed...):void $assertion
      */
-    public function then($assertion): self;
+    public function then($assertion): void;
 
     /**
      * @param callable(mixed...):void $assertion
      */
-    public function __invoke($assertion): self;
+    public function __invoke($assertion): void;
 }
