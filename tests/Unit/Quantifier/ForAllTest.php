@@ -18,14 +18,18 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
+ *
+ * @uses Eris\Antecedent\AntecedentCollection
+ * @uses Eris\Listener\ListenerCollection
+ * @uses Eris\TerminationCondition\TerminationConditionCollection
  */
 class ForAllTest extends TestCase
 {
     /**
      * @test
      *
-     * @covers Eris\Quantifier\ForAll::withMaxSize
-     * @covers Eris\Quantifier\ForAll::getMaxSize
+     * @covers Eris\Quantifier\ForAll::withMaximumSize
+     * @covers Eris\Quantifier\ForAll::getMaximumSize
      *
      * @uses Eris\Quantifier\ForAll::__construct
      *
@@ -39,15 +43,15 @@ class ForAllTest extends TestCase
         $dut = new ForAll([]);
 
         $this->assertLessThanOrEqual(ForAll::DEFAULT_MAX_SIZE, $dut->getMaximumSize());
-        $this->assertInstanceOf(ForAll::class, $dut->withMaxSize(50));
+        $this->assertInstanceOf(ForAll::class, $dut->withMaximumSize(50));
         $this->assertLessThanOrEqual(50, $dut->getMaximumSize());
     }
 
     /**
      * @test
      *
-     * @covers Eris\Quantifier\ForAll::withIterations
-     * @covers Eris\Quantifier\ForAll::getIterations
+     * @covers Eris\Quantifier\ForAll::withMaximumIterations
+     * @covers Eris\Quantifier\ForAll::getMaximumIterations
      *
      * @uses Eris\Quantifier\ForAll::__construct
      *
@@ -70,12 +74,9 @@ class ForAllTest extends TestCase
      * @covers Eris\Quantifier\ForAll::__invoke
      * @covers Eris\Quantifier\ForAll::__construct
      *
-     * @uses Eris\Quantifier\ForAll::antecedentsAreSatisfied
      * @uses Eris\Quantifier\ForAll::getMaximumIterations
      * @uses Eris\Quantifier\ForAll::listenTo
      * @uses Eris\Quantifier\ForAll::hook
-     * @uses Eris\Quantifier\ForAll::notifyListeners
-     * @uses Eris\Quantifier\ForAll::terminationConditionsAreSatisfied
      *
      * @uses Eris\Contracts\Growth
      * @uses Eris\Generator\TupleGenerator

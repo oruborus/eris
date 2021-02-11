@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Eris\Quantifier;
 
 use DateInterval;
+use Eris\Antecedent\AntecedentCollection;
 use Eris\Antecedent\IndependentConstraintsAntecedent;
 use Eris\Antecedent\SingleCallbackAntecedent;
 use Eris\Contracts\Antecedent;
@@ -16,10 +17,12 @@ use Eris\Contracts\Source;
 use Eris\Contracts\TerminationCondition;
 use Eris\Generator\SkipValueException;
 use Eris\Growth\TriangularGrowth;
+use Eris\Listener\ListenerCollection;
 use Eris\Listener\TimeBasedTerminationCondition;
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
 use Eris\Shrinker\ShrinkerFactory;
+use Eris\TerminationCondition\TerminationConditionCollection;
 use Eris\Value\Value;
 use Exception;
 use PHPUnit\Framework\AssertionFailedError;
@@ -60,20 +63,11 @@ class ForAll implements Quantifier
 
     private ShrinkerFactory $shrinkerFactory;
 
-    /**
-     * @var list<Antecedent> $antecedents
-     */
-    private array $antecedents = [];
+    private AntecedentCollection $antecedents;
 
-    /**
-     * @var list<TerminationCondition> $terminationConditions
-     */
-    private array $terminationConditions = [];
+    private TerminationConditionCollection $terminationConditions;
 
-    /**
-     * @var Listener[] $listeners
-     */
-    private array $listeners = [];
+    private ListenerCollection $listeners;
 
     private bool $shrinkingDisabled = false;
 
@@ -85,6 +79,9 @@ class ForAll implements Quantifier
         $this->generators  = $generators;
         $this->growthClass = TriangularGrowth::class;
         $this->sourceClass = RandSource::class;
+        $this->listeners   = new ListenerCollection();
+        $this->antecedents = new AntecedentCollection();
+        $this->terminationConditions = new TerminationConditionCollection();
         $this->shrinkerFactory = new ShrinkerFactory();
     }
 
@@ -101,7 +98,7 @@ class ForAll implements Quantifier
 
     public function listenTo(Listener $listener): self
     {
-        $this->listeners[] = $listener;
+        $this->listeners->add($listener);
 
         return $this;
     }
@@ -116,7 +113,7 @@ class ForAll implements Quantifier
 
     public function stopOn(TerminationCondition $terminationCondition): self
     {
-        $this->terminationConditions[] = $terminationCondition;
+        $this->terminationConditions->add($terminationCondition);
 
         return $this;
     }
@@ -240,16 +237,16 @@ class ForAll implements Quantifier
     public function when($firstArgument, Constraint ...$arguments): self
     {
         if ($firstArgument instanceof Constraint) {
-            $this->antecedents[] = new IndependentConstraintsAntecedent([$firstArgument] + $arguments);
+            $this->antecedents->add(new IndependentConstraintsAntecedent([$firstArgument] + $arguments));
             return $this;
         }
 
         if ($firstArgument instanceof Antecedent) {
-            $this->antecedents[] = $firstArgument;
+            $this->antecedents->add($firstArgument);
             return $this;
         }
 
-        $this->antecedents[] = new SingleCallbackAntecedent($firstArgument);
+        $this->antecedents->add(new SingleCallbackAntecedent($firstArgument));
 
         return $this;
     }
@@ -281,12 +278,12 @@ class ForAll implements Quantifier
         $redTestException    = null;
         $values              = null;
 
-        $this->notifyListeners('startPropertyVerification');
+        $this->listeners->startPropertyVerification();
 
         try {
             for (
                 $iteration = 0;
-                $iteration < $this->maximumIterations && !$this->terminationConditionsAreSatisfied();
+                $iteration < $this->maximumIterations && !$this->terminationConditions->shouldTerminate();
                 $iteration++
             ) {
                 /**
@@ -311,9 +308,9 @@ class ForAll implements Quantifier
 
                 $generation = new Value($values, $generatedValues);
 
-                $this->notifyListeners('newGeneration', $generation->value(), $iteration);
+                $this->listeners->newGeneration($generation->value(), $iteration);
 
-                if (!$this->antecedentsAreSatisfied($values)) {
+                if (!$this->antecedents->evaluate($values)) {
                     continue;
                 }
 
@@ -322,7 +319,7 @@ class ForAll implements Quantifier
                 try {
                     $assertion(...$generation->value());
                 } catch (AssertionFailedError $exception) {
-                    $this->notifyListeners('failure', $generation->value(), $exception);
+                    $this->listeners->failure($generation->value(), $exception);
 
                     if ($this->shrinkingDisabled) {
                         throw $exception;
@@ -340,14 +337,14 @@ class ForAll implements Quantifier
                             /**
                              * @param Value<array> $generation
                              */
-                            fn (Value $generation): bool => $this->antecedentsAreSatisfied($generation->value())
+                            fn (Value $generation): bool => $this->antecedents->evaluate($generation->value())
                         )
                         ->onAttempt(
                             /**
                              * @param Value<array> $generation
                              */
                             function (Value $generation): void {
-                                $this->notifyListeners('shrinking', $generation->value());
+                                $this->listeners->shrinking($generation->value());
                             }
                         )
                         ->from($generation, $exception);
@@ -366,47 +363,7 @@ class ForAll implements Quantifier
 
             throw $redTestException;
         } finally {
-            $this->notifyListeners(
-                'endPropertyVerification',
-                $ordinaryEvaluations,
-                $this->maximumIterations,
-                $redTestException
-            );
+            $this->listeners->endPropertyVerification($ordinaryEvaluations, $this->maximumIterations, $redTestException);
         }
-    }
-
-    /**
-     * @param mixed $arguments
-     */
-    private function notifyListeners(string $event, ...$arguments): void
-    {
-        foreach ($this->listeners as $listener) {
-            $listener->{$event}(...$arguments);
-        }
-    }
-
-    /**
-     * @param array<mixed> $values
-     */
-    private function antecedentsAreSatisfied(array $values): bool
-    {
-        foreach ($this->antecedents as $antecedentToVerify) {
-            if (!$antecedentToVerify->evaluate($values)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private function terminationConditionsAreSatisfied(): bool
-    {
-        foreach ($this->terminationConditions as $terminationCondition) {
-            if ($terminationCondition->shouldTerminate()) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
