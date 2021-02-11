@@ -212,12 +212,11 @@ trait TestTrait
 
         $this->randRange->seed($this->seed);
 
-        $quantifier = new ForAll(
-            $generators,
-            new TriangularGrowth(ForAll::DEFAULT_MAX_SIZE, $this->iterations),
-            [new ShrinkerFactory($this->shrinkingTimeLimit), $this->shrinkerFactoryMethod],
-            $this->randRange
-        );
+        $quantifier = new ForAll($generators);
+
+        $quantifier->withShrinkingTimeLimit($this->shrinkingTimeLimit);
+
+        $quantifier->withMaximumIterations($this->iterations);
 
         foreach ($this->listeners as $listener) {
             $quantifier->hook($listener);
