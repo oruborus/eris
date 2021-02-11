@@ -6,8 +6,5 @@ namespace Eris\Contracts;
 
 interface TerminationCondition
 {
-    /**
-     * @return boolean
-     */
-    public function shouldTerminate();
+    public function shouldTerminate(): bool;
 }
