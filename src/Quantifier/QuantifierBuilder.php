@@ -35,6 +35,8 @@ final class QuantifierBuilder implements QuantifierConfiguration
 
     private ?int $maximumSize = null;
 
+    private ?int $seed = null;
+
     private bool $withoutShrinking = false;
 
     /**
@@ -72,6 +74,10 @@ final class QuantifierBuilder implements QuantifierConfiguration
 
         if (is_string($this->source)) {
             $quantifier->withRand($this->source);
+        }
+
+        if (is_int($this->seed)) {
+            $quantifier->withSeed($this->seed);
         }
 
         if (is_int($this->shrinkingTimeLimit)) {
@@ -128,6 +134,13 @@ final class QuantifierBuilder implements QuantifierConfiguration
     public function withMaximumSize(int $maximumSize): self
     {
         $this->maximumSize = $maximumSize;
+
+        return $this;
+    }
+
+    public function withSeed(int $seed): self
+    {
+        $this->seed = $seed;
 
         return $this;
     }

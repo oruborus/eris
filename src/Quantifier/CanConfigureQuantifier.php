@@ -69,6 +69,13 @@ trait CanConfigureQuantifier
         return $this;
     }
 
+    private function withSeed(int $seed): static
+    {
+        $this->getQuantifierBuilder()->withSeed($seed);
+
+        return $this;
+    }
+
     private function withoutShrinking(): static
     {
         $this->getQuantifierBuilder()->withoutShrinking();

@@ -23,6 +23,8 @@ interface QuantifierConfiguration
 
     public function withMaximumSize(int $maximumSize): self;
 
+    public function withSeed(int $seed): self;
+
     public function withoutShrinking(): self;
 
     /**

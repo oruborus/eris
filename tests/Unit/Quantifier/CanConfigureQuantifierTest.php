@@ -147,6 +147,38 @@ class CanConfigureQuantifierTest extends TestCase
         $dut->withGrowth($growth::class)->run($quantifier);
     }
 
+
+    /**
+     * @test
+     *
+     * @covers Eris\Quantifier\CanConfigureQuantifier::withSeed
+     *
+     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     */
+    public function canStageSeedForQuantifierCreation(): void
+    {
+        $quantifier = $this->getMockForAbstractClass(Quantifier::class);
+        $quantifier
+            ->expects($this->once())
+            ->method('withSeed')
+            ->with(15)
+            ->willReturnSelf();
+
+        $dut = new class()
+        {
+            use CanConfigureQuantifier {
+                withSeed as public;
+            }
+
+            public function run(Quantifier $quantifier): void
+            {
+                $this->getQuantifierBuilder()->build($quantifier);
+            }
+        };
+
+        $dut->withSeed(15)->run($quantifier);
+    }
+
     /**
      * @test
      *

@@ -104,6 +104,27 @@ class QuantifierBuilderTest extends TestCase
      * @test
      *
      * @covers Eris\Quantifier\QuantifierBuilder::build
+     * @covers Eris\Quantifier\QuantifierBuilder::withSeed
+     */
+    public function canSetTheSeedOfQuantifier(): void
+    {
+        $quantifier = $this->getMockForAbstractClass(Quantifier::class);
+
+        $quantifier
+            ->expects($this->once())
+            ->method('withSeed')
+            ->with(15)
+            ->willReturnSelf();
+
+        $dut = new QuantifierBuilder();
+
+        $dut->withSeed(15)->build($quantifier);
+    }
+
+    /**
+     * @test
+     *
+     * @covers Eris\Quantifier\QuantifierBuilder::build
      * @covers Eris\Quantifier\QuantifierBuilder::withMaximumIterations
      */
     public function canSetTheMaximumIterationCountOfQuantifier(): void
