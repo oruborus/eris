@@ -6,9 +6,7 @@ namespace Test\Unit\Contracts;
 
 use Eris\Contracts\Growth;
 use PHPUnit\Framework\TestCase;
-
-use function restore_error_handler;
-use function set_error_handler;
+use RuntimeException;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -72,31 +70,10 @@ class GrowthTest extends TestCase
      * @uses Eris\Contracts\Growth::__construct
      * @uses Eris\Contracts\Growth::count
      */
-    public function returnNullWhenUndefinedOffsetIsRequested(): void
+    public function throwExceptionWhenUndefinedOffsetIsRequested(): void
     {
-        /**
-         * @psalm-suppress InvalidArgument
-         */
-        set_error_handler(fn () => null);
-
-        $this->assertNull($this->dut[-7]);
-
-        restore_error_handler();
-    }
-
-    /**
-     * @test
-     *
-     * @covers Eris\Contracts\Growth::offsetExists
-     * @covers Eris\Contracts\Growth::offsetGet
-     *
-     * @uses Eris\Contracts\Growth::__construct
-     * @uses Eris\Contracts\Growth::count
-     */
-    public function triggerWarningWhenUndefinedOffsetIsRequested(): void
-    {
-        $this->expectWarning();
-        $this->expectWarningMessageMatches('/Undefined TriangularGrowth key -7 in .+ on line \d+/');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches('/Undefined Growth key -7/');
 
         $this->dut[-7];
     }

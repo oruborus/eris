@@ -6,6 +6,7 @@ namespace Eris\Contracts;
 
 use ArrayAccess;
 use Countable;
+use RuntimeException;
 
 /**
  * @psalm-consistent-constructor
@@ -51,19 +52,9 @@ abstract class Growth implements ArrayAccess, Countable
     /**
      * @param int $offset
      */
-    public function offsetGet($offset): ?int
+    public function offsetGet($offset): int
     {
-        $offsetModSize = $offset % count($this);
-
-        if (isset($this[$offsetModSize])) {
-            return $this->values[$offsetModSize];
-        }
-
-        [['file' => $file, 'line' => $line]] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
-
-        trigger_error("Undefined TriangularGrowth key {$offset} in {$file} on line {$line}", E_USER_WARNING);
-
-        return null;
+        return $this->values[$offset % count($this)] ?? throw new RuntimeException("Undefined Growth key {$offset}");
     }
 
     public function count(): int
