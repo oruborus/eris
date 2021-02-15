@@ -6,5 +6,7 @@ namespace Eris\Contracts;
 
 interface TerminationCondition
 {
+    public function startPropertyVerification(): void;
+
     public function shouldTerminate(): bool;
 }

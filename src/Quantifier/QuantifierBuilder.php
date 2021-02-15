@@ -9,7 +9,7 @@ use Eris\Contracts\Listener;
 use Eris\Contracts\Quantifier;
 use Eris\Contracts\QuantifierConfiguration;
 use Eris\Contracts\TerminationCondition;
-use Eris\Listener\TimeBasedTerminationCondition;
+use Eris\TerminationCondition\TimeBasedTerminationCondition;
 
 use function is_int;
 use function is_string;

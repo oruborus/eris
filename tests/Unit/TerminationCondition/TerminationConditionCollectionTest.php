@@ -22,10 +22,16 @@ class TerminationConditionCollectionTest extends TestCase
     {
         $terminationCondition1 = $this->getMockForAbstractClass(TerminationCondition::class);
         $terminationCondition1
+            ->expects($this->once())
+            ->method('startPropertyVerification');
+        $terminationCondition1
             ->expects($this->exactly(4))
             ->method('shouldTerminate')
             ->willReturn(true, true, false, false);
         $terminationCondition2 = $this->getMockForAbstractClass(TerminationCondition::class);
+        $terminationCondition2
+            ->expects($this->once())
+            ->method('startPropertyVerification');
         $terminationCondition2
             ->expects($this->exactly(2))
             ->method('shouldTerminate')
@@ -33,6 +39,8 @@ class TerminationConditionCollectionTest extends TestCase
 
         $dut = new TerminationConditionCollection([$terminationCondition1]);
         $dut->add($terminationCondition2);
+
+        $dut->startPropertyVerification();
 
         $this->assertTrue($dut->shouldTerminate());
         $this->assertTrue($dut->shouldTerminate());

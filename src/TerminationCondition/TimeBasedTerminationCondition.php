@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Eris\Listener;
+namespace Eris\TerminationCondition;
 
-use Eris\Contracts\Listener;
 use Eris\Contracts\TerminationCondition;
-use Eris\Listener\EmptyListener;
 use DateTime;
 use DateInterval;
 
-class TimeBasedTerminationCondition extends EmptyListener implements TerminationCondition, Listener
+class TimeBasedTerminationCondition implements TerminationCondition
 {
     private ?DateTime $limitTime = null;
 

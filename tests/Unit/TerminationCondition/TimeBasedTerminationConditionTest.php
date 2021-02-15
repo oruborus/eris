@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Test\Unit\Listener;
+namespace Test\Unit\TerminationCondition;
 
 use DateInterval;
-use Eris\Listener\TimeBasedTerminationCondition;
+use Eris\TerminationCondition\TimeBasedTerminationCondition;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -29,10 +29,10 @@ class TimeBasedTerminationConditionTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Listener\TimeBasedTerminationCondition::__construct
-     * @covers Eris\Listener\TimeBasedTerminationCondition::currentDateTime
-     * @covers Eris\Listener\TimeBasedTerminationCondition::startPropertyVerification
-     * @covers Eris\Listener\TimeBasedTerminationCondition::shouldTerminate
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::__construct
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::currentDateTime
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::startPropertyVerification
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::shouldTerminate
      */
     public function defaultsToNotTerminateAtStartup(): void
     {
@@ -47,10 +47,10 @@ class TimeBasedTerminationConditionTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Listener\TimeBasedTerminationCondition::__construct
-     * @covers Eris\Listener\TimeBasedTerminationCondition::currentDateTime
-     * @covers Eris\Listener\TimeBasedTerminationCondition::startPropertyVerification
-     * @covers Eris\Listener\TimeBasedTerminationCondition::shouldTerminate
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::__construct
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::currentDateTime
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::startPropertyVerification
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::shouldTerminate
      */
     public function whenAnIntervalShorterThanTheMaximumIntervalIsElapsedChoosesNotToTerminate(): void
     {
@@ -66,10 +66,10 @@ class TimeBasedTerminationConditionTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Listener\TimeBasedTerminationCondition::__construct
-     * @covers Eris\Listener\TimeBasedTerminationCondition::currentDateTime
-     * @covers Eris\Listener\TimeBasedTerminationCondition::startPropertyVerification
-     * @covers Eris\Listener\TimeBasedTerminationCondition::shouldTerminate
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::__construct
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::currentDateTime
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::startPropertyVerification
+     * @covers Eris\TerminationCondition\TimeBasedTerminationCondition::shouldTerminate
      */
     public function whenTheMaximumIntervalIsElapsedChoosesToTerminate(): void
     {

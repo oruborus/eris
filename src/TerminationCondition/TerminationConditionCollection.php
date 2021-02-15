@@ -28,6 +28,13 @@ class TerminationConditionCollection implements TerminationCondition
         return $this;
     }
 
+    public function startPropertyVerification(): void
+    {
+        foreach ($this->terminationConditions as $terminationCondition) {
+            $terminationCondition->startPropertyVerification();
+        }
+    }
+
     /**
      * @inheritdoc
      */

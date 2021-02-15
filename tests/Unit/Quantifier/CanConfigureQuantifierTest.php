@@ -52,7 +52,7 @@ class CanConfigureQuantifierTest extends TestCase
      *
      * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
      *
-     * @uses Eris\Listener\TimeBasedTerminationCondition
+     * @uses Eris\TerminationCondition\TimeBasedTerminationCondition
      */
     public function canStageLimitsForQuantifierCreation(): void
     {
@@ -302,7 +302,6 @@ class CanConfigureQuantifierTest extends TestCase
 
         $dut->withoutShrinking()->run($quantifier);
     }
-
 
     /**
      * @test

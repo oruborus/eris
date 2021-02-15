@@ -27,7 +27,7 @@ class QuantifierBuilderTest extends TestCase
      * @uses Eris\Quantifier\QuantifierBuilder::stopOn
      * @uses Eris\Quantifier\QuantifierBuilder::withMaximumIterations
      *
-     * @uses Eris\Listener\TimeBasedTerminationCondition
+     * @uses Eris\TerminationCondition\TimeBasedTerminationCondition
      */
     public function canAddLimitToQuantifier(): void
     {
