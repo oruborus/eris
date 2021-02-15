@@ -18,21 +18,23 @@ use Eris\Contracts\TerminationCondition;
 use Eris\Generator\SkipValueException;
 use Eris\Growth\TriangularGrowth;
 use Eris\Listener\ListenerCollection;
-use Eris\Listener\TimeBasedTerminationCondition;
+use Eris\Listener\MinimumEvaluations;
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
 use Eris\Shrinker\ShrinkerFactory;
 use Eris\TerminationCondition\TerminationConditionCollection;
+use Eris\TerminationCondition\TimeBasedTerminationCondition;
 use Eris\Value\Value;
 use Exception;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Constraint\Constraint;
 use RuntimeException;
 
-use function call_user_func_array;
 use function class_implements;
+use function crc32;
 use function getenv;
 use function in_array;
+use function microtime;
 use function strtolower;
 use function var_export;
 
@@ -69,6 +71,8 @@ class ForAll implements Quantifier
 
     private ListenerCollection $listeners;
 
+    private int $seed;
+
     private bool $shrinkingDisabled = false;
 
     /**
@@ -83,6 +87,7 @@ class ForAll implements Quantifier
         $this->antecedents = new AntecedentCollection();
         $this->terminationConditions = new TerminationConditionCollection();
         $this->shrinkerFactory = new ShrinkerFactory();
+        $this->seed        = crc32(microtime());
     }
 
     public function limitTo(int|DateInterval $limit): self
@@ -90,7 +95,7 @@ class ForAll implements Quantifier
         if ($limit instanceof DateInterval) {
             $terminationCondition = new TimeBasedTerminationCondition('time', $limit);
 
-            return $this->listenTo($terminationCondition)->stopOn($terminationCondition);
+            return $this->stopOn($terminationCondition);
         }
 
         return $this->withMaximumIterations($limit);
@@ -98,6 +103,10 @@ class ForAll implements Quantifier
 
     public function listenTo(Listener $listener): self
     {
+        if ($listener instanceof MinimumEvaluations) {
+            $this->listeners->removeListenerOfType(MinimumEvaluations::class);
+        }
+
         $this->listeners->add($listener);
 
         return $this;
@@ -123,15 +132,18 @@ class ForAll implements Quantifier
      */
     public function withGrowth(string $growth): self
     {
-        $interfaces = class_implements($growth, true);
+        if (class_exists($growth)) {
 
-        /**
-         * @psalm-suppress PropertyTypeCoercion
-         */
-        if ($interfaces && in_array(Growth::class, $interfaces)) {
-            $this->growthClass = $growth;
+            $interfaces = class_implements($growth, true);
 
-            return $this;
+            /**
+             * @psalm-suppress PropertyTypeCoercion
+             */
+            if ($interfaces && in_array(Growth::class, $interfaces)) {
+                $this->growthClass = $growth;
+
+                return $this;
+            }
         }
 
         $growth = strtolower($growth);
@@ -200,15 +212,17 @@ class ForAll implements Quantifier
      */
     public function withRand(string $source): self
     {
-        $interfaces = class_implements($source, true);
+        if (class_exists($source)) {
+            $interfaces = class_implements($source, true);
 
-        /**
-         * @psalm-suppress PropertyTypeCoercion
-         */
-        if ($interfaces && in_array(Source::class, $interfaces)) {
-            $this->sourceClass = $source;
+            /**
+             * @psalm-suppress PropertyTypeCoercion
+             */
+            if ($interfaces && in_array(Source::class, $interfaces)) {
+                $this->sourceClass = $source;
 
-            return $this;
+                return $this;
+            }
         }
 
         $source = strtolower($source);
@@ -220,6 +234,13 @@ class ForAll implements Quantifier
         if (in_array($source, $sourceClasses)) {
             $this->sourceClass = $sourceClasses[$source];
         }
+
+        return $this;
+    }
+
+    public function withSeed(int $seed): self
+    {
+        $this->seed = $seed;
 
         return $this;
     }
@@ -278,6 +299,9 @@ class ForAll implements Quantifier
         $redTestException    = null;
         $values              = null;
 
+        $range->seed($this->seed);
+
+        $this->terminationConditions->startPropertyVerification();
         $this->listeners->startPropertyVerification();
 
         try {
