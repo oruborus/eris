@@ -46,6 +46,11 @@ final class QuantifierBuilder implements QuantifierConfiguration
 
     private ?int $shrinkingTimeLimit = null;
 
+    /**
+     * @template TQuantifier of Quantifier
+     * @param TQuantifier $quantifier
+     * @return TQuantifier
+     */
     public function build(Quantifier $quantifier): Quantifier
     {
         foreach ($this->listeners as $listener) {
