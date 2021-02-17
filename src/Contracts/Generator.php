@@ -19,7 +19,7 @@ interface Generator
      * @param RandomRange $rand
      * @return Value<TValue>
      */
-    public function __invoke(int $size, RandomRange $rand);
+    public function __invoke(int $size, RandomRange $rand): Value;
 
     /**
      * The conditions for terminating are either:
@@ -29,5 +29,5 @@ interface Generator
      * @param Value<TValue> $element
      * @return ValueCollection<TValue>
      */
-    public function shrink(Value $element);
+    public function shrink(Value $element): ValueCollection;
 }
