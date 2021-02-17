@@ -298,8 +298,28 @@ class ForAll implements Quantifier
         $ordinaryEvaluations = 0;
         $redTestException    = null;
         $values              = null;
+        $shrinker            = $this->shrinkerFactory->multiple($this->generators, $assertion);
 
         $range->seed($this->seed);
+
+        /**
+         * @psalm-suppress MixedArgumentTypeCoercion
+         */
+        $shrinker
+            ->addGoodShrinkCondition(
+                /**
+                 * @param Value<array> $generation
+                 */
+                fn (Value $generation): bool => $this->antecedents->evaluate($generation->value())
+            )
+            ->onAttempt(
+                /**
+                 * @param Value<array> $generation
+                 */
+                function (Value $generation): void {
+                    $this->listeners->shrinking($generation->value());
+                }
+            );
 
         $this->terminationConditions->startPropertyVerification();
         $this->listeners->startPropertyVerification();
@@ -310,19 +330,15 @@ class ForAll implements Quantifier
                 $iteration < $this->maximumIterations && !$this->terminationConditions->shouldTerminate();
                 $iteration++
             ) {
-                /**
-                 * @var list<mixed> $values
-                 */
                 $values = [];
                 $generatedValues = [];
 
                 try {
-                    /**
-                     * @psalm-suppress PossiblyNullArgument
-                     * @psalm-suppress MixedAssignment
-                     */
                     foreach ($this->generators as $generator) {
                         $value = $generator($growth[$iteration], $range);
+                        /**
+                         * @var mixed
+                         */
                         $values[] = $value->value();
                         $generatedValues[] = $value;
                     }
@@ -330,9 +346,7 @@ class ForAll implements Quantifier
                     continue;
                 }
 
-                $generation = new Value($values, $generatedValues);
-
-                $this->listeners->newGeneration($generation->value(), $iteration);
+                $this->listeners->newGeneration($values, $iteration);
 
                 if (!$this->antecedents->evaluate($values)) {
                     continue;
@@ -341,37 +355,15 @@ class ForAll implements Quantifier
                 $ordinaryEvaluations++;
 
                 try {
-                    $assertion(...$generation->value());
+                    $assertion(...$values);
                 } catch (AssertionFailedError $exception) {
-                    $this->listeners->failure($generation->value(), $exception);
+                    $this->listeners->failure($values, $exception);
 
                     if ($this->shrinkingDisabled) {
                         throw $exception;
                     }
 
-                    $shrinker = $this->shrinkerFactory->multiple($this->generators, $assertion);
-
-                    /**
-                     * TODO: MAYBE: put into ShrinkerFactory?
-                     *
-                     * @psalm-suppress MixedArgumentTypeCoercion
-                     */
-                    $shrinker
-                        ->addGoodShrinkCondition(
-                            /**
-                             * @param Value<array> $generation
-                             */
-                            fn (Value $generation): bool => $this->antecedents->evaluate($generation->value())
-                        )
-                        ->onAttempt(
-                            /**
-                             * @param Value<array> $generation
-                             */
-                            function (Value $generation): void {
-                                $this->listeners->shrinking($generation->value());
-                            }
-                        )
-                        ->from($generation, $exception);
+                    $shrinker->from(new Value($values, $generatedValues), $exception);
                 }
             }
         } catch (Exception $e) {
