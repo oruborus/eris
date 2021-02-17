@@ -65,6 +65,18 @@ class GrowthTest extends TestCase
      * @test
      *
      * @covers Eris\Contracts\Growth::offsetExists
+     *
+     * @uses Eris\Contracts\Growth::__construct
+     */
+    public function canShowIfOffsetExists(): void
+    {
+        $this->assertTrue(isset($this->dut[0]));
+        $this->assertFalse(isset($this->dut[10]));
+    }
+
+    /**
+     * @test
+     *
      * @covers Eris\Contracts\Growth::offsetGet
      *
      * @uses Eris\Contracts\Growth::__construct
