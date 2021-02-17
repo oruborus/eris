@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Test\Unit\Shrinker;
 
+use Eris\Generator\GeneratorCollection;
 use Eris\Generator\IntegerGenerator;
 use Eris\Shrinker\Multiple;
 use Eris\TimeLimit\FixedTimeLimit;
@@ -15,6 +16,11 @@ use PHPUnit\Framework\TestCase;
 
 use function count;
 
+/**
+ * @uses Eris\Generator\GeneratorCollection
+ * @uses Eris\Value\Value
+ * @uses Eris\Value\ValueCollection
+ */
 class MultipleTest extends TestCase
 {
     /**
@@ -28,7 +34,7 @@ class MultipleTest extends TestCase
      */
     public function timeLimitCanBeSet(): void
     {
-        $dut = new Multiple([], function (): void {
+        $dut = new Multiple(new GeneratorCollection([]), function (): void {
         });
 
         $this->assertInstanceOf(NoTimeLimit::class, $dut->getTimeLimit());
@@ -49,8 +55,6 @@ class MultipleTest extends TestCase
      *
      * @uses Eris\Generator\IntegerGenerator
      * @uses Eris\TimeLimit\NoTimeLimit
-     * @uses Eris\Value\Value
-     * @uses Eris\Value\ValueCollection
      *
      * @dataProvider provideInitiallyFailedTests
      */
@@ -60,7 +64,7 @@ class MultipleTest extends TestCase
         $this->expectExceptionMessage('Failed asserting that 5001 is equal to 5000 or is less than 5000.');
 
         $dut = new Multiple(
-            [new IntegerGenerator()],
+            new GeneratorCollection([new IntegerGenerator()]),
             function ($number): void {
                 $this->assertLessThanOrEqual(5000, $number);
             }
@@ -104,8 +108,6 @@ class MultipleTest extends TestCase
      *
      * @uses Eris\Generator\IntegerGenerator
      * @uses Eris\TimeLimit\NoTimeLimit
-     * @uses Eris\Value\Value
-     * @uses Eris\Value\ValueCollection
      */
     public function throwsRuntimeExceptionWhenTimeLimitIsExceeded(): void
     {
@@ -117,14 +119,15 @@ class MultipleTest extends TestCase
                 "increase it with the annotation \'@eris-shrink {seconds}\'."
         );
 
-        $timeLimit = new class() extends NoTimeLimit {
+        $timeLimit = new class() extends NoTimeLimit
+        {
             public function hasBeenReached(): bool
             {
                 return true;
             }
         };
 
-        $dut = new Multiple([new IntegerGenerator()], function (): void {
+        $dut = new Multiple(new GeneratorCollection([new IntegerGenerator()]), function (): void {
         });
         $dut->setTimeLimit($timeLimit);
 
@@ -146,8 +149,6 @@ class MultipleTest extends TestCase
      *
      * @uses Eris\Generator\IntegerGenerator
      * @uses Eris\TimeLimit\NoTimeLimit
-     * @uses Eris\Value\Value
-     * @uses Eris\Value\ValueCollection
      *
      * @dataProvider provideReturnValuesForConditions
      */
@@ -167,7 +168,7 @@ class MultipleTest extends TestCase
             return $return2;
         };
 
-        $dut = new Multiple([new IntegerGenerator()], function (): void {
+        $dut = new Multiple(new GeneratorCollection([new IntegerGenerator()]), function (): void {
         });
 
         $dut->addGoodShrinkCondition($condition1);

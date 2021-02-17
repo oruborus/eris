@@ -6,6 +6,7 @@ namespace Test\Unit\Quantifier;
 
 use Eris\Contracts\Generator;
 use Eris\Contracts\Listener;
+use Eris\Generator\GeneratorCollection;
 use Eris\Growth\TriangularGrowth;
 use Eris\Quantifier\ForAll;
 use Eris\Random\RandomRange;
@@ -21,6 +22,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @uses Eris\Antecedent\AntecedentCollection
  * @uses Eris\Listener\ListenerCollection
+ * @uses Eris\Generator\GeneratorCollection
  * @uses Eris\TerminationCondition\TerminationConditionCollection
  */
 class ForAllTest extends TestCase
@@ -40,7 +42,7 @@ class ForAllTest extends TestCase
      */
     public function maximumSizeCanBeChanged(): void
     {
-        $dut = new ForAll([]);
+        $dut = new ForAll(new GeneratorCollection([]));
 
         $this->assertLessThanOrEqual(ForAll::DEFAULT_MAX_SIZE, $dut->getMaximumSize());
         $this->assertInstanceOf(ForAll::class, $dut->withMaximumSize(50));
@@ -62,7 +64,7 @@ class ForAllTest extends TestCase
      */
     public function iterationsCanBeChanged(): void
     {
-        $dut = new ForAll([]);
+        $dut = new ForAll(new GeneratorCollection([]));
 
         $this->assertInstanceOf(ForAll::class, $dut->withMaximumIterations(50));
         $this->assertSame(50, $dut->getMaximumIterations());
@@ -91,10 +93,9 @@ class ForAllTest extends TestCase
      *
      * @dataProvider provideMethodNamesAndConstructorArguments
      *
-     * @param list<Generator<mixed>> $generators 
      * @param callable(mixed...):void $assertion
      */
-    public function callsListenersMethods(string $name, int $count, array $generators, $assertion): void
+    public function callsListenersMethods(string $name, int $count, GeneratorCollection $generators, $assertion): void
     {
         $listener1 = $this->getMockForAbstractClass(Listener::class);
         $listener1->expects($this->exactly($count))->method($name);
@@ -134,19 +135,19 @@ class ForAllTest extends TestCase
             'startPropertyVerification' => [
                 'startPropertyVerification',
                 1,
-                [],
+                new GeneratorCollection([]),
                 static fn (): bool => false
             ],
             'newGeneration' => [
                 'newGeneration',
                 100,
-                [],
+                new GeneratorCollection([]),
                 static fn (): bool => false
             ],
             'failure' => [
                 'failure',
                 1,
-                [$generator],
+                new GeneratorCollection([$generator]),
                 static function () {
                     throw new AssertionFailedError();
                 }
@@ -154,7 +155,7 @@ class ForAllTest extends TestCase
             'shrinking' => [
                 'shrinking',
                 1,
-                [$generator],
+                new GeneratorCollection([$generator]),
                 static function () {
                     throw new AssertionFailedError();
                 }
@@ -162,7 +163,7 @@ class ForAllTest extends TestCase
             'endPropertyVerification' => [
                 'endPropertyVerification',
                 1,
-                [],
+                new GeneratorCollection([]),
                 static fn (): bool => false
             ],
         ];

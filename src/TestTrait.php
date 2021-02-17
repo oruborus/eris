@@ -6,6 +6,7 @@ namespace Eris;
 
 use DateInterval;
 use Eris\Contracts\Generator;
+use Eris\Generator\GeneratorCollection;
 use Eris\Listener\MinimumEvaluations;
 use Eris\Quantifier\ForAll;
 use Eris\Quantifier\CanConfigureQuantifier;
@@ -131,7 +132,9 @@ trait TestTrait
      */
     public function forAll(...$generators): ForAll
     {
-        $quantifier = new ForAll(boxAll($generators));
+        $generatorCollection = new GeneratorCollection(boxAll($generators));
+
+        $quantifier = new ForAll($generatorCollection);
         $quantifier = $this->getQuantifierBuilder()->build($quantifier);
 
         $this->quantifiers[] = $quantifier;

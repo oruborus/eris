@@ -184,8 +184,9 @@ class TestTraitTest extends TestCase
      * @covers Eris\TestTrait::forAll
      *
      * @uses Eris\Antecedent\AntecedentCollection
-     * @uses Eris\Generator\ConstantGenerator
      * @uses Eris\Generator\boxAll
+     * @uses Eris\Generator\ConstantGenerator
+     * @uses Eris\Generator\GeneratorCollection
      * @uses Eris\Listener\ListenerCollection
      * @uses Eris\Quantifier\ForAll
      * @uses Eris\Shrinker\ShrinkerFactory

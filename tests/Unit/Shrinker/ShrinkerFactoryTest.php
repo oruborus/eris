@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Test\Unit\Shrinker;
 
+use Eris\Generator\GeneratorCollection;
 use Eris\Shrinker\Multiple;
 use Eris\Shrinker\ShrinkerFactory;
 use Eris\TimeLimit\FixedTimeLimit;
@@ -22,13 +23,14 @@ class ShrinkerFactoryTest extends TestCase
      * @covers Eris\Shrinker\ShrinkerFactory::multiple
      * @covers Eris\Shrinker\ShrinkerFactory::configureShrinker
      *
+     * @uses Eris\Generator\GeneratorCollection
      * @uses Eris\Shrinker\Multiple
      */
     public function createsMultipleWithoutTimeLimit(): void
     {
         $dut = new ShrinkerFactory();
 
-        $actual = $dut->multiple([], static fn (bool $test): bool => !$test);
+        $actual = $dut->multiple(new GeneratorCollection([]), static fn (bool $test): bool => !$test);
 
         $this->assertInstanceOf(Multiple::class, $actual);
         $this->assertInstanceOf(NoTimeLimit::class, $actual->getTimeLimit());
@@ -41,6 +43,7 @@ class ShrinkerFactoryTest extends TestCase
      * @covers Eris\Shrinker\ShrinkerFactory::multiple
      * @covers Eris\Shrinker\ShrinkerFactory::configureShrinker
      *
+     * @uses Eris\Generator\GeneratorCollection
      * @uses Eris\Shrinker\Multiple
      * @uses Eris\TimeLimit\FixedTimeLimit
      */
@@ -48,7 +51,7 @@ class ShrinkerFactoryTest extends TestCase
     {
         $dut = new ShrinkerFactory(2);
 
-        $actual = $dut->multiple([], static fn (bool $test): bool => !$test);
+        $actual = $dut->multiple(new GeneratorCollection([]), static fn (bool $test): bool => !$test);
 
         $this->assertInstanceOf(Multiple::class, $actual);
         $this->assertInstanceOf(FixedTimeLimit::class, $actual->getTimeLimit());

@@ -7,6 +7,7 @@ namespace Eris\Shrinker;
 use Eris\Contracts\Generator;
 use Eris\Contracts\Shrinker;
 use Eris\Contracts\TimeLimit;
+use Eris\Generator\GeneratorCollection;
 use Eris\TimeLimit\NoTimeLimit;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
@@ -18,10 +19,7 @@ use function array_map;
 
 class Multiple implements Shrinker
 {
-    /**
-     * @var list<Generator> $generators
-     */
-    private array $generators;
+    private GeneratorCollection $generators;
 
     /**
      * @var callable(mixed...):void $assertion
@@ -41,10 +39,9 @@ class Multiple implements Shrinker
     private TimeLimit $timeLimit;
 
     /**
-     * @param list<Generator> $generators
      * @param callable(mixed...):void $assertion
      */
-    public function __construct(array $generators, $assertion)
+    public function __construct(GeneratorCollection $generators, $assertion)
     {
         $this->generators = $generators;
         $this->assertion = $assertion;
@@ -114,8 +111,7 @@ class Multiple implements Shrinker
             try {
                 /**
                  * @psalm-suppress MixedArgument
-                 */
-                ($this->assertion)(...$firstBranch->value());
+                 */ ($this->assertion)(...$firstBranch->value());
             } catch (AssertionFailedError $e) {
                 $currentElement = $firstBranch;
                 $exception = $e;
@@ -142,7 +138,7 @@ class Multiple implements Shrinker
          * @psalm-suppress MixedArgument
          * @var list<array{0:Generator, 1:Value}> $generatorInputPair
          */
-        $generatorInputPair = array_map(null, $this->generators, $value->input());
+        $generatorInputPair = array_map(null, $this->generators->toArray(), $value->input());
 
         $result = new ValueCollection();
         foreach ($generatorInputPair as [$generator, $input]) {

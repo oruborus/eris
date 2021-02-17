@@ -15,6 +15,7 @@ use Eris\Contracts\Listener;
 use Eris\Contracts\Quantifier;
 use Eris\Contracts\Source;
 use Eris\Contracts\TerminationCondition;
+use Eris\Generator\GeneratorCollection;
 use Eris\Generator\SkipValueException;
 use Eris\Growth\TriangularGrowth;
 use Eris\Listener\ListenerCollection;
@@ -44,10 +45,7 @@ class ForAll implements Quantifier
 
     public const DEFAULT_MAX_ITERATIONS = 100;
 
-    /**
-     * @var list<Generator<mixed>> $generators
-     */
-    private array $generators;
+    private GeneratorCollection $generators;
 
     private int $maximumIterations = self::DEFAULT_MAX_ITERATIONS;
 
@@ -75,10 +73,7 @@ class ForAll implements Quantifier
 
     private bool $shrinkingDisabled = false;
 
-    /**
-     * @param list<Generator<mixed>> $generators
-     */
-    public function __construct(array $generators)
+    public function __construct(GeneratorCollection $generators)
     {
         $this->generators  = $generators;
         $this->growthClass = TriangularGrowth::class;
@@ -330,40 +325,30 @@ class ForAll implements Quantifier
                 $iteration < $this->maximumIterations && !$this->terminationConditions->shouldTerminate();
                 $iteration++
             ) {
-                $values = [];
-                $generatedValues = [];
-
                 try {
-                    foreach ($this->generators as $generator) {
-                        $value = $generator($growth[$iteration], $range);
-                        /**
-                         * @var mixed
-                         */
-                        $values[] = $value->value();
-                        $generatedValues[] = $value;
-                    }
+                    $values = $this->generators->__invoke($growth[$iteration], $range);
                 } catch (SkipValueException $e) {
                     continue;
                 }
 
-                $this->listeners->newGeneration($values, $iteration);
+                $this->listeners->newGeneration($values->value(), $iteration);
 
-                if (!$this->antecedents->evaluate($values)) {
+                if (!$this->antecedents->evaluate($values->value())) {
                     continue;
                 }
 
                 $ordinaryEvaluations++;
 
                 try {
-                    $assertion(...$values);
+                    $assertion(...$values->value());
                 } catch (AssertionFailedError $exception) {
-                    $this->listeners->failure($values, $exception);
+                    $this->listeners->failure($values->value(), $exception);
 
                     if ($this->shrinkingDisabled) {
                         throw $exception;
                     }
 
-                    $shrinker->from(new Value($values, $generatedValues), $exception);
+                    $shrinker->from($values, $exception);
                 }
             }
         } catch (Exception $e) {

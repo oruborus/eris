@@ -6,6 +6,7 @@ namespace Eris\Shrinker;
 
 use Eris\Contracts\Generator;
 use Eris\Contracts\Shrinker;
+use Eris\Generator\GeneratorCollection;
 use Eris\TimeLimit\FixedTimeLimit;
 
 use function is_null;
@@ -20,10 +21,9 @@ class ShrinkerFactory
     }
 
     /**
-     * @param list<Generator<mixed>> $generators
      * @param callable(mixed...):void $assertion
      */
-    public function multiple(array $generators, $assertion): Shrinker
+    public function multiple(GeneratorCollection $generators, $assertion): Shrinker
     {
         return $this->configureShrinker(new Multiple($generators, $assertion));
     }

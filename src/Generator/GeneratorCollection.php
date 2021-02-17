@@ -39,6 +39,8 @@ class GeneratorCollection implements Generator
 
     /**
      * @inheritdoc
+     *
+     * @return Value<list<mixed>>
      */
     public function __invoke(int $size, RandomRange $rand): Value
     {
