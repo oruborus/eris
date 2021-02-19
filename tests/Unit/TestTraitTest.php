@@ -22,7 +22,7 @@ use const PHP_EOL;
 
 /**
  * @uses Eris\Contracts\Collection
- * @uses Eris\Quantifier\CanConfigureQuantifier
+ * @uses Eris\Traits\CanConfigureQuantifier
  * @uses Eris\Quantifier\QuantifierBuilder
  *
  * @psalm-suppress PropertyNotSetInConstructor

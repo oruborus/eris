@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Test\Unit\Quantifier;
+namespace Test\Unit\Traits;
 
 use DateInterval;
 use Eris\Contracts\Growth;
@@ -11,7 +11,7 @@ use Eris\Contracts\Quantifier;
 use Eris\Contracts\Source;
 use Eris\Contracts\TerminationCondition;
 use Eris\Quantifier\QuantifierBuilder;
-use Eris\Quantifier\CanConfigureQuantifier;
+use Eris\Traits\CanConfigureQuantifier;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -24,7 +24,7 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     * @covers Eris\Traits\CanConfigureQuantifier::getQuantifierBuilder
      */
     public function holdSingletonForQuantifierBuilder(): void
     {
@@ -48,9 +48,9 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Quantifier\CanConfigureQuantifier::limitTo
+     * @covers Eris\Traits\CanConfigureQuantifier::limitTo
      *
-     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     * @uses Eris\Traits\CanConfigureQuantifier::getQuantifierBuilder
      *
      * @uses Eris\TerminationCondition\TimeBasedTerminationCondition
      */
@@ -86,9 +86,9 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Quantifier\CanConfigureQuantifier::listenTo
+     * @covers Eris\Traits\CanConfigureQuantifier::listenTo
      *
-     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     * @uses Eris\Traits\CanConfigureQuantifier::getQuantifierBuilder
      */
     public function canStageListenersForQuantifierCreation(): void
     {
@@ -118,9 +118,9 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Quantifier\CanConfigureQuantifier::withGrowth
+     * @covers Eris\Traits\CanConfigureQuantifier::withGrowth
      *
-     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     * @uses Eris\Traits\CanConfigureQuantifier::getQuantifierBuilder
      */
     public function canStageGrowthTypeConditionsForQuantifierCreation(): void
     {
@@ -151,9 +151,9 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Quantifier\CanConfigureQuantifier::withSeed
+     * @covers Eris\Traits\CanConfigureQuantifier::withSeed
      *
-     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     * @uses Eris\Traits\CanConfigureQuantifier::getQuantifierBuilder
      */
     public function canStageSeedForQuantifierCreation(): void
     {
@@ -182,9 +182,9 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Quantifier\CanConfigureQuantifier::stopOn
+     * @covers Eris\Traits\CanConfigureQuantifier::stopOn
      *
-     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     * @uses Eris\Traits\CanConfigureQuantifier::getQuantifierBuilder
      */
     public function canStageTerminationConditionsForQuantifierCreation(): void
     {
@@ -214,9 +214,9 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Quantifier\CanConfigureQuantifier::withMaximumIterations
+     * @covers Eris\Traits\CanConfigureQuantifier::withMaximumIterations
      *
-     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     * @uses Eris\Traits\CanConfigureQuantifier::getQuantifierBuilder
      */
     public function canStageMaximumIterationCountForQuantifierCreation(): void
     {
@@ -245,9 +245,9 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Quantifier\CanConfigureQuantifier::withMaximumSize
+     * @covers Eris\Traits\CanConfigureQuantifier::withMaximumSize
      *
-     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     * @uses Eris\Traits\CanConfigureQuantifier::getQuantifierBuilder
      */
     public function canStageMaximumSizeForQuantifierCreation(): void
     {
@@ -276,9 +276,9 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Quantifier\CanConfigureQuantifier::withoutShrinking
+     * @covers Eris\Traits\CanConfigureQuantifier::withoutShrinking
      *
-     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     * @uses Eris\Traits\CanConfigureQuantifier::getQuantifierBuilder
      */
     public function canStageShrinkingFlagForQuantifierCreation(): void
     {
@@ -306,9 +306,9 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Quantifier\CanConfigureQuantifier::withRand
+     * @covers Eris\Traits\CanConfigureQuantifier::withRand
      *
-     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     * @uses Eris\Traits\CanConfigureQuantifier::getQuantifierBuilder
      */
     public function canStageRandTypeConditionsForQuantifierCreation(): void
     {
@@ -338,9 +338,9 @@ class CanConfigureQuantifierTest extends TestCase
     /**
      * @test
      *
-     * @covers Eris\Quantifier\CanConfigureQuantifier::withShrinkingTimeLimit
+     * @covers Eris\Traits\CanConfigureQuantifier::withShrinkingTimeLimit
      *
-     * @uses Eris\Quantifier\CanConfigureQuantifier::getQuantifierBuilder
+     * @uses Eris\Traits\CanConfigureQuantifier::getQuantifierBuilder
      */
     public function canStageShrinkingTimeLimitForQuantifierCreation(): void
     {

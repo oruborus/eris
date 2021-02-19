@@ -9,7 +9,7 @@ use Eris\Contracts\Generator;
 use Eris\Generator\GeneratorCollection;
 use Eris\Listener\MinimumEvaluations;
 use Eris\Quantifier\ForAll;
-use Eris\Quantifier\CanConfigureQuantifier;
+use Eris\Traits\CanConfigureQuantifier;
 use Eris\Random\RandomRange;
 use Eris\Random\RandSource;
 use Eris\Value\Value;

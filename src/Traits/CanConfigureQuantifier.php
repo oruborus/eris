@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Eris\Quantifier;
+namespace Eris\Traits;
 
 use DateInterval;
 use Eris\Contracts\Growth;
