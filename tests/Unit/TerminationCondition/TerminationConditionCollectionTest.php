@@ -10,6 +10,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
+ *
+ * @uses Eris\Contracts\Collection
  */
 class TerminationConditionCollectionTest extends TestCase
 {
@@ -37,8 +39,7 @@ class TerminationConditionCollectionTest extends TestCase
             ->method('shouldTerminate')
             ->willReturn(true, false, true, false);
 
-        $dut = new TerminationConditionCollection([$terminationCondition1]);
-        $dut->add($terminationCondition2);
+        $dut = new TerminationConditionCollection($terminationCondition1, $terminationCondition2);
 
         $dut->startPropertyVerification();
 

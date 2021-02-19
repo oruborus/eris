@@ -132,7 +132,7 @@ trait TestTrait
      */
     public function forAll(...$generators): ForAll
     {
-        $generatorCollection = new GeneratorCollection(boxAll($generators));
+        $generatorCollection = new GeneratorCollection(...boxAll($generators));
 
         $quantifier = new ForAll($generatorCollection);
         $quantifier = $this->getQuantifierBuilder()->build($quantifier);

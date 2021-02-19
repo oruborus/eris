@@ -21,6 +21,7 @@ use function putenv;
 use const PHP_EOL;
 
 /**
+ * @uses Eris\Contracts\Collection
  * @uses Eris\Quantifier\CanConfigureQuantifier
  * @uses Eris\Quantifier\QuantifierBuilder
  *

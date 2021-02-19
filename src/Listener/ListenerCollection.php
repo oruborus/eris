@@ -4,38 +4,22 @@ declare(strict_types=1);
 
 namespace Eris\Listener;
 
+use Eris\Contracts\Collection;
 use Eris\Contracts\Listener;
 use Exception;
 
-class ListenerCollection implements Listener
+/**
+ * @extends Collection<Listener>
+ */
+class ListenerCollection extends Collection implements Listener
 {
-    /**
-     * @var Listener[] $listeners
-     */
-    private array $listeners = [];
-
-    /**
-     * @param Listener[] $listeners
-     */
-    public function __construct(array $listeners = [])
-    {
-        $this->listeners = $listeners;
-    }
-
-    public function add(Listener $listener): self
-    {
-        $this->listeners[] = $listener;
-
-        return $this;
-    }
-
     /**
      * @param class-string<Listener> $listener
      */
     public function removeListenerOfType(string $listener): self
     {
         $newListeners = [];
-        foreach ($this->listeners as &$listenerToCheck) {
+        foreach ($this->elements as $listenerToCheck) {
             if ($listenerToCheck instanceof $listener) {
                 continue;
             }
@@ -43,7 +27,7 @@ class ListenerCollection implements Listener
             $newListeners[] = $listenerToCheck;
         }
 
-        $this->listeners = $newListeners;
+        $this->elements = $newListeners;
 
         return $this;
     }
@@ -53,7 +37,7 @@ class ListenerCollection implements Listener
      */
     public function startPropertyVerification(): void
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->elements as $listener) {
             $listener->startPropertyVerification();
         }
     }
@@ -63,7 +47,7 @@ class ListenerCollection implements Listener
      */
     public function endPropertyVerification(int $ordinaryEvaluations, int $iterations, ?Exception $exception = null): void
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->elements as $listener) {
             $listener->endPropertyVerification($ordinaryEvaluations, $iterations, $exception);
         }
     }
@@ -73,7 +57,7 @@ class ListenerCollection implements Listener
      */
     public function newGeneration(array $generation, int $iteration): void
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->elements as $listener) {
             $listener->newGeneration($generation, $iteration);
         }
     }
@@ -83,7 +67,7 @@ class ListenerCollection implements Listener
      */
     public function failure(array $generation, Exception $exception): void
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->elements as $listener) {
             $listener->failure($generation, $exception);
         }
     }
@@ -93,7 +77,7 @@ class ListenerCollection implements Listener
      */
     public function shrinking(array $generation): void
     {
-        foreach ($this->listeners as $listener) {
+        foreach ($this->elements as $listener) {
             $listener->shrinking($generation);
         }
     }

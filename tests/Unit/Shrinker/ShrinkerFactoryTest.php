@@ -13,6 +13,9 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
+ *
+ * @uses Eris\Contracts\Collection
+ * @uses Eris\Generator\GeneratorCollection
  */
 class ShrinkerFactoryTest extends TestCase
 {
@@ -23,7 +26,6 @@ class ShrinkerFactoryTest extends TestCase
      * @covers Eris\Shrinker\ShrinkerFactory::multiple
      * @covers Eris\Shrinker\ShrinkerFactory::configureShrinker
      *
-     * @uses Eris\Generator\GeneratorCollection
      * @uses Eris\Shrinker\Multiple
      */
     public function createsMultipleWithoutTimeLimit(): void
@@ -43,7 +45,6 @@ class ShrinkerFactoryTest extends TestCase
      * @covers Eris\Shrinker\ShrinkerFactory::multiple
      * @covers Eris\Shrinker\ShrinkerFactory::configureShrinker
      *
-     * @uses Eris\Generator\GeneratorCollection
      * @uses Eris\Shrinker\Multiple
      * @uses Eris\TimeLimit\FixedTimeLimit
      */

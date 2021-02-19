@@ -10,13 +10,15 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
+ *
+ * @uses Eris\Contracts\Collection
  */
 class AntecedentCollectionTest extends TestCase
 {
     /**
      * @test
      *
-     * @covers Eris\Antecedent\AntecedentCollection
+     * @covers Eris\Antecedent\AntecedentCollection::evaluate
      */
     public function antecedentsCanBeAddedAndTheirEvaluationStatusCanBeRetrieved(): void
     {
@@ -25,8 +27,7 @@ class AntecedentCollectionTest extends TestCase
         $antecedent2 = $this->getMockForAbstractClass(Antecedent::class);
         $antecedent2->expects($this->exactly(2))->method('evaluate')->willReturn(true, false, true, false);
 
-        $dut = new AntecedentCollection([$antecedent1]);
-        $dut->add($antecedent2);
+        $dut = new AntecedentCollection($antecedent1, $antecedent2);
 
         $this->assertTrue($dut->evaluate([]));
         $this->assertFalse($dut->evaluate([]));

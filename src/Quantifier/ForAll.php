@@ -102,7 +102,7 @@ class ForAll implements Quantifier
             $this->listeners->removeListenerOfType(MinimumEvaluations::class);
         }
 
-        $this->listeners->add($listener);
+        $this->listeners[] = $listener;
 
         return $this;
     }
@@ -117,7 +117,7 @@ class ForAll implements Quantifier
 
     public function stopOn(TerminationCondition $terminationCondition): self
     {
-        $this->terminationConditions->add($terminationCondition);
+        $this->terminationConditions[] = $terminationCondition;
 
         return $this;
     }
@@ -253,16 +253,16 @@ class ForAll implements Quantifier
     public function when($firstArgument, Constraint ...$arguments): self
     {
         if ($firstArgument instanceof Constraint) {
-            $this->antecedents->add(new IndependentConstraintsAntecedent([$firstArgument] + $arguments));
+            $this->antecedents[] = new IndependentConstraintsAntecedent([$firstArgument] + $arguments);
             return $this;
         }
 
         if ($firstArgument instanceof Antecedent) {
-            $this->antecedents->add($firstArgument);
+            $this->antecedents[] = $firstArgument;
             return $this;
         }
 
-        $this->antecedents->add(new SingleCallbackAntecedent($firstArgument));
+        $this->antecedents[] = new SingleCallbackAntecedent($firstArgument);
 
         return $this;
     }

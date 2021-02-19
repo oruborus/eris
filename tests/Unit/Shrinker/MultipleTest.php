@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 use function count;
 
 /**
+ * @uses Eris\Contracts\Collection
  * @uses Eris\Generator\GeneratorCollection
  * @uses Eris\Value\Value
  * @uses Eris\Value\ValueCollection
@@ -34,7 +35,7 @@ class MultipleTest extends TestCase
      */
     public function timeLimitCanBeSet(): void
     {
-        $dut = new Multiple(new GeneratorCollection([]), function (): void {
+        $dut = new Multiple(new GeneratorCollection(), function (): void {
         });
 
         $this->assertInstanceOf(NoTimeLimit::class, $dut->getTimeLimit());
@@ -64,7 +65,7 @@ class MultipleTest extends TestCase
         $this->expectExceptionMessage('Failed asserting that 5001 is equal to 5000 or is less than 5000.');
 
         $dut = new Multiple(
-            new GeneratorCollection([new IntegerGenerator()]),
+            new GeneratorCollection(new IntegerGenerator()),
             function ($number): void {
                 $this->assertLessThanOrEqual(5000, $number);
             }
@@ -127,7 +128,7 @@ class MultipleTest extends TestCase
             }
         };
 
-        $dut = new Multiple(new GeneratorCollection([new IntegerGenerator()]), function (): void {
+        $dut = new Multiple(new GeneratorCollection(new IntegerGenerator()), function (): void {
         });
         $dut->setTimeLimit($timeLimit);
 
@@ -168,7 +169,7 @@ class MultipleTest extends TestCase
             return $return2;
         };
 
-        $dut = new Multiple(new GeneratorCollection([new IntegerGenerator()]), function (): void {
+        $dut = new Multiple(new GeneratorCollection(new IntegerGenerator()), function (): void {
         });
 
         $dut->addGoodShrinkCondition($condition1);

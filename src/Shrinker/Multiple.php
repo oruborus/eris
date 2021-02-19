@@ -138,7 +138,7 @@ class Multiple implements Shrinker
          * @psalm-suppress MixedArgument
          * @var list<array{0:Generator, 1:Value}> $generatorInputPair
          */
-        $generatorInputPair = array_map(null, $this->generators->toArray(), $value->input());
+        $generatorInputPair = array_map(null, $this->generators->all(), $value->input());
 
         $result = new ValueCollection();
         foreach ($generatorInputPair as [$generator, $input]) {
