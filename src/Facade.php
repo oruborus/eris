@@ -14,16 +14,25 @@ class Facade
         erisSetup as __construct;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getName(bool $withDataSet = true): string
     {
         return '';
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function hasFailed(): bool
     {
         return false;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function toString(): string
     {
         return '';
