@@ -6,6 +6,7 @@ namespace Test\Unit\Generator;
 
 use Eris\Generator\SubsetGenerator;
 use Eris\Quantifier\ForAll;
+use Eris\Value\Value;
 
 use function array_count_values;
 use function count;
@@ -121,5 +122,23 @@ class SubsetGeneratorTest extends GeneratorTestCase
 
         $this->assertCount(0, $elements->value());
         $this->assertCount(0, $actual);
+    }
+
+    /**
+     * @test
+     *
+     * @covers Eris\Generator\SubSetGenerator::shrink
+     *
+     * @uses Eris\Generator\SubSetGenerator::__construct
+     */
+    public function shrinkingReducesSizeOfSetByOne(): void
+    {
+        $universe = ['a', 'b', 'c'];
+        $value    = new Value($universe);
+        $dut      = new SubsetGenerator($universe);
+
+        $actual = $dut->shrink($value)->last()->value();
+
+        $this->assertCount(2, $actual);
     }
 }
