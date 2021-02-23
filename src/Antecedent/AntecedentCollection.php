@@ -8,7 +8,7 @@ use Eris\Contracts\Antecedent;
 use Eris\Contracts\Collection;
 
 /**
- * @extends Collection<Antecedents>
+ * @extends Collection<Antecedent>
  */
 class AntecedentCollection extends Collection implements Antecedent
 {
