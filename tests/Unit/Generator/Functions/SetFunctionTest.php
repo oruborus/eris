@@ -36,6 +36,9 @@ class SetFunctionTest extends GeneratorTestCase
         $actual = $actual->value();
 
         $this->assertInstanceOf(SetGenerator::class, $dut);
-        $this->assertSame([5], $actual);
+        $this->assertThat($actual, $this->logicalOr(
+            $this->identicalTo([]),
+            $this->identicalTo([5])
+        ));
     }
 }
