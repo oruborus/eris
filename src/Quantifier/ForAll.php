@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Eris\Quantifier;
 
 use DateInterval;
+use InvalidArgumentException;
 use Eris\Antecedent\AntecedentCollection;
 use Eris\Antecedent\IndependentConstraintsAntecedent;
 use Eris\Antecedent\SingleCallbackAntecedent;
 use Eris\Contracts\Antecedent;
-use Eris\Contracts\Generator;
 use Eris\Contracts\Growth;
 use Eris\Contracts\Listener;
 use Eris\Contracts\Quantifier;
@@ -32,6 +32,7 @@ use PHPUnit\Framework\Constraint\Constraint;
 use RuntimeException;
 
 use function class_implements;
+use function class_parents;
 use function crc32;
 use function getenv;
 use function in_array;
@@ -108,7 +109,8 @@ class ForAll implements Quantifier
     }
 
     /**
-     * Alias of Eris\Quantifier\ForAll::hook
+     * @see Eris\Quantifier\ForAll::listenTo alias
+     * @codeCoverageIgnore
      */
     public function hook(Listener $listener): self
     {
@@ -129,12 +131,12 @@ class ForAll implements Quantifier
     {
         if (class_exists($growth)) {
 
-            $interfaces = class_implements($growth, true);
+            $parents = class_parents($growth, true);
 
             /**
              * @psalm-suppress PropertyTypeCoercion
              */
-            if ($interfaces && in_array(Growth::class, $interfaces)) {
+            if ($parents && in_array(Growth::class, $parents)) {
                 $this->growthClass = $growth;
 
                 return $this;
@@ -148,15 +150,15 @@ class ForAll implements Quantifier
             'triangular' => \Eris\Growth\TriangularGrowth::class,
         ];
 
-        if (in_array($growth, $growthClasses)) {
-            $this->growthClass = $growthClasses[$growth];
-        }
+        $this->growthClass = $growthClasses[$growth] ??
+            throw new InvalidArgumentException("{$growth} in not a valid Growth type");
 
         return $this;
     }
 
     /**
-     * Alias of Eris\Quantifier\ForAll::withMaximumSize
+     * @see Eris\Quantifier\ForAll::withMaximumSize alias
+     * @codeCoverageIgnore
      */
     public function withMaxSize(int $maxSize): self
     {
@@ -188,7 +190,8 @@ class ForAll implements Quantifier
     }
 
     /**
-     * Alias of Eris\Quantifier\ForAll::withoutShrinking
+     * @see Eris\Quantifier\ForAll::withoutShrinking alias
+     * @codeCoverageIgnore
      */
     public function disableShrinking(): self
     {
@@ -226,9 +229,8 @@ class ForAll implements Quantifier
             'rand'     => \Eris\Random\RandSource::class,
         ];
 
-        if (in_array($source, $sourceClasses)) {
-            $this->sourceClass = $sourceClasses[$source];
-        }
+        $this->sourceClass = $sourceClasses[$source] ??
+            throw new InvalidArgumentException("{$source} in not a valid Source type");
 
         return $this;
     }
@@ -268,6 +270,9 @@ class ForAll implements Quantifier
     }
 
     /**
+     * @see Eris\Quantifier\ForAll::when alias
+     * @codeCoverageIgnore
+     *
      * @param Antecedent|Constraint|callable(mixed...):bool $firstArgument
      */
     public function and($firstArgument, Constraint ...$arguments): self
@@ -276,17 +281,20 @@ class ForAll implements Quantifier
     }
 
     /**
+     * @see Eris\Quantifier\ForAll::then alias
+     * @codeCoverageIgnore
+     *
      * @param callable(mixed...):void $assertion
      */
-    public function then($assertion): void
+    public function __invoke($assertion): void
     {
-        $this->__invoke($assertion);
+        $this->then($assertion);
     }
 
     /**
      * @param callable(mixed...):void $assertion
      */
-    public function __invoke($assertion): void
+    public function then($assertion): void
     {
         $growth              = new ($this->growthClass)($this->maximumSize, $this->maximumIterations);
         $range               = new RandomRange(new ($this->sourceClass)());
@@ -320,11 +328,11 @@ class ForAll implements Quantifier
         $this->listeners->startPropertyVerification();
 
         try {
-            for (
-                $iteration = 0;
-                $iteration < $this->maximumIterations && !$this->terminationConditions->shouldTerminate();
-                $iteration++
-            ) {
+            for ($iteration = 0; $iteration < $this->maximumIterations; $iteration++) {
+                if ($this->terminationConditions->shouldTerminate()) {
+                    break;
+                }
+
                 try {
                     $values = $this->generators->__invoke($growth[$iteration], $range);
                 } catch (SkipValueException $e) {
