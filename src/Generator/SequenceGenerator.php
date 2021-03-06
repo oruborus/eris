@@ -80,8 +80,15 @@ class SequenceGenerator implements Generator
             $input
         );
 
-        // TODO: try to shrink the elements also of longer sequences
-        if ($count > 9) { // a size which is computationally acceptable
+        /**
+         * Shrinking will only continue with an element count which is computationally acceptable
+         *
+         * @todo try to shrink the elements also of longer sequences
+         */
+        if ($count > 9) {
+            /**
+             * @codeCoverageIgnore
+             */
             return new ValueCollection([$shrunkSequence]);
         }
 
