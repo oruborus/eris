@@ -30,19 +30,33 @@ use RuntimeException;
 use Test\Support\Listener\Spy;
 use Test\Support\TerminationCondition\TerminationSwitch;
 
+use function putenv;
+
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  *
  * @uses Eris\Contracts\Collection
+ * @uses Eris\Contracts\Growth
  * @uses Eris\Antecedent\AntecedentCollection
- * @uses Eris\Listener\ListenerCollection
  * @uses Eris\Generator\GeneratorCollection
+ * @uses Eris\Listener\ListenerCollection
+ * @uses Eris\Random\RandomRange
+ * @uses Eris\Random\RandSource
+ * @uses Eris\Shrinker\Multiple
+ * @uses Eris\Shrinker\ShrinkerFactory
  * @uses Eris\TerminationCondition\TerminationConditionCollection
  * @uses Eris\Value\Value
  * @uses Eris\Value\ValueCollection
  */
 class ForAllTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        putenv('ERIS_ORIGINAL_INPUT');
+    }
+
     /**
      * @test
      *
@@ -50,11 +64,6 @@ class ForAllTest extends TestCase
      * @covers Eris\Quantifier\ForAll::getMaximumSize
      *
      * @uses Eris\Quantifier\ForAll::__construct
-     *
-     * @uses Eris\Contracts\Growth
-     * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function maximumSizeCanBeChanged(): void
     {
@@ -72,8 +81,6 @@ class ForAllTest extends TestCase
      * @covers Eris\Quantifier\ForAll::getMaximumIterations
      *
      * @uses Eris\Quantifier\ForAll::__construct
-     *
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function iterationsCanBeChanged(): void
     {
@@ -91,8 +98,6 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::__construct
      * @uses Eris\Quantifier\ForAll::getMaximumIterations
      * @uses Eris\Quantifier\ForAll::withMaximumIterations
-     *
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function iterationsCanBeChangedAsLimit(): void
     {
@@ -110,15 +115,9 @@ class ForAllTest extends TestCase
      *
      * @uses Eris\Quantifier\ForAll::getMaximumIterations
      * @uses Eris\Quantifier\ForAll::listenTo
-     * @uses Eris\Quantifier\ForAll::hook
      *
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Generator\TupleGenerator
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      * @uses Eris\TimeLimit\NoTimeLimit
      *
      * @dataProvider provideMethodNamesAndConstructorArguments
@@ -134,8 +133,8 @@ class ForAllTest extends TestCase
         $listener2->expects($this->exactly($count))->method($name);
 
         $forAll = (new ForAll($generators))
-            ->hook($listener1)
-            ->hook($listener2);
+            ->listenTo($listener1)
+            ->listenTo($listener2);
 
         try {
             $forAll($assertion);
@@ -166,19 +165,21 @@ class ForAllTest extends TestCase
                 'startPropertyVerification',
                 1,
                 new GeneratorCollection(),
-                static fn (): bool => false
+                static function (): void {
+                }
             ],
             'newGeneration' => [
                 'newGeneration',
                 100,
                 new GeneratorCollection(),
-                static fn (): bool => false
+                static function (): void {
+                }
             ],
             'failure' => [
                 'failure',
                 1,
                 new GeneratorCollection($generator),
-                static function () {
+                static function (): void {
                     throw new AssertionFailedError();
                 }
             ],
@@ -186,7 +187,7 @@ class ForAllTest extends TestCase
                 'shrinking',
                 1,
                 new GeneratorCollection($generator),
-                static function () {
+                static function (): void {
                     throw new AssertionFailedError();
                 }
             ],
@@ -194,7 +195,8 @@ class ForAllTest extends TestCase
                 'endPropertyVerification',
                 1,
                 new GeneratorCollection(),
-                static fn (): bool => false
+                static function (): void {
+                }
             ],
         ];
     }
@@ -209,10 +211,6 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::listenTo
      *
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function canBeTerminatedWithConditions(): void
     {
@@ -241,12 +239,7 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::__construct
      * @uses Eris\Quantifier\ForAll::listenTo
      *
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function restartsTheGenerationProcessOnSkipValueExceptionOfGenerator(): void
     {
@@ -279,12 +272,7 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::stopOn
      * @uses Eris\Quantifier\ForAll::when
      *
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function restartsTheGenerationProcessWhenAntecedentsAreNotSatisfied(): void
     {
@@ -316,12 +304,7 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::__construct
      * @uses Eris\Quantifier\ForAll::listenTo
      *
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function whenAssertionSucceedsAllIterationsAreCompleted(): void
     {
@@ -347,12 +330,7 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::__construct
      * @uses Eris\Quantifier\ForAll::listenTo
      *
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      * @uses Eris\TimeLimit\NoTimeLimit
      *
      * @psalm-suppress InternalClass
@@ -395,13 +373,8 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::then
      * @uses Eris\Quantifier\ForAll::listenTo
      *
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\LinearGrowth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      * @uses Eris\TimeLimit\NoTimeLimit
      *
      * @dataProvider provideGrowth
@@ -455,8 +428,6 @@ class ForAllTest extends TestCase
      * @covers Eris\Quantifier\ForAll::withGrowth
      *
      * @uses Eris\Quantifier\ForAll::__construct
-     *
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function throwsWhenNonExistingGrowthTypeIsSelected(): void
     {
@@ -476,13 +447,8 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::then
      * @uses Eris\Quantifier\ForAll::listenTo
      *
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\LinearGrowth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      * @uses Eris\TimeLimit\NoTimeLimit
      *
      * @dataProvider provideRand
@@ -524,8 +490,6 @@ class ForAllTest extends TestCase
      * @covers Eris\Quantifier\ForAll::withRand
      *
      * @uses Eris\Quantifier\ForAll::__construct
-     *
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function throwsWhenNonExistingRandTypeIsSelected(): void
     {
@@ -546,13 +510,8 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::listenTo
      * @uses Eris\Quantifier\ForAll::stopOn
      *
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\LinearGrowth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      * @uses Eris\TimeLimit\NoTimeLimit
      */
     public function seedCanBeSet(): void
@@ -572,8 +531,10 @@ class ForAllTest extends TestCase
         $switch = new TerminationSwitch();
 
         $assertion = function (array $value, int $iteration) use ($expected, $switch): void {
-            $this->assertSame($expected, $value[0]->rand());
             $switch->abort();
+
+            $this->assertInstanceOf(RandomRange::class, $value[0]);
+            $this->assertSame($expected, $value[0]->rand());
         };
 
         $listener = new Spy();
@@ -595,12 +556,7 @@ class ForAllTest extends TestCase
      *
      * @uses Eris\Quantifier\ForAll::__construct
      *
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function generatedInputWillBeShownWhenCorrespondingEnvironmentFlagIsSet(): void
     {
@@ -619,8 +575,6 @@ class ForAllTest extends TestCase
         $dut->then(static function (): void {
             throw new Exception();
         });
-
-        putenv('ERIS_ORIGINAL_INPUT=');
     }
 
     /**
@@ -633,10 +587,6 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::stopOn
      *
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function listenersCanBeAdded(): void
     {
@@ -670,10 +620,6 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::then
      *
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      * @uses Eris\TerminationCondition\TimeBasedTerminationCondition
      */
     public function timeIntervalCanBeUsedAsLimit(): void
@@ -700,12 +646,7 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::stopOn
      *
      * @uses Eris\Antecedent\IndependentConstraintsAntecedent
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function constraintsCanBeUsedAsAntecedent(): void
     {
@@ -735,12 +676,7 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::then
      * @uses Eris\Quantifier\ForAll::stopOn
      *
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function antecedentsCanBeUsedAsAntecedent(): void
     {
@@ -771,12 +707,7 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::stopOn
      *
      * @uses Eris\Antecedent\SingleCallbackAntecedent
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      */
     public function callbacksCanBeUsedAsAntecedent(): void
     {
@@ -808,13 +739,10 @@ class ForAllTest extends TestCase
      * @uses Eris\Quantifier\ForAll::__construct
      * @uses Eris\Quantifier\ForAll::then
      *
-     * @uses Eris\Contracts\Growth
      * @uses Eris\Growth\TriangularGrowth
-     * @uses Eris\Random\RandSource
-     * @uses Eris\Random\RandomRange
-     * @uses Eris\Shrinker\Multiple
-     * @uses Eris\Shrinker\ShrinkerFactory
      * @uses Eris\TimeLimit\FixedTimeLimit
+     *
+     * @psalm-suppress InternalClass
      */
     public function timelimitForShrinkingCanBeSet(): void
     {
