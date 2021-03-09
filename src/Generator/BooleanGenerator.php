@@ -9,8 +9,6 @@ use Eris\Random\RandomRange;
 use Eris\Value\Value;
 use Eris\Value\ValueCollection;
 
-use function count;
-
 /**
  * @implements Generator<bool>
  */
@@ -21,10 +19,7 @@ class BooleanGenerator implements Generator
      */
     public function __invoke(int $_size, RandomRange $rand): Value
     {
-        $booleanValues = [true, false];
-        $randomIndex = $rand->rand(0, count($booleanValues) - 1);
-
-        return new Value($booleanValues[$randomIndex]);
+        return new Value((bool) $rand->rand(0, 1));
     }
 
     /**
