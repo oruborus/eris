@@ -86,10 +86,9 @@ class SequenceGenerator implements Generator
          * @todo try to shrink the elements also of longer sequences
          */
         if ($count > 9) {
-            /**
-             * @codeCoverageIgnore
-             */
+            // @codeCoverageIgnoreStart
             return new ValueCollection([$shrunkSequence]);
+            // @codeCoverageIgnoreEnd
         }
 
         /**
