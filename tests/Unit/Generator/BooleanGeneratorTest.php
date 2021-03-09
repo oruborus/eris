@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Test\Unit\Generator;
 
 use Eris\Generator\BooleanGenerator;
+use Eris\Random\RandomRange;
+use Eris\Value\Value;
 use Test\Unit\Generator\GeneratorTestCase;
 
 /**
@@ -22,18 +24,19 @@ class BooleanGeneratorTest extends GeneratorTestCase
      *
      * @covers Eris\Generator\BooleanGenerator::__invoke
      */
-    public function randomlyPicksTrueOrFalse(): void
+    public function generatesBothPossibleBooleanValues(): void
     {
+        $rand = $this->createMock(RandomRange::class);
+        $rand
+            ->expects($this->exactly(2))
+            ->method('rand')
+            ->with(0, 1)
+            ->willReturn(0, 1);
+
         $dut = new BooleanGenerator();
 
-        for ($i = 0; $i < 100; $i++) {
-            $value = $dut($_size = 0, $this->rand);
-
-            /**
-             * @psalm-suppress RedundantConditionGivenDocblockType
-             */
-            $this->assertIsBool($value->value());
-        }
+        $this->assertFalse($dut->__invoke($size = 0, $rand)->value());
+        $this->assertTrue($dut->__invoke($size = 0, $rand)->value());
     }
 
     /**
@@ -41,15 +44,28 @@ class BooleanGeneratorTest extends GeneratorTestCase
      *
      * @covers Eris\Generator\BooleanGenerator::__invoke
      * @covers Eris\Generator\BooleanGenerator::shrink
+     *
+     * @dataProvider provideBooleanValues
+     *
+     * @param Value<bool> $value
      */
-    public function allwaysShrinksToFalse(): void
+    public function allwaysShrinksToFalse(Value $value): void
     {
         $dut = new BooleanGenerator();
 
-        for ($i = 0; $i < 100; $i++) {
-            $value = $dut($_size = 10, $this->rand);
+        $actual = $dut->shrink($value)->last()->value();
 
-            $this->assertFalse($dut->shrink($value)->last()->value());
-        }
+        $this->assertFalse($actual);
+    }
+
+    /**
+     * @return array<string, array<Value<bool>>>
+     */
+    public function provideBooleanValues(): array
+    {
+        return [
+            'false value' => [new Value(false)],
+            'true value'  => [new Value(true)],
+        ];
     }
 }
