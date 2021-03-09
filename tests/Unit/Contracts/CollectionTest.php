@@ -157,6 +157,8 @@ class CollectionTest extends TestCase
      * @covers Eris\Contracts\Collection::offsetUnset
      *
      * @uses Eris\Contracts\Collection::all
+     * @uses Eris\Contracts\Collection::next
+     * @uses Eris\Contracts\Collection::key
      */
     public function elementsCanBeUnset(): void
     {
@@ -164,9 +166,11 @@ class CollectionTest extends TestCase
 
         $dut = $this->getMockForAbstractClass(Collection::class, [...$elements]);
 
+        $dut->next();
         unset($dut[1]);
 
         $this->assertSame([0 => 1, 2 => 3], $dut->all());
+        $this->assertSame(2, $dut->key());
     }
 
     /**
